@@ -6,7 +6,7 @@ public class Package
     public Guid TenantId { get; set; }
     public Guid StudentId { get; set; }
     public string Name { get; set; } = string.Empty;
-    public DateTime? ExpiresAt { get; set; }
+    public DateOnly? ExpiresAt { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

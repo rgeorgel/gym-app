@@ -16,7 +16,7 @@ public static class PackageEndpoints
         {
             var query = db.Packages.AsNoTracking()
                 .Include(p => p.Items).ThenInclude(i => i.ClassType)
-                .Where(p => p.TenantId == tenant.TenantId);
+                .Where(p => p.TenantId == tenant.TenantId && p.IsActive);
 
             if (studentId.HasValue)
                 query = query.Where(p => p.StudentId == studentId.Value);

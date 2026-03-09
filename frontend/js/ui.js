@@ -23,6 +23,8 @@ export function showToast(message, type = 'info', duration = 3500) {
 // Modal
 export function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
 export function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+// Expose globally so inline onclick="closeModal(...)" in modal footers works
+window.closeModal = closeModal;
 
 export function createModal({ id, title, body, footer = '' }) {
   const existing = document.getElementById(id);
@@ -43,9 +45,10 @@ export function createModal({ id, title, body, footer = '' }) {
   `;
   document.body.appendChild(overlay);
 
-  // Close handlers
+  // Close via X button or Escape key
   overlay.querySelector('.modal-close').addEventListener('click', () => closeModal(id));
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(id); });
+  const onKeyDown = (e) => { if (e.key === 'Escape') { closeModal(id); document.removeEventListener('keydown', onKeyDown); } };
+  document.addEventListener('keydown', onKeyDown);
   return overlay;
 }
 
@@ -105,9 +108,32 @@ export function statusBadge(status) {
   return badge(s.label, s.type);
 }
 
-// Confirm dialog
+// Confirm dialog (custom async — avoids browser blocking window.confirm)
 export function confirm(message) {
-  return window.confirm(message);
+  return new Promise((resolve) => {
+    const id = 'confirmDialog';
+    const existing = document.getElementById(id);
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = id;
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = 'z-index:9999';
+    overlay.innerHTML = `
+      <div class="modal" style="max-width:380px">
+        <div class="modal-body" style="padding:1.5rem;text-align:center;font-size:0.95rem">${message}</div>
+        <div class="modal-footer" style="justify-content:center;gap:0.75rem">
+          <button class="btn btn-secondary" id="confirmNo">Cancelar</button>
+          <button class="btn btn-danger" id="confirmYes">Confirmar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const cleanup = (result) => { overlay.remove(); resolve(result); };
+    document.getElementById('confirmYes').addEventListener('click', () => cleanup(true));
+    document.getElementById('confirmNo').addEventListener('click', () => cleanup(false));
+  });
 }
 
 // Render empty state

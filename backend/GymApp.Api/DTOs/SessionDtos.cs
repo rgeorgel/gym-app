@@ -8,6 +8,7 @@ public record SessionResponse(
     DateOnly Date,
     TimeOnly StartTime,
     int DurationMinutes,
+    Guid ClassTypeId,
     string ClassTypeName,
     string ClassTypeColor,
     ModalityType ModalityType,

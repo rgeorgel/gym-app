@@ -14,6 +14,21 @@ public static class BookingEndpoints
     {
         var group = app.MapGroup("/api/bookings").RequireAuthorization();
 
+        group.MapGet("/", async (AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>
+        {
+            var callerId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var bookings = await db.Bookings.AsNoTracking()
+                .Include(b => b.Session).ThenInclude(s => s.Schedule).ThenInclude(s => s.ClassType)
+                .Where(b => b.StudentId == callerId && b.Session.Schedule.TenantId == tenant.TenantId)
+                .OrderByDescending(b => b.Session.Date)
+                .Select(b => new BookingResponse(
+                    b.Id, b.SessionId, b.Session.Date, b.Session.Schedule.StartTime,
+                    b.Session.Schedule.ClassType.Name, b.StudentId, b.Student.Name,
+                    b.Status, b.CheckedInAt, b.CreatedAt))
+                .ToListAsync();
+            return Results.Ok(bookings);
+        });
+
         group.MapPost("/", async (CreateBookingRequest req, AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>
         {
             var role = principal.FindFirstValue(ClaimTypes.Role);
@@ -50,7 +65,7 @@ public static class BookingEndpoints
             if (packageItem is null) return Results.NotFound("Package item not found.");
             if (packageItem.UsedCredits >= packageItem.TotalCredits)
                 return Results.BadRequest($"No credits left for {packageItem.ClassType.Name}.");
-            if (packageItem.Package.ExpiresAt.HasValue && packageItem.Package.ExpiresAt < DateTime.UtcNow)
+            if (packageItem.Package.ExpiresAt.HasValue && packageItem.Package.ExpiresAt < DateOnly.FromDateTime(DateTime.UtcNow))
                 return Results.BadRequest("Package has expired.");
             if (packageItem.ClassTypeId != session.Schedule.ClassTypeId)
                 return Results.BadRequest("Package item class type doesn't match session class type.");
@@ -72,7 +87,7 @@ public static class BookingEndpoints
             return Results.Created($"/api/bookings/{booking.Id}", booking.Id);
         });
 
-        group.MapDelete("/{id:guid}", async (Guid id, CancelBookingRequest? req, AppDbContext db, TenantContext tenant,
+        group.MapDelete("/{id:guid}", async (Guid id, string? reason, AppDbContext db, TenantContext tenant,
             ClaimsPrincipal principal, IConfiguration config) =>
         {
             var role = principal.FindFirstValue(ClaimTypes.Role);
@@ -92,7 +107,7 @@ public static class BookingEndpoints
 
             booking.Status = BookingStatus.Cancelled;
             booking.CancelledAt = DateTime.UtcNow;
-            booking.CancellationReason = req?.Reason;
+            booking.CancellationReason = reason;
 
             // Refund credit if within cancellation window
             var sessionDateTime = booking.Session.Date.ToDateTime(booking.Session.Schedule.StartTime);

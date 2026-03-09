@@ -8,13 +8,25 @@ export async function renderMyBookings(container) {
 
   try {
     const bookings = await api.get(`/students/${user.id}/bookings`);
-    const upcoming = bookings.filter(b => b.status !== 'Cancelled' && new Date(b.sessionDate + 'T' + (b.sessionStartTime ?? '00:00:00')) >= new Date());
-    const past = bookings.filter(b => b.status === 'Cancelled' || new Date(b.sessionDate + 'T' + (b.sessionStartTime ?? '00:00:00')) < new Date());
+    const today = new Date().toISOString().slice(0, 10);
+    const upcoming = bookings.filter(b => b.status !== 'Cancelled' && b.sessionDate >= today);
+    const past = bookings.filter(b => b.status === 'Cancelled' || b.sessionDate < today);
 
     if (!bookings.length) {
       container.innerHTML = emptyState('📅', 'Nenhum agendamento encontrado');
       return;
     }
+
+    window._cancelBooking = async (id) => {
+      if (!await confirm('Cancelar este agendamento?')) return;
+      try {
+        await api.delete(`/bookings/${id}`);
+        showToast('Agendamento cancelado', 'success');
+        renderMyBookings(container);
+      } catch (e) {
+        showToast('Erro: ' + e.message, 'error');
+      }
+    };
 
     container.innerHTML = `
       ${upcoming.length ? `
@@ -35,20 +47,6 @@ export async function renderMyBookings(container) {
         </div>
       ` : ''}
     `;
-
-    // Event listeners for cancel buttons
-    container.querySelectorAll('.btn-cancel-booking').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        if (!confirm('Cancelar este agendamento?')) return;
-        try {
-          await api.delete(`/bookings/${btn.dataset.id}`);
-          showToast('Agendamento cancelado', 'success');
-          renderMyBookings(container);
-        } catch (e) {
-          showToast('Erro: ' + e.message, 'error');
-        }
-      });
-    });
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">Erro: ${e.message}</div></div>`;
   }
@@ -70,7 +68,7 @@ function renderBookingRow(b, showCancel) {
       <div style="display:flex;align-items:center;gap:0.75rem">
         ${statusBadge(b.status)}
         ${showCancel && b.status === 'Confirmed'
-          ? `<button class="btn btn-danger btn-sm btn-cancel-booking" data-id="${b.id}">Cancelar</button>`
+          ? `<button class="btn btn-danger btn-sm" onclick="window._cancelBooking('${b.id}')">Cancelar</button>`
           : ''}
       </div>
     </div>

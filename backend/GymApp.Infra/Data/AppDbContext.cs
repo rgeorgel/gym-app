@@ -15,6 +15,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Package> Packages => Set<Package>();
     public DbSet<PackageItem> PackageItems => Set<PackageItem>();
     public DbSet<WaitingListEntry> WaitingList => Set<WaitingListEntry>();
+    public DbSet<PackageTemplate> PackageTemplates => Set<PackageTemplate>();
+    public DbSet<PackageTemplateItem> PackageTemplateItems => Set<PackageTemplateItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +104,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(x => x.Package).WithMany(p => p.Items).HasForeignKey(x => x.PackageId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.ClassType).WithMany(ct => ct.PackageItems).HasForeignKey(x => x.ClassTypeId).OnDelete(DeleteBehavior.Restrict);
             e.Ignore(x => x.RemainingCredits);
+        });
+
+        // PackageTemplate
+        modelBuilder.Entity<PackageTemplate>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.HasOne(x => x.Tenant).WithMany(t => t.PackageTemplates).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PackageTemplateItem>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.PricePerCredit).HasPrecision(10, 2);
+            e.HasOne(x => x.Template).WithMany(t => t.Items).HasForeignKey(x => x.TemplateId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.ClassType).WithMany().HasForeignKey(x => x.ClassTypeId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // WaitingListEntry

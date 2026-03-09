@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using GymApp.Api.DTOs;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
@@ -82,8 +83,16 @@ public static class StudentEndpoints
             return Results.Ok(new StudentResponse(user.Id, user.Name, user.Email, user.Phone, user.BirthDate, user.Status, user.PhotoUrl, user.CreatedAt));
         });
 
-        group.MapGet("/{id:guid}/bookings", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        // Sub-routes accessible by admins OR by the student themselves
+        var selfOrAdminGroup = app.MapGroup("/api/students").RequireAuthorization();
+
+        selfOrAdminGroup.MapGet("/{id:guid}/bookings", async (Guid id, AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>
         {
+            var role = principal.FindFirstValue(ClaimTypes.Role);
+            var callerId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (role == nameof(UserRole.Student) && id != callerId)
+                return Results.Forbid();
+
             var bookings = await db.Bookings.AsNoTracking()
                 .Include(b => b.Session).ThenInclude(s => s.Schedule).ThenInclude(s => s.ClassType)
                 .Where(b => b.StudentId == id && b.Session.Schedule.TenantId == tenant.TenantId)
@@ -97,11 +106,16 @@ public static class StudentEndpoints
             return Results.Ok(bookings);
         });
 
-        group.MapGet("/{id:guid}/packages", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        selfOrAdminGroup.MapGet("/{id:guid}/packages", async (Guid id, AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>
         {
+            var role = principal.FindFirstValue(ClaimTypes.Role);
+            var callerId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (role == nameof(UserRole.Student) && id != callerId)
+                return Results.Forbid();
+
             var packages = await db.Packages.AsNoTracking()
                 .Include(p => p.Items).ThenInclude(i => i.ClassType)
-                .Where(p => p.StudentId == id && p.TenantId == tenant.TenantId)
+                .Where(p => p.StudentId == id && p.TenantId == tenant.TenantId && p.IsActive)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 

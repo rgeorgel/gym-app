@@ -8,9 +8,10 @@ COPY GymApp.Api/GymApp.Api.csproj GymApp.Api/
 RUN dotnet restore
 
 COPY . .
-RUN dotnet publish GymApp.Api/GymApp.Api.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish GymApp.Api/GymApp.Api.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/publish .
 

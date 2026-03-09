@@ -20,6 +20,16 @@ export function requireAuth(allowedRoles = []) {
 }
 
 export async function initLoginPage() {
+  // Slug from subdomain, URL param (?slug=boxe-elite), or stored value
+  const host = location.hostname;
+  const parts = host.split('.');
+  const urlSlug = new URLSearchParams(location.search).get('slug');
+  const tenantSlug = parts.length >= 3
+    ? parts[0]
+    : urlSlug || localStorage.getItem('tenant_slug') || null;
+
+  if (tenantSlug) localStorage.setItem('tenant_slug', tenantSlug);
+
   await loadTenantTheme();
 
   if (isLoggedIn()) {
@@ -42,10 +52,13 @@ export async function initLoginPage() {
     errorEl?.classList.add('hidden');
 
     try {
-      const data = await api.post('/auth/login', { email, password });
+      const body = { email, password };
+      if (tenantSlug) body.tenantSlug = tenantSlug;
+      const data = await api.post('/auth/login', body);
       localStorage.setItem('access_token', data.accessToken);
       localStorage.setItem('refresh_token', data.refreshToken);
       localStorage.setItem('user', JSON.stringify({ id: data.userId, name: data.name, role: data.role }));
+      if (data.tenantSlug) localStorage.setItem('tenant_slug', data.tenantSlug);
       redirectByRole(data.role);
     } catch (err) {
       errorEl.textContent = 'E-mail ou senha incorretos.';

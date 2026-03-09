@@ -3,7 +3,7 @@ namespace GymApp.Api.DTOs;
 public record CreatePackageRequest(
     Guid StudentId,
     string Name,
-    DateTime? ExpiresAt,
+    DateOnly? ExpiresAt,
     List<CreatePackageItemRequest> Items
 );
 
@@ -16,7 +16,7 @@ public record CreatePackageItemRequest(
 public record PackageResponse(
     Guid Id,
     string Name,
-    DateTime? ExpiresAt,
+    DateOnly? ExpiresAt,
     bool IsActive,
     DateTime CreatedAt,
     List<PackageItemResponse> Items

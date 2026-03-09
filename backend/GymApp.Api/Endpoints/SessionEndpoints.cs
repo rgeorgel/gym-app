@@ -137,6 +137,7 @@ public static class SessionEndpoints
 
     private static SessionResponse ToResponse(Session s) => new(
         s.Id, s.ScheduleId, s.Date, s.Schedule.StartTime, s.Schedule.DurationMinutes,
+        s.Schedule.ClassTypeId,
         s.Schedule.ClassType.Name, s.Schedule.ClassType.Color,
         s.Schedule.ClassType.ModalityType,
         s.Schedule.Instructor?.User.Name,

@@ -153,7 +153,7 @@ async function openCheckinModal(sessionId) {
 }
 
 async function cancelSession(sessionId) {
-  if (!confirm('Cancelar esta aula? Os créditos serão devolvidos para os alunos agendados.')) return;
+  if (!await confirm('Cancelar esta aula? Os créditos serão devolvidos para os alunos agendados.')) return;
   try {
     await api.post(`/sessions/${sessionId}/cancel`, { reason: 'Cancelado pelo admin' });
     showToast('Aula cancelada. Créditos devolvidos.', 'success');

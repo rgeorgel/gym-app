@@ -162,9 +162,10 @@ async function openPackagesModal(studentId, studentName) {
   openModal('packagesModal');
 
   try {
-    const [packages, classTypes] = await Promise.all([
+    const [packages, classTypes, templates] = await Promise.all([
       api.get(`/students/${studentId}/packages`),
       api.get('/class-types'),
+      api.get('/package-templates'),
     ]);
 
     const body = modal.querySelector('.modal-body');
@@ -176,6 +177,7 @@ async function openPackagesModal(studentId, studentName) {
           <div class="package-header">
             <span class="package-name">${p.name}</span>
             <span class="package-expiry">Vence: ${p.expiresAt ? new Date(p.expiresAt).toLocaleDateString('pt-BR') : 'Sem validade'}</span>
+            <button class="btn btn-danger btn-sm" data-delete-pkg="${p.id}" style="margin-left:auto">Apagar</button>
           </div>
           <div class="package-items">
             ${p.items.map(i => `
@@ -191,49 +193,87 @@ async function openPackagesModal(studentId, studentName) {
           </div>
         </div>
       `).join('');
+
+      body.querySelectorAll('[data-delete-pkg]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!await confirm('Apagar este pacote?')) return;
+          try {
+            await api.delete(`/packages/${btn.dataset.deletePkg}`);
+            showToast('Pacote apagado', 'success');
+            closeModal('packagesModal');
+            openPackagesModal(studentId, studentName);
+          } catch (e) {
+            showToast('Erro: ' + e.message, 'error');
+          }
+        });
+      });
     }
 
-    document.getElementById('btnNewPackage').addEventListener('click', () => openNewPackageModal(studentId, classTypes, async () => {
-      const packages2 = await api.get(`/students/${studentId}/packages`);
-      body.innerHTML = ''; // re-render handled by reopening
+    document.getElementById('btnNewPackage').addEventListener('click', () => openNewPackageModal(studentId, classTypes, templates, async () => {
+      closeModal('packagesModal');
+      openPackagesModal(studentId, studentName);
     }));
   } catch (e) {
     showToast('Erro ao carregar pacotes: ' + e.message, 'error');
   }
 }
 
-function openNewPackageModal(studentId, classTypes, onSuccess) {
-  const modal = createModal({
+function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
+  const activeClassTypes = classTypes.filter(ct => ct.isActive);
+
+  const templateOptions = templates.length
+    ? templates.map(t => `<option value="${t.id}">${t.name}${t.durationDays ? ` · ${t.durationDays}d` : ''}</option>`).join('')
+    : '<option disabled>Nenhum modelo cadastrado</option>';
+
+  const itemsForm = activeClassTypes.map(ct => `
+    <div class="form-group" style="background:var(--gray-50);padding:0.75rem;border-radius:var(--border-radius);border:1px solid var(--gray-200)">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+        <div style="width:10px;height:10px;border-radius:2px;background:${ct.color}"></div>
+        <label class="form-label" style="margin:0">${ct.name}</label>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+        <div>
+          <label class="form-label" style="font-size:0.7rem">Créditos</label>
+          <input class="form-control" id="credits_${ct.id}" type="number" min="0" value="0">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.7rem">R$/aula</label>
+          <input class="form-control" id="price_${ct.id}" type="number" min="0" step="0.01" value="0">
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  createModal({
     id: 'newPackageModal',
     title: 'Novo Pacote',
     body: `
-      <div class="form-group">
-        <label class="form-label">Nome do pacote</label>
-        <input class="form-control" id="pkgName" placeholder="ex: Plano Março 2026" required>
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem">
+        <button class="btn btn-primary" id="tabTemplate" style="flex:1">Usar modelo</button>
+        <button class="btn btn-secondary" id="tabCustom" style="flex:1">Pacote avulso</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Validade</label>
-        <input class="form-control" id="pkgExpiry" type="date">
+
+      <div id="sectionTemplate">
+        <div class="form-group">
+          <label class="form-label">Modelo</label>
+          <select class="form-control" id="templateSelect">${templateOptions}</select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Validade (opcional — substitui a do modelo)</label>
+          <input class="form-control" id="templateExpiry" type="date">
+        </div>
       </div>
-      <div id="pkgItems">
-        ${classTypes.filter(ct => ct.isActive).map(ct => `
-          <div class="form-group" style="background:var(--gray-50);padding:0.75rem;border-radius:var(--border-radius);border:1px solid var(--gray-200)">
-            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
-              <div style="width:10px;height:10px;border-radius:2px;background:${ct.color}"></div>
-              <label class="form-label" style="margin:0">${ct.name}</label>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
-              <div>
-                <label class="form-label" style="font-size:0.7rem">Créditos</label>
-                <input class="form-control" id="credits_${ct.id}" type="number" min="0" value="0" placeholder="0">
-              </div>
-              <div>
-                <label class="form-label" style="font-size:0.7rem">R$/aula</label>
-                <input class="form-control" id="price_${ct.id}" type="number" min="0" step="0.01" value="0" placeholder="0.00">
-              </div>
-            </div>
-          </div>
-        `).join('')}
+
+      <div id="sectionCustom" class="hidden">
+        <div class="form-group">
+          <label class="form-label">Nome do pacote</label>
+          <input class="form-control" id="pkgName" placeholder="ex: Plano Abril 2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Validade</label>
+          <input class="form-control" id="pkgExpiry" type="date">
+        </div>
+        ${itemsForm}
       </div>
     `,
     footer: `
@@ -243,22 +283,47 @@ function openNewPackageModal(studentId, classTypes, onSuccess) {
   });
   openModal('newPackageModal');
 
+  // Tab switching
+  const tabTemplate = document.getElementById('tabTemplate');
+  const tabCustom = document.getElementById('tabCustom');
+  const sectionTemplate = document.getElementById('sectionTemplate');
+  const sectionCustom = document.getElementById('sectionCustom');
+
+  tabTemplate.addEventListener('click', () => {
+    tabTemplate.className = 'btn btn-primary';
+    tabCustom.className = 'btn btn-secondary';
+    sectionTemplate.classList.remove('hidden');
+    sectionCustom.classList.add('hidden');
+  });
+  tabCustom.addEventListener('click', () => {
+    tabCustom.className = 'btn btn-primary';
+    tabTemplate.className = 'btn btn-secondary';
+    sectionCustom.classList.remove('hidden');
+    sectionTemplate.classList.add('hidden');
+  });
+
   document.getElementById('btnSavePkg').addEventListener('click', async () => {
-    const items = classTypes.filter(ct => ct.isActive).map(ct => ({
-      classTypeId: ct.id,
-      totalCredits: parseInt(document.getElementById(`credits_${ct.id}`).value) || 0,
-      pricePerCredit: parseFloat(document.getElementById(`price_${ct.id}`).value) || 0,
-    })).filter(i => i.totalCredits > 0);
-
-    if (!items.length) { showToast('Adicione pelo menos um tipo de aula', 'error'); return; }
-
+    const isTemplate = !sectionTemplate.classList.contains('hidden');
     try {
-      await api.post('/packages', {
-        studentId,
-        name: document.getElementById('pkgName').value.trim() || 'Pacote',
-        expiresAt: document.getElementById('pkgExpiry').value || null,
-        items
-      });
+      if (isTemplate) {
+        const templateId = document.getElementById('templateSelect').value;
+        if (!templateId) { showToast('Selecione um modelo', 'error'); return; }
+        const expiry = document.getElementById('templateExpiry').value || null;
+        await api.post(`/package-templates/${templateId}/assign`, { studentId, expiresAt: expiry });
+      } else {
+        const items = activeClassTypes.map(ct => ({
+          classTypeId: ct.id,
+          totalCredits: parseInt(document.getElementById(`credits_${ct.id}`).value) || 0,
+          pricePerCredit: parseFloat(document.getElementById(`price_${ct.id}`).value) || 0,
+        })).filter(i => i.totalCredits > 0);
+        if (!items.length) { showToast('Adicione pelo menos um tipo de aula', 'error'); return; }
+        await api.post('/packages', {
+          studentId,
+          name: document.getElementById('pkgName').value.trim() || 'Pacote',
+          expiresAt: document.getElementById('pkgExpiry').value || null,
+          items
+        });
+      }
       showToast('Pacote criado com sucesso!', 'success');
       closeModal('newPackageModal');
       await onSuccess();

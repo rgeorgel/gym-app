@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using GymApp.Api.Endpoints;
 using GymApp.Api.Middleware;
 using GymApp.Domain.Interfaces;
@@ -9,6 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// JSON: serialize/deserialize enums as strings globally
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -89,6 +96,7 @@ app.MapScheduleEndpoints();
 app.MapSessionEndpoints();
 app.MapBookingEndpoints();
 app.MapPackageEndpoints();
+app.MapPackageTemplateEndpoints();
 app.MapInstructorEndpoints();
 app.MapDashboardEndpoints();
 

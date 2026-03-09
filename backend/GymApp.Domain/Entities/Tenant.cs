@@ -21,4 +21,5 @@ public class Tenant
     public ICollection<Schedule> Schedules { get; set; } = [];
     public ICollection<Package> Packages { get; set; } = [];
     public ICollection<Instructor> Instructors { get; set; } = [];
+    public ICollection<PackageTemplate> PackageTemplates { get; set; } = [];
 }

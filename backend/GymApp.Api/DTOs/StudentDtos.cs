@@ -6,14 +6,14 @@ public record CreateStudentRequest(
     string Name,
     string Email,
     string? Phone,
-    DateTime? BirthDate,
+    DateOnly? BirthDate,
     string? HealthNotes
 );
 
 public record UpdateStudentRequest(
     string Name,
     string? Phone,
-    DateTime? BirthDate,
+    DateOnly? BirthDate,
     string? HealthNotes,
     StudentStatus Status
 );
@@ -23,7 +23,7 @@ public record StudentResponse(
     string Name,
     string Email,
     string? Phone,
-    DateTime? BirthDate,
+    DateOnly? BirthDate,
     StudentStatus Status,
     string? PhotoUrl,
     DateTime CreatedAt

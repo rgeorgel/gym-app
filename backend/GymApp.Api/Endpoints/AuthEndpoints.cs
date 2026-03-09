@@ -21,7 +21,15 @@ public static class AuthEndpoints
         {
             var email = req.Email.ToLowerInvariant();
 
-            // SuperAdmin can login without tenant
+            // Resolve tenant: header > body slug > SuperAdmin fallback
+            if (!tenantCtx.IsResolved && !string.IsNullOrEmpty(req.TenantSlug))
+            {
+                var t = await db.Tenants.AsNoTracking()
+                    .FirstOrDefaultAsync(t => t.Slug == req.TenantSlug && t.IsActive);
+                if (t is not null)
+                    tenantCtx.Resolve(t.Id, t.Slug);
+            }
+
             var user = tenantCtx.IsResolved
                 ? await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantCtx.TenantId && u.Email == email)
                 : await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Role == UserRole.SuperAdmin);
@@ -37,7 +45,7 @@ public static class AuthEndpoints
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(int.Parse(config["Jwt:RefreshExpiryDays"] ?? "30"));
             await db.SaveChangesAsync();
 
-            return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id));
+            return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id, tenantCtx.IsResolved ? tenantCtx.Slug : null));
         }).AllowAnonymous();
 
         group.MapPost("/refresh", async (RefreshRequest req, AppDbContext db, IConfiguration config) =>

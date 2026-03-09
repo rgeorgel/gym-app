@@ -36,8 +36,10 @@ public static class InstructorEndpoints
         group.MapPost("/", async (CreateInstructorRequest req, AppDbContext db, TenantContext tenant) =>
         {
             var email = req.Email.ToLowerInvariant();
-            var user = await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenant.TenantId && u.Email == email)
-                ?? new User
+            var user = await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenant.TenantId && u.Email == email);
+            if (user is null)
+            {
+                user = new User
                 {
                     TenantId = tenant.TenantId,
                     Name = req.Name,
@@ -46,9 +48,8 @@ public static class InstructorEndpoints
                     Role = UserRole.Admin,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString())
                 };
-
-            if (user.Id == Guid.Empty)
                 db.Users.Add(user);
+            }
 
             var instructor = new Instructor
             {
@@ -73,10 +74,22 @@ public static class InstructorEndpoints
 
             instructor.Bio = req.Bio;
             instructor.Specialties = req.Specialties;
+            instructor.User.Name = req.Name;
+            instructor.User.Phone = req.Phone;
             await db.SaveChangesAsync();
 
             return Results.Ok(new InstructorResponse(instructor.Id, instructor.User.Name, instructor.User.Email,
                 instructor.User.Phone, instructor.Bio, instructor.Specialties, instructor.User.PhotoUrl));
+        }).RequireAuthorization("AdminOrAbove");
+
+        group.MapDelete("/{id:guid}", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        {
+            var instructor = await db.Instructors
+                .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == tenant.TenantId);
+            if (instructor is null) return Results.NotFound();
+            db.Instructors.Remove(instructor);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
         }).RequireAuthorization("AdminOrAbove");
     }
 }

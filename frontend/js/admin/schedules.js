@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, WEEKDAYS_FULL, formatTime, emptyState } from '../ui.js';
+import { showToast, createModal, openModal, closeModal, WEEKDAYS_FULL, formatTime, emptyState, confirm } from '../ui.js';
 
 export async function renderSchedules(container) {
   container.innerHTML = `
@@ -105,11 +105,26 @@ function openScheduleModal(sched = null) {
       </div>` : ''}
     `,
     footer: `
+      ${sched ? `<button class="btn btn-danger" id="btnDeleteSched" style="margin-right:auto">Excluir</button>` : ''}
       <button class="btn btn-secondary" onclick="closeModal('schedModal')">Cancelar</button>
       <button class="btn btn-primary" id="btnSaveSched">Salvar</button>
     `
   });
   openModal('schedModal');
+
+  if (sched) {
+    document.getElementById('btnDeleteSched').addEventListener('click', async () => {
+      if (!await confirm('Excluir este horário da grade? As aulas futuras geradas por ele não serão afetadas.')) return;
+      try {
+        await api.delete(`/schedules/${sched.id}`);
+        showToast('Horário excluído', 'success');
+        closeModal('schedModal');
+        await loadSchedules();
+      } catch (e) {
+        showToast('Erro: ' + e.message, 'error');
+      }
+    });
+  }
 
   document.getElementById('btnSaveSched').addEventListener('click', async () => {
     const body = {

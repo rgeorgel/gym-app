@@ -13,7 +13,7 @@ public class User
     public string? Phone { get; set; }
     public string? PhotoUrl { get; set; }
     public StudentStatus Status { get; set; } = StudentStatus.Active;
-    public DateTime? BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public string? HealthNotes { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }

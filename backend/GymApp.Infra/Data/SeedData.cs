@@ -76,7 +76,7 @@ public static class SeedData
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("aluno123"),
                 Role = UserRole.Student,
                 Phone = "(11) 99999-1234",
-                BirthDate = new DateTime(1990, 5, 15)
+                BirthDate = new DateOnly(1990, 5, 15)
             };
             db.Users.Add(student);
             await db.SaveChangesAsync();
@@ -87,7 +87,7 @@ public static class SeedData
                 TenantId = tenant.Id,
                 StudentId = student.Id,
                 Name = "Plano Março 2026",
-                ExpiresAt = new DateTime(2026, 3, 31, 23, 59, 59, DateTimeKind.Utc)
+                ExpiresAt = new DateOnly(2026, 3, 31)
             };
             package.Items.Add(new PackageItem { ClassTypeId = grupoClass.Id, TotalCredits = 12, PricePerCredit = 50m });
             package.Items.Add(new PackageItem { ClassTypeId = individualClass.Id, TotalCredits = 4, PricePerCredit = 120m });

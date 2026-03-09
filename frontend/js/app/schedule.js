@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatTime, emptyState } from '../ui.js';
+import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js';
 import { getUser } from '../auth.js';
 
 let currentDate = new Date();
@@ -68,16 +68,19 @@ async function loadSessions() {
     }
 
     // Check which sessions the student is already booked for
-    const myBookings = await api.get('/bookings?mine=true').catch(() => []);
-    const bookedSessionIds = new Set(myBookings.filter(b => b.status === 'Confirmed' || b.status === 'CheckedIn').map(b => b.sessionId));
+    const myBookings = await api.get('/bookings').catch(() => []);
+    const activeBookings = myBookings.filter(b => b.status === 'Confirmed' || b.status === 'CheckedIn');
+    const bookedSessionIds = new Set(activeBookings.map(b => b.sessionId));
+    const bookingBySession = Object.fromEntries(activeBookings.map(b => [b.sessionId, b.id]));
 
     list.innerHTML = sessions.map(s => {
       const isBooked = bookedSessionIds.has(s.id);
+      const bookingId = bookingBySession[s.id] ?? null;
       const isFull = s.slotsAvailable <= 0;
       const isCancelled = s.status === 'Cancelled';
       return `
         <div class="session-item ${isFull && !isBooked ? 'full' : ''} ${isBooked ? 'booked' : ''} ${isCancelled ? 'cancelled' : ''}"
-             onclick="window._openSession('${s.id}', ${isBooked}, ${isFull})">
+             onclick="window._openSession('${s.id}', ${isBooked}, ${isFull}, '${bookingId}')">
           <div class="session-time-block">
             <div class="session-time">${formatTime(s.startTime?.toString())}</div>
             <div class="session-duration">${s.durationMinutes}min</div>
@@ -102,13 +105,13 @@ async function loadSessions() {
       `.replace('{{ modalityLabel }}', { Group: 'Grupo', Individual: 'Individual', Pair: 'Dupla' }[s.modalityType] ?? '');
     }).join('');
 
-    window._openSession = (id, isBooked, isFull) => openSessionModal(id, isBooked, isFull);
+    window._openSession = (id, isBooked, isFull, bookingId) => openSessionModal(id, isBooked, isFull, bookingId);
   } catch (e) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-text">Erro ao carregar: ${e.message}</div></div>`;
   }
 }
 
-async function openSessionModal(sessionId, isBooked, isFull) {
+async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   const session = sessions.find(s => s.id === sessionId);
   if (!session) return;
 
@@ -163,6 +166,19 @@ async function openSessionModal(sessionId, isBooked, isFull) {
     try {
       await api.post('/bookings', { sessionId, studentId: user.id, packageItemId: pkgItemId });
       showToast('Agendamento confirmado!', 'success');
+      closeModal('sessionModal');
+      await loadPackages();
+      await loadSessions();
+    } catch (e) {
+      showToast('Erro: ' + e.message, 'error');
+    }
+  });
+
+  document.getElementById('btnCancel')?.addEventListener('click', async () => {
+    if (!await confirm('Cancelar este agendamento?')) return;
+    try {
+      await api.delete(`/bookings/${bookingId}`);
+      showToast('Agendamento cancelado', 'success');
       closeModal('sessionModal');
       await loadPackages();
       await loadSessions();

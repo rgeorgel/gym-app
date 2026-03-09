@@ -67,7 +67,7 @@ public static class DashboardEndpoints
                 p.TenantId == tenant.TenantId &&
                 p.IsActive &&
                 p.ExpiresAt.HasValue &&
-                p.ExpiresAt <= DateTime.UtcNow.AddDays(7));
+                p.ExpiresAt <= DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
 
             return Results.Ok(new
             {
@@ -105,7 +105,7 @@ public static class DashboardEndpoints
 
         group.MapGet("/expiring-packages", async (AppDbContext db, TenantContext tenant) =>
         {
-            var until = DateTime.UtcNow.AddDays(14);
+            var until = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(14));
 
             var packages = await db.Packages.AsNoTracking()
                 .Include(p => p.Student)

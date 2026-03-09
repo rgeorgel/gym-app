@@ -11,7 +11,9 @@ public class TenantMiddleware(RequestDelegate next)
         var host = context.Request.Host.Host.ToLowerInvariant();
 
         // Extract slug from subdomain (e.g. "boxe-elite" from "boxe-elite.gymapp.com")
-        var slug = ExtractSlug(host);
+        // or fall back to X-Tenant-Slug header (used in dev / nginx proxy)
+        var slug = ExtractSlug(host)
+            ?? context.Request.Headers["X-Tenant-Slug"].FirstOrDefault();
 
         if (!string.IsNullOrEmpty(slug))
         {

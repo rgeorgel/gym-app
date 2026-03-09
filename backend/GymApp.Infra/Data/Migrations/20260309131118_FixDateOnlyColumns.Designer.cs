@@ -3,6 +3,7 @@ using System;
 using GymApp.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymApp.Infra.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309131118_FixDateOnlyColumns")]
+    partial class FixDateOnlyColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -198,61 +201,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.HasIndex("PackageId");
 
                     b.ToTable("PackageItems");
-                });
-
-            modelBuilder.Entity("GymApp.Domain.Entities.PackageTemplate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DurationDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("PackageTemplates");
-                });
-
-            modelBuilder.Entity("GymApp.Domain.Entities.PackageTemplateItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ClassTypeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("PricePerCredit")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<Guid>("TemplateId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TotalCredits")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassTypeId");
-
-                    b.HasIndex("TemplateId");
-
-                    b.ToTable("PackageTemplateItems");
                 });
 
             modelBuilder.Entity("GymApp.Domain.Entities.Schedule", b =>
@@ -564,36 +512,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.Navigation("Package");
                 });
 
-            modelBuilder.Entity("GymApp.Domain.Entities.PackageTemplate", b =>
-                {
-                    b.HasOne("GymApp.Domain.Entities.Tenant", "Tenant")
-                        .WithMany("PackageTemplates")
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("GymApp.Domain.Entities.PackageTemplateItem", b =>
-                {
-                    b.HasOne("GymApp.Domain.Entities.ClassType", "ClassType")
-                        .WithMany()
-                        .HasForeignKey("ClassTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("GymApp.Domain.Entities.PackageTemplate", "Template")
-                        .WithMany("Items")
-                        .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ClassType");
-
-                    b.Navigation("Template");
-                });
-
             modelBuilder.Entity("GymApp.Domain.Entities.Schedule", b =>
                 {
                     b.HasOne("GymApp.Domain.Entities.ClassType", "ClassType")
@@ -682,11 +600,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.Navigation("Bookings");
                 });
 
-            modelBuilder.Entity("GymApp.Domain.Entities.PackageTemplate", b =>
-                {
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("GymApp.Domain.Entities.Schedule", b =>
                 {
                     b.Navigation("Sessions");
@@ -704,8 +617,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.Navigation("ClassTypes");
 
                     b.Navigation("Instructors");
-
-                    b.Navigation("PackageTemplates");
 
                     b.Navigation("Packages");
 
