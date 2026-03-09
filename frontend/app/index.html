@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym App</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top navbar -->
+    <nav class="app-navbar">
+      <div class="app-navbar-brand">
+        <img src="/assets/logo-placeholder.svg" alt="Logo" class="app-navbar-logo" data-tenant-logo>
+        <span class="app-navbar-name" data-tenant-name>Gym App</span>
+      </div>
+      <div class="app-navbar-actions">
+        <span id="navUserName" style="font-size:var(--font-size-sm);opacity:0.8"></span>
+        <button class="btn btn-sm" id="btnAppLogout" style="background:rgba(255,255,255,0.15);color:white;border:none">Sair</button>
+      </div>
+    </nav>
+
+    <!-- Desktop tabs -->
+    <div class="app-tabs">
+      <div class="app-tab active" data-tab="schedule">📅 Grade de Aulas</div>
+      <div class="app-tab" data-tab="bookings">🎫 Meus Agendamentos</div>
+      <div class="app-tab" data-tab="packages">📦 Meu Plano</div>
+    </div>
+
+    <!-- Content -->
+    <main class="app-content" id="appContent">
+      <div class="loading-center"><span class="spinner"></span></div>
+    </main>
+
+    <!-- Bottom nav (mobile) -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-item active" data-tab="schedule">
+        <span class="bottom-nav-icon">📅</span>
+        Grade
+      </div>
+      <div class="bottom-nav-item" data-tab="bookings">
+        <span class="bottom-nav-icon">🎫</span>
+        Agendamentos
+      </div>
+      <div class="bottom-nav-item" data-tab="packages">
+        <span class="bottom-nav-icon">📦</span>
+        Plano
+      </div>
+    </nav>
+  </div>
+
+  <script type="module">
+    import { requireAuth, getUser } from '/js/auth.js';
+    import { logout } from '/js/api.js';
+    import { loadTenantTheme } from '/js/tenant.js';
+    import { renderSchedule } from '/js/app/schedule.js';
+    import { renderMyBookings } from '/js/app/my-bookings.js';
+    import { renderMyPackages } from '/js/app/my-packages.js';
+
+    if (!requireAuth(['Student', 'Admin', 'SuperAdmin'])) throw new Error('unauthorized');
+
+    await loadTenantTheme();
+
+    const user = getUser();
+    document.getElementById('navUserName').textContent = user?.name ?? '';
+
+    const tabs = {
+      schedule: renderSchedule,
+      bookings: renderMyBookings,
+      packages: renderMyPackages,
+    };
+
+    let currentTab = 'schedule';
+
+    async function switchTab(tab) {
+      if (!tabs[tab]) return;
+      currentTab = tab;
+
+      document.querySelectorAll('.app-tab, .bottom-nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tab);
+      });
+
+      const content = document.getElementById('appContent');
+      content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+      await tabs[tab](content);
+    }
+
+    document.querySelectorAll('[data-tab]').forEach(el => {
+      el.addEventListener('click', () => switchTab(el.dataset.tab));
+    });
+
+    document.getElementById('btnAppLogout').addEventListener('click', () => logout());
+
+    await switchTab('schedule');
+  </script>
+</body>
+</html>

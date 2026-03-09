@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gymapp}
+      POSTGRES_USER: ${POSTGRES_USER:-gymapp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gymapp123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gymapp}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - gymapp
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=${POSTGRES_DB:-gymapp};Username=${POSTGRES_USER:-gymapp};Password=${POSTGRES_PASSWORD:-gymapp123}"
+      Jwt__Secret: "${JWT_SECRET:-CHANGE_ME_IN_PRODUCTION_32_CHARS_MIN}"
+      Jwt__Issuer: "gymapp"
+      Jwt__Audience: "gymapp"
+      Jwt__ExpiryMinutes: "60"
+      Jwt__RefreshExpiryDays: "30"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Development}"
+      ASPNETCORE_URLS: "http://+:5000"
+      Cors__AllowedOrigins__0: "http://localhost"
+      Cors__AllowedOrigins__1: "http://localhost:80"
+    networks:
+      - gymapp
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks:
+      - gymapp
+
+volumes:
+  postgres_data:
+
+networks:
+  gymapp:
+    driver: bridge

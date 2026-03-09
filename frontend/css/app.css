@@ -1,0 +1,212 @@
+/* ─── Student App Layout ─── */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top nav */
+.app-navbar {
+  background: var(--brand-primary);
+  color: white;
+  padding: 0 1rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-navbar-brand { display: flex; align-items: center; gap: 0.625rem; }
+.app-navbar-logo { height: 32px; }
+.app-navbar-name { font-weight: 700; font-size: var(--font-size-lg); }
+.app-navbar-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Bottom tab bar (mobile) */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  z-index: 100;
+}
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 0;
+  font-size: var(--font-size-xs);
+  color: var(--gray-400);
+  cursor: pointer;
+  gap: 0.25rem;
+}
+.bottom-nav-item.active { color: var(--brand-secondary); }
+.bottom-nav-icon { font-size: 1.25rem; }
+
+/* Desktop tab bar */
+.app-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gray-200);
+  background: white;
+  padding: 0 1rem;
+}
+.app-tab {
+  padding: 1rem 1.25rem;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--gray-500);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.app-tab:hover { color: var(--gray-700); }
+.app-tab.active { color: var(--brand-secondary); border-bottom-color: var(--brand-secondary); }
+
+.app-content { padding: 1.25rem; flex: 1; padding-bottom: 5rem; }
+
+/* ─── Class schedule (student view) ─── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.week-label { font-weight: 600; font-size: var(--font-size-lg); }
+
+.sessions-list { display: flex; flex-direction: column; gap: 0.625rem; }
+
+.session-item {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--gray-200);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.session-item:hover { box-shadow: var(--shadow); }
+.session-item.full { opacity: 0.6; }
+.session-item.booked { border-color: var(--brand-secondary); background: rgba(233,69,96,0.04); }
+.session-item.cancelled { opacity: 0.5; }
+
+.session-time-block {
+  text-align: center;
+  min-width: 52px;
+}
+.session-time { font-weight: 700; font-size: var(--font-size-base); color: var(--gray-900); }
+.session-duration { font-size: var(--font-size-xs); color: var(--gray-400); }
+
+.session-color-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.session-info { flex: 1; }
+.session-name { font-weight: 600; color: var(--gray-900); }
+.session-meta { font-size: var(--font-size-xs); color: var(--gray-500); margin-top: 0.25rem; display: flex; gap: 0.75rem; }
+
+.session-slots {
+  text-align: right;
+  flex-shrink: 0;
+}
+.slots-count { font-size: var(--font-size-xs); color: var(--gray-500); }
+.slots-available { font-weight: 600; font-size: var(--font-size-sm); color: var(--color-success); }
+.slots-available.low { color: var(--color-warning); }
+.slots-available.full { color: var(--color-danger); }
+
+/* ─── Package credits ─── */
+.package-card {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.package-header {
+  padding: 1rem 1.25rem;
+  background: var(--brand-primary);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.package-name { font-weight: 600; }
+.package-expiry { font-size: var(--font-size-xs); opacity: 0.7; }
+.package-items { padding: 0.75rem 1.25rem; }
+.credit-item {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--gray-100);
+  gap: 0.75rem;
+}
+.credit-item:last-child { border-bottom: none; }
+.credit-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.credit-info { flex: 1; }
+.credit-type { font-size: var(--font-size-sm); font-weight: 500; }
+.credit-used { font-size: var(--font-size-xs); color: var(--gray-400); }
+.credit-remaining {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--gray-900);
+}
+
+/* ─── Booking history ─── */
+.booking-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.booking-item:last-child { border-bottom: none; }
+.booking-date-block { text-align: center; min-width: 48px; }
+.booking-day { font-weight: 700; font-size: var(--font-size-xl); color: var(--gray-900); }
+.booking-month { font-size: var(--font-size-xs); color: var(--gray-400); text-transform: uppercase; }
+.booking-info { flex: 1; }
+.booking-class { font-weight: 500; color: var(--gray-900); }
+.booking-time { font-size: var(--font-size-xs); color: var(--gray-400); }
+
+/* ─── Date day selector ─── */
+.day-selector {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+.day-selector::-webkit-scrollbar { display: none; }
+.day-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  background: white;
+  min-width: 52px;
+  transition: all 0.15s;
+}
+.day-btn.active { background: var(--brand-secondary); border-color: var(--brand-secondary); color: white; }
+.day-btn:hover:not(.active) { border-color: var(--brand-secondary); }
+.day-btn-name { font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.05em; }
+.day-btn-num { font-weight: 700; font-size: var(--font-size-lg); }
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .bottom-nav { display: flex; }
+  .app-tabs { display: none; }
+  .app-content { padding: 1rem; padding-bottom: 5rem; }
+}

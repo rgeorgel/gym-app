@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Gym App</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo-placeholder.svg" alt="Logo" class="sidebar-logo" data-tenant-logo>
+        <span class="sidebar-name" data-tenant-name>Gym App</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Principal</div>
+        <div class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="sessions">
+          <span class="nav-icon">📅</span> Aulas
+        </div>
+
+        <div class="nav-section-label">Gestão</div>
+        <div class="nav-item" data-page="students">
+          <span class="nav-icon">👥</span> Alunos
+        </div>
+        <div class="nav-item" data-page="schedules">
+          <span class="nav-icon">🗓️</span> Grade de Horários
+        </div>
+        <div class="nav-item" data-page="class-types">
+          <span class="nav-icon">🥊</span> Modalidades
+        </div>
+        <div class="nav-item" data-page="instructors">
+          <span class="nav-icon">👤</span> Instrutores
+        </div>
+
+        <div class="nav-section-label">Relatórios</div>
+        <div class="nav-item" data-page="reports">
+          <span class="nav-icon">📈</span> Relatórios
+        </div>
+
+        <div id="superAdminNav" class="hidden">
+          <div class="nav-section-label">Super Admin</div>
+          <div class="nav-item" data-page="tenants">
+            <span class="nav-icon">🏢</span> Academias
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Carregando...</div>
+            <div class="user-role" id="userRole"></div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:0.75rem" id="btnLogout">Sair</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <header class="topbar">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <button class="btn btn-secondary btn-sm" id="btnRefresh">↻ Atualizar</button>
+        </div>
+      </header>
+
+      <main class="content-area" id="contentArea">
+        <div class="loading-center"><span class="spinner"></span></div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAuth, getUser } from '/js/auth.js';
+    import { logout } from '/js/api.js';
+    import { loadTenantTheme } from '/js/tenant.js';
+    import { showToast } from '/js/ui.js';
+    import { renderDashboard } from '/js/admin/dashboard.js';
+    import { renderStudents } from '/js/admin/students.js';
+    import { renderClassTypes } from '/js/admin/class-types.js';
+    import { renderSchedules } from '/js/admin/schedules.js';
+    import { renderSessions } from '/js/admin/sessions.js';
+    import { renderReports } from '/js/admin/reports.js';
+
+    if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
+
+    await loadTenantTheme();
+
+    const user = getUser();
+    document.getElementById('userName').textContent = user?.name ?? '';
+    document.getElementById('userRole').textContent = user?.role === 'SuperAdmin' ? 'Super Admin' : 'Administrador';
+    document.getElementById('userAvatar').textContent = (user?.name ?? '?')[0].toUpperCase();
+
+    if (user?.role === 'SuperAdmin') {
+      document.getElementById('superAdminNav').classList.remove('hidden');
+    }
+
+    const pages = {
+      dashboard: { title: 'Dashboard', render: renderDashboard },
+      students: { title: 'Alunos', render: renderStudents },
+      schedules: { title: 'Grade de Horários', render: renderSchedules },
+      'class-types': { title: 'Modalidades', render: renderClassTypes },
+      sessions: { title: 'Aulas', render: renderSessions },
+      reports: { title: 'Relatórios', render: renderReports },
+    };
+
+    let currentPage = 'dashboard';
+
+    async function navigateTo(page) {
+      if (!pages[page]) return;
+      currentPage = page;
+      document.getElementById('pageTitle').textContent = pages[page].title;
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === page);
+      });
+      const content = document.getElementById('contentArea');
+      content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+      try {
+        await pages[page].render(content);
+      } catch (e) {
+        content.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">${e.message}</div></div>`;
+      }
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => navigateTo(item.dataset.page));
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => logout());
+    document.getElementById('btnRefresh').addEventListener('click', () => navigateTo(currentPage));
+
+    await navigateTo('dashboard');
+  </script>
+</body>
+</html>

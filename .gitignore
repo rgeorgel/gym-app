@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Docker volumes
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.suo
+*.ncrunchproject

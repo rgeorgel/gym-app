@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym App — Login</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="/assets/logo-placeholder.svg" alt="Gym App" data-tenant-logo>
+        <span class="app-name" data-tenant-name>Gym App</span>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">E-mail</label>
+          <input class="form-control" id="email" type="email" autocomplete="email"
+            placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Senha</label>
+          <input class="form-control" id="password" type="password" autocomplete="current-password"
+            placeholder="••••••••" required>
+        </div>
+
+        <div id="loginError" class="form-error hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem">
+          Entrar
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-muted" style="margin-top:1.5rem">
+        Problemas para acessar? Fale com a academia.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initLoginPage } from '/js/auth.js';
+    initLoginPage();
+  </script>
+</body>
+</html>

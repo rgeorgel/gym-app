@@ -1,0 +1,121 @@
+using GymApp.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace GymApp.Infra.Data;
+
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+{
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Instructor> Instructors => Set<Instructor>();
+    public DbSet<ClassType> ClassTypes => Set<ClassType>();
+    public DbSet<Schedule> Schedules => Set<Schedule>();
+    public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<Booking> Bookings => Set<Booking>();
+    public DbSet<Package> Packages => Set<Package>();
+    public DbSet<PackageItem> PackageItems => Set<PackageItem>();
+    public DbSet<WaitingListEntry> WaitingList => Set<WaitingListEntry>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Tenant
+        modelBuilder.Entity<Tenant>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Slug).IsUnique();
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.Slug).HasMaxLength(100);
+            e.Property(x => x.PrimaryColor).HasMaxLength(20);
+            e.Property(x => x.SecondaryColor).HasMaxLength(20);
+        });
+
+        // User
+        modelBuilder.Entity<User>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.Email }).IsUnique();
+            e.Property(x => x.Email).HasMaxLength(200);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.HasOne(x => x.Tenant).WithMany(t => t.Users).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Instructor
+        modelBuilder.Entity<Instructor>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.Tenant).WithMany(t => t.Instructors).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ClassType
+        modelBuilder.Entity<ClassType>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.Color).HasMaxLength(20);
+            e.HasOne(x => x.Tenant).WithMany(t => t.ClassTypes).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Schedule
+        modelBuilder.Entity<Schedule>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.Tenant).WithMany(t => t.Schedules).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.ClassType).WithMany(ct => ct.Schedules).HasForeignKey(x => x.ClassTypeId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Instructor).WithMany(i => i.Schedules).HasForeignKey(x => x.InstructorId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Session
+        modelBuilder.Entity<Session>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.ScheduleId, x.Date }).IsUnique();
+            e.HasOne(x => x.Schedule).WithMany(s => s.Sessions).HasForeignKey(x => x.ScheduleId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Booking
+        modelBuilder.Entity<Booking>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.SessionId, x.StudentId });
+            e.HasOne(x => x.Session).WithMany(s => s.Bookings).HasForeignKey(x => x.SessionId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Student).WithMany(u => u.Bookings).HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.PackageItem).WithMany(pi => pi.Bookings).HasForeignKey(x => x.PackageItemId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Package
+        modelBuilder.Entity<Package>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.HasOne(x => x.Tenant).WithMany(t => t.Packages).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Student).WithMany(u => u.Packages).HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // PackageItem
+        modelBuilder.Entity<PackageItem>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.PricePerCredit).HasPrecision(10, 2);
+            e.HasOne(x => x.Package).WithMany(p => p.Items).HasForeignKey(x => x.PackageId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.ClassType).WithMany(ct => ct.PackageItems).HasForeignKey(x => x.ClassTypeId).OnDelete(DeleteBehavior.Restrict);
+            e.Ignore(x => x.RemainingCredits);
+        });
+
+        // WaitingListEntry
+        modelBuilder.Entity<WaitingListEntry>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.SessionId, x.StudentId }).IsUnique();
+            e.HasOne(x => x.Session).WithMany(s => s.WaitingList).HasForeignKey(x => x.SessionId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Student).WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+    }
+}
