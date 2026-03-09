@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY GymApp.sln .
+COPY GymApp.slnx .
 COPY GymApp.Domain/GymApp.Domain.csproj GymApp.Domain/
 COPY GymApp.Infra/GymApp.Infra.csproj GymApp.Infra/
 COPY GymApp.Api/GymApp.Api.csproj GymApp.Api/
