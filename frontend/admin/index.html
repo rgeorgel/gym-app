@@ -96,6 +96,7 @@
     import { renderReports } from '/js/admin/reports.js';
     import { renderPackageTemplates } from '/js/admin/package-templates.js';
     import { renderInstructors } from '/js/admin/instructors.js';
+    import { renderTenants } from '/js/admin/tenants.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
 
@@ -119,6 +120,7 @@
       reports: { title: 'Relatórios', render: renderReports },
       'package-templates': { title: 'Modelos de Pacote', render: renderPackageTemplates },
       instructors: { title: 'Instrutores', render: renderInstructors },
+      tenants: { title: 'Academias', render: renderTenants },
     };
 
     let currentPage = 'dashboard';
