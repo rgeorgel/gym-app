@@ -12,18 +12,25 @@ public class TenantMiddleware(RequestDelegate next)
 
         // Extract slug from subdomain (e.g. "boxe-elite" from "boxe-elite.gymapp.com")
         // or fall back to X-Tenant-Slug header (used in dev / nginx proxy)
-        var slug = ExtractSlug(host)
-            ?? context.Request.Headers["X-Tenant-Slug"].FirstOrDefault();
+        // 1. Try custom domain match (e.g. "app.boxeelite.com.br")
+        var tenant = await db.Tenants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.CustomDomain == host && t.IsActive);
 
-        if (!string.IsNullOrEmpty(slug))
+        // 2. Try subdomain slug (e.g. "boxe-elite" from "boxe-elite.gymapp.com")
+        if (tenant is null)
         {
-            var tenant = await db.Tenants
-                .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Slug == slug && t.IsActive);
+            var slug = ExtractSlug(host)
+                ?? context.Request.Headers["X-Tenant-Slug"].FirstOrDefault();
 
-            if (tenant is not null)
-                tenantContext.Resolve(tenant.Id, tenant.Slug);
+            if (!string.IsNullOrEmpty(slug))
+                tenant = await db.Tenants
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(t => t.Slug == slug && t.IsActive);
         }
+
+        if (tenant is not null)
+            tenantContext.Resolve(tenant.Id, tenant.Slug);
 
         await next(context);
     }

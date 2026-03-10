@@ -17,13 +17,19 @@ public static class TenantEndpoints
         group.MapGet("/config", async (HttpContext ctx, AppDbContext db) =>
         {
             var host = ctx.Request.Host.Host.ToLowerInvariant();
-            var slug = ExtractSlug(host) ?? ctx.Request.Headers["X-Tenant-Slug"].FirstOrDefault();
 
-            if (string.IsNullOrEmpty(slug))
-                return Results.BadRequest("Tenant not identified.");
-
+            // 1. Custom domain match (e.g. "app.boxeelite.com.br")
             var tenant = await db.Tenants.AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Slug == slug && t.IsActive);
+                .FirstOrDefaultAsync(t => t.CustomDomain == host && t.IsActive);
+
+            // 2. Subdomain or header slug
+            if (tenant is null)
+            {
+                var slug = ExtractSlug(host) ?? ctx.Request.Headers["X-Tenant-Slug"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(slug))
+                    tenant = await db.Tenants.AsNoTracking()
+                        .FirstOrDefaultAsync(t => t.Slug == slug && t.IsActive);
+            }
 
             if (tenant is null) return Results.NotFound();
 
@@ -38,7 +44,7 @@ public static class TenantEndpoints
         {
             var tenants = await db.Tenants.AsNoTracking()
                 .OrderBy(t => t.Name)
-                .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor, t.Plan, t.IsActive, t.CreatedAt))
+                .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor, t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt))
                 .ToListAsync();
             return Results.Ok(tenants);
         });
@@ -72,7 +78,7 @@ public static class TenantEndpoints
             await db.SaveChangesAsync();
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
                 new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
-                    tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CreatedAt));
+                    tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CustomDomain, tenant.CreatedAt));
         });
 
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
@@ -84,11 +90,12 @@ public static class TenantEndpoints
             tenant.LogoUrl = req.LogoUrl;
             tenant.PrimaryColor = req.PrimaryColor;
             tenant.SecondaryColor = req.SecondaryColor;
+            tenant.CustomDomain = string.IsNullOrWhiteSpace(req.CustomDomain) ? null : req.CustomDomain.ToLowerInvariant().Trim();
             tenant.IsActive = req.IsActive;
 
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
-                tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CreatedAt));
+                tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CustomDomain, tenant.CreatedAt));
         });
     }
 

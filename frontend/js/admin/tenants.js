@@ -104,6 +104,10 @@ function openTenantModal(tenant = null) {
           </select>
         </div>
         ${tenant ? `
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Domínio personalizado <span class="text-muted" style="font-weight:400;font-size:0.75rem">(deixe vazio para usar subdomínio padrão)</span></label>
+          <input class="form-control" id="tCustomDomain" placeholder="app.boxeelite.com.br" value="${tenant.customDomain ?? ''}">
+        </div>
         <div class="form-group">
           <label class="form-label">Status</label>
           <select class="form-control" id="tActive">
@@ -152,6 +156,7 @@ function openTenantModal(tenant = null) {
           logoUrl: null,
           primaryColor: document.getElementById('tPrimary').value,
           secondaryColor: document.getElementById('tSecondary').value,
+          customDomain: document.getElementById('tCustomDomain').value.trim() || null,
           isActive: document.getElementById('tActive').value === 'true',
         };
         await api.put(`/admin/tenants/${tenant.id}`, body);

@@ -31,6 +31,7 @@ public record TenantResponse(
     string SecondaryColor,
     TenantPlan Plan,
     bool IsActive,
+    string? CustomDomain,
     DateTime CreatedAt
 );
 
@@ -39,5 +40,6 @@ public record UpdateTenantRequest(
     string? LogoUrl,
     string PrimaryColor,
     string SecondaryColor,
+    string? CustomDomain,
     bool IsActive
 );
