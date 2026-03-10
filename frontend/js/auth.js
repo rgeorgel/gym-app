@@ -30,21 +30,42 @@ export async function initLoginPage() {
 
   if (tenantSlug) localStorage.setItem('tenant_slug', tenantSlug);
 
-  await loadTenantTheme();
+  const config = await loadTenantTheme();
+  const hasTenant = !!config;
 
   if (isLoggedIn()) {
     redirectByRole(getUser()?.role);
     return;
   }
 
-  const form = document.getElementById('loginForm');
-  if (!form) return;
+  // Toggle login/register — only show register link when tenant is resolved
+  const toRegister = document.getElementById('toRegister');
+  const toLogin = document.getElementById('toLogin');
+  if (!hasTenant && toRegister) toRegister.classList.add('hidden');
 
-  form.addEventListener('submit', async (e) => {
+  document.getElementById('linkRegister')?.addEventListener('click', (e) => {
     e.preventDefault();
-    const btn = form.querySelector('button[type=submit]');
-    const email = form.querySelector('#email').value.trim();
-    const password = form.querySelector('#password').value;
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+    toRegister.classList.add('hidden');
+    toLogin.classList.remove('hidden');
+  });
+
+  document.getElementById('linkLogin')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+    toLogin.classList.add('hidden');
+    toRegister.classList.remove('hidden');
+  });
+
+  // Login form
+  const loginForm = document.getElementById('loginForm');
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = loginForm.querySelector('button[type=submit]');
+    const email = loginForm.querySelector('#email').value.trim();
+    const password = loginForm.querySelector('#password').value;
     const errorEl = document.getElementById('loginError');
 
     btn.disabled = true;
@@ -55,10 +76,7 @@ export async function initLoginPage() {
       const body = { email, password };
       if (tenantSlug) body.tenantSlug = tenantSlug;
       const data = await api.post('/auth/login', body);
-      localStorage.setItem('access_token', data.accessToken);
-      localStorage.setItem('refresh_token', data.refreshToken);
-      localStorage.setItem('user', JSON.stringify({ id: data.userId, name: data.name, role: data.role }));
-      if (data.tenantSlug) localStorage.setItem('tenant_slug', data.tenantSlug);
+      storeSession(data);
       redirectByRole(data.role);
     } catch (err) {
       errorEl.textContent = 'E-mail ou senha incorretos.';
@@ -68,6 +86,64 @@ export async function initLoginPage() {
       btn.textContent = 'Entrar';
     }
   });
+
+  // Register form
+  const registerForm = document.getElementById('registerForm');
+  registerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = registerForm.querySelector('button[type=submit]');
+    const errorEl = document.getElementById('registerError');
+
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim() || null;
+    const birth = document.getElementById('regBirth').value || null;
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regPasswordConfirm').value;
+
+    errorEl?.classList.add('hidden');
+
+    if (!name || !email || !password) {
+      errorEl.textContent = 'Preencha nome, e-mail e senha.';
+      errorEl?.classList.remove('hidden');
+      return;
+    }
+    if (password !== confirm) {
+      errorEl.textContent = 'As senhas não coincidem.';
+      errorEl?.classList.remove('hidden');
+      return;
+    }
+    if (password.length < 6) {
+      errorEl.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+      errorEl?.classList.remove('hidden');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+
+    try {
+      const body = { name, email, password, phone, birthDate: birth || null };
+      const data = await api.post('/auth/register', body);
+      storeSession(data);
+      redirectByRole(data.role);
+    } catch (err) {
+      errorEl.textContent = err.message === 'Conflict' || err.status === 409
+        ? 'Este e-mail já está cadastrado.'
+        : 'Erro ao criar conta. Tente novamente.';
+      errorEl?.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Criar conta';
+    }
+  });
+}
+
+function storeSession(data) {
+  localStorage.setItem('access_token', data.accessToken);
+  localStorage.setItem('refresh_token', data.refreshToken);
+  localStorage.setItem('user', JSON.stringify({ id: data.userId, name: data.name, role: data.role }));
+  if (data.tenantSlug) localStorage.setItem('tenant_slug', data.tenantSlug);
 }
 
 function redirectByRole(role) {

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using GymApp.Api.DTOs;
+using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
@@ -46,6 +47,43 @@ public static class AuthEndpoints
             await db.SaveChangesAsync();
 
             return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id, tenantCtx.IsResolved ? tenantCtx.Slug : null));
+        }).AllowAnonymous();
+
+        group.MapPost("/register", async (RegisterStudentRequest req, AppDbContext db, TenantContext tenantCtx, IConfiguration config) =>
+        {
+            if (!tenantCtx.IsResolved)
+                return Results.BadRequest("Tenant not identified. Access via your gym's URL.");
+
+            if (string.IsNullOrWhiteSpace(req.Name) || string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
+                return Results.BadRequest("Name, email and password are required.");
+
+            if (req.Password.Length < 6)
+                return Results.BadRequest("Password must be at least 6 characters.");
+
+            var email = req.Email.ToLowerInvariant();
+            if (await db.Users.AnyAsync(u => u.TenantId == tenantCtx.TenantId && u.Email == email))
+                return Results.Conflict("Email already registered.");
+
+            var user = new User
+            {
+                TenantId = tenantCtx.TenantId,
+                Name = req.Name.Trim(),
+                Email = email,
+                Phone = req.Phone,
+                BirthDate = req.BirthDate,
+                Role = UserRole.Student,
+                Status = StudentStatus.Active,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
+            };
+            db.Users.Add(user);
+
+            var (access, refresh) = GenerateTokens(user, config);
+            user.RefreshToken = refresh;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(int.Parse(config["Jwt:RefreshExpiryDays"] ?? "30"));
+
+            await db.SaveChangesAsync();
+
+            return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id, tenantCtx.Slug));
         }).AllowAnonymous();
 
         group.MapPost("/refresh", async (RefreshRequest req, AppDbContext db, IConfiguration config) =>

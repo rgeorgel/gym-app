@@ -16,6 +16,7 @@
         <span class="app-name" data-tenant-name>Gym App</span>
       </div>
 
+      <!-- Login form -->
       <form id="loginForm" novalidate>
         <div class="form-group">
           <label class="form-label" for="email">E-mail</label>
@@ -35,9 +36,51 @@
         </button>
       </form>
 
-      <p class="text-center text-sm text-muted" style="margin-top:1.5rem">
-        Problemas para acessar? Fale com a academia.
-      </p>
+      <!-- Register form (hidden by default) -->
+      <form id="registerForm" class="hidden" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="regName">Nome completo *</label>
+          <input class="form-control" id="regName" type="text" autocomplete="name" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regEmail">E-mail *</label>
+          <input class="form-control" id="regEmail" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div class="form-group">
+            <label class="form-label" for="regPhone">Telefone</label>
+            <input class="form-control" id="regPhone" type="tel" autocomplete="tel" placeholder="(11) 99999-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="regBirth">Data de nascimento</label>
+            <input class="form-control" id="regBirth" type="date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Senha *</label>
+          <input class="form-control" id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPasswordConfirm">Confirmar senha *</label>
+          <input class="form-control" id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="••••••••" required>
+        </div>
+
+        <div id="registerError" class="form-error hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem">
+          Criar conta
+        </button>
+      </form>
+
+      <!-- Toggle links -->
+      <div id="toRegister" class="text-center text-sm" style="margin-top:1.25rem">
+        Ainda não tem conta?
+        <a href="#" id="linkRegister" style="font-weight:600">Cadastre-se</a>
+      </div>
+      <div id="toLogin" class="hidden text-center text-sm" style="margin-top:1.25rem">
+        Já tem conta?
+        <a href="#" id="linkLogin" style="font-weight:600">Entrar</a>
+      </div>
     </div>
   </div>
 
