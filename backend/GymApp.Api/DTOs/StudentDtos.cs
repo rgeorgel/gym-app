@@ -5,6 +5,7 @@ namespace GymApp.Api.DTOs;
 public record CreateStudentRequest(
     string Name,
     string Email,
+    string? Password,
     string? Phone,
     DateOnly? BirthDate,
     string? HealthNotes

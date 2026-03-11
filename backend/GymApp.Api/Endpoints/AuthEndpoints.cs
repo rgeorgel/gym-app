@@ -5,6 +5,7 @@ using System.Text;
 using GymApp.Api.DTOs;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
+using GymApp.Domain.Interfaces;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,58 @@ public static class AuthEndpoints
             await db.SaveChangesAsync();
 
             return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id));
+        }).AllowAnonymous();
+
+        group.MapPost("/forgot-password", async (ForgotPasswordRequest req, HttpContext ctx, AppDbContext db, IEmailService email, TenantContext tenantCtx) =>
+        {
+            // Always return OK to avoid email enumeration
+            var emailAddr = req.Email.ToLowerInvariant();
+
+            // Filter by tenant when resolved; allow SuperAdmin lookup when not
+            var user = tenantCtx.IsResolved
+                ? await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantCtx.TenantId && u.Email == emailAddr)
+                : await db.Users.FirstOrDefaultAsync(u => u.Email == emailAddr && u.Role == UserRole.SuperAdmin);
+
+            if (user is not null)
+            {
+                var token = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
+                    .Replace("+", "-").Replace("/", "_").Replace("=", "");
+                user.PasswordResetToken = token;
+                user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(2);
+                await db.SaveChangesAsync();
+
+                // Build reset URL from the incoming request host so the link
+                // preserves the tenant's subdomain or custom domain
+                var request = ctx.Request;
+                var origin = $"{request.Scheme}://{request.Host}";
+                var resetUrl = $"{origin}/reset-password.html?token={Uri.EscapeDataString(token)}";
+                await email.SendPasswordResetAsync(user.Email, user.Name, resetUrl);
+            }
+            return Results.Ok();
+        }).AllowAnonymous();
+
+        group.MapGet("/validate-reset-token", async (string token, AppDbContext db) =>
+        {
+            var user = await db.Users.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.PasswordResetToken == token && u.PasswordResetTokenExpiry > DateTime.UtcNow);
+            if (user is null) return Results.BadRequest("Token inválido ou expirado.");
+            return Results.Ok(new { user.Name, user.Email });
+        }).AllowAnonymous();
+
+        group.MapPost("/reset-password", async (ResetPasswordRequest req, AppDbContext db) =>
+        {
+            if (string.IsNullOrWhiteSpace(req.NewPassword) || req.NewPassword.Length < 6)
+                return Results.BadRequest("A senha deve ter pelo menos 6 caracteres.");
+
+            var user = await db.Users
+                .FirstOrDefaultAsync(u => u.PasswordResetToken == req.Token && u.PasswordResetTokenExpiry > DateTime.UtcNow);
+            if (user is null) return Results.BadRequest("Token inválido ou expirado.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiry = null;
+            await db.SaveChangesAsync();
+            return Results.Ok();
         }).AllowAnonymous();
 
         group.MapPost("/change-password", async (ChangePasswordRequest req, ClaimsPrincipal principal, AppDbContext db) =>

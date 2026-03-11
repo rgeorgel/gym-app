@@ -117,9 +117,15 @@ function openStudentModal(student = null) {
           <label class="form-label">Observações de saúde</label>
           <textarea class="form-control" id="sHealth">${student?.healthNotes ?? ''}</textarea>
         </div>
+        ${!student ? `
+        <div class="form-group">
+          <label class="form-label">Senha inicial *</label>
+          <input class="form-control" id="sPassword" type="password" placeholder="Mínimo 6 caracteres" required>
+        </div>` : ''}
       </form>
     `,
     footer: `
+      ${student ? '<button class="btn btn-secondary" id="btnResetLink" style="margin-right:auto">🔗 Gerar link de acesso</button>' : ''}
       <button class="btn btn-secondary" onclick="closeModal('studentModal')">Cancelar</button>
       <button class="btn btn-primary" id="btnSaveStudent">Salvar</button>
     `
@@ -135,7 +141,13 @@ function openStudentModal(student = null) {
       birthDate: document.getElementById('sBirth').value || null,
       healthNotes: document.getElementById('sHealth').value.trim() || null,
     };
-    if (student) body.status = document.getElementById('sStatus').value;
+    if (student) {
+      body.status = document.getElementById('sStatus').value;
+    } else {
+      const pw = document.getElementById('sPassword').value;
+      if (!pw || pw.length < 6) { showToast('Senha deve ter mínimo 6 caracteres', 'error'); return; }
+      body.password = pw;
+    }
 
     try {
       if (student) await api.put(`/students/${student.id}`, body);
@@ -145,6 +157,17 @@ function openStudentModal(student = null) {
       await loadStudents();
     } catch (e) {
       showToast('Erro: ' + e.message, 'error');
+    }
+  });
+
+  document.getElementById('btnResetLink')?.addEventListener('click', async () => {
+    try {
+      const data = await api.post(`/students/${student.id}/reset-link`, {});
+      const url = `${location.origin}/reset-password.html?token=${data.token}`;
+      await navigator.clipboard.writeText(url);
+      showToast('Link copiado! Envie ao aluno via WhatsApp ou e-mail.', 'success');
+    } catch (e) {
+      showToast('Erro ao gerar link: ' + e.message, 'error');
     }
   });
 }

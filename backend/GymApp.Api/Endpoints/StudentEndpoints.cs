@@ -48,7 +48,7 @@ public static class StudentEndpoints
             if (await db.Users.AnyAsync(u => u.TenantId == tenant.TenantId && u.Email == email))
                 return Results.Conflict("Email already registered.");
 
-            var tempPassword = GenerateTempPassword();
+            var password = !string.IsNullOrWhiteSpace(req.Password) ? req.Password : GenerateTempPassword();
             var user = new User
             {
                 TenantId = tenant.TenantId,
@@ -58,12 +58,11 @@ public static class StudentEndpoints
                 BirthDate = req.BirthDate,
                 HealthNotes = req.HealthNotes,
                 Role = UserRole.Student,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword)
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
             };
             db.Users.Add(user);
             await db.SaveChangesAsync();
 
-            // TODO: send welcome email with temp password via Resend
             return Results.Created($"/api/students/{user.Id}",
                 new StudentResponse(user.Id, user.Name, user.Email, user.Phone, user.BirthDate, user.Status, user.PhotoUrl, user.CreatedAt));
         });
@@ -104,6 +103,20 @@ public static class StudentEndpoints
                 .ToListAsync();
 
             return Results.Ok(bookings);
+        });
+
+        group.MapPost("/{id:guid}/reset-link", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
+            if (user is null) return Results.NotFound();
+
+            var token = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
+                .Replace("+", "-").Replace("/", "_").Replace("=", "");
+            user.PasswordResetToken = token;
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(48);
+            await db.SaveChangesAsync();
+
+            return Results.Ok(new ResetLinkResponse(token));
         });
 
         selfOrAdminGroup.MapGet("/{id:guid}/packages", async (Guid id, AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>

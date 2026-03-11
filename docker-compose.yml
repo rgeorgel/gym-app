@@ -37,6 +37,14 @@ services:
       ASPNETCORE_URLS: "http://+:5000"
       Cors__AllowedOrigins__0: "http://localhost:8095"
       Cors__AllowedOrigins__1: "http://localhost"
+      App__FrontendUrl: "${FRONTEND_URL:-http://localhost}"
+      Email__Provider: "${EMAIL_PROVIDER:-SendGrid}"
+      SendGrid__ApiKey: "${SENDGRID_API_KEY:-}"
+      SendGrid__FromEmail: "${SENDGRID_FROM_EMAIL:-noreply@seudominio.com}"
+      SendGrid__FromName: "${SENDGRID_FROM_NAME:-Gym App}"
+      Resend__ApiKey: "${RESEND_API_KEY:-}"
+      Resend__FromEmail: "${RESEND_FROM_EMAIL:-noreply@seudominio.com}"
+      Resend__FromName: "${RESEND_FROM_NAME:-Gym App}"
     networks:
       - gymapp
     healthcheck:

@@ -33,6 +33,8 @@ async function request(path, options = {}) {
   }
 
   if (res.status === 204) return null;
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) return null;
   return res.json();
 }
 

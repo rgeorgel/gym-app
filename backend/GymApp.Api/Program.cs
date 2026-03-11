@@ -26,6 +26,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<TenantContext>();
 builder.Services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
 
+// Email — provider selected by Email:Provider config ("SendGrid" | "Resend", default: SendGrid)
+var emailProvider = builder.Configuration["Email:Provider"] ?? "SendGrid";
+if (emailProvider.Equals("Resend", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.Configure<Resend.ResendClientOptions>(options =>
+        options.ApiToken = builder.Configuration["Resend:ApiKey"] ?? throw new InvalidOperationException("Resend:ApiKey not configured."));
+    builder.Services.AddHttpClient<Resend.IResend, Resend.ResendClient>();
+    builder.Services.AddScoped<IEmailService, ResendEmailService>();
+}
+else
+{
+    builder.Services.AddScoped<IEmailService, SendGridEmailService>();
+}
+
 // JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? throw new InvalidOperationException("Jwt:Secret is required");
 var key = Encoding.UTF8.GetBytes(jwtSecret);
