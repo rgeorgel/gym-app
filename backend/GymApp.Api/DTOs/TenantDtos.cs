@@ -43,3 +43,11 @@ public record UpdateTenantRequest(
     string? CustomDomain,
     bool IsActive
 );
+
+public record TenantSettingsResponse(
+    Guid? DefaultPackageTemplateId
+);
+
+public record SetDefaultTemplateRequest(
+    Guid? TemplateId
+);

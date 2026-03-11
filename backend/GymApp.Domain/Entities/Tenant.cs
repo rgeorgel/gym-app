@@ -16,6 +16,9 @@ public class Tenant
     public int CancellationHoursLimit { get; set; } = 2;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public Guid? DefaultPackageTemplateId { get; set; }
+
+    public PackageTemplate? DefaultPackageTemplate { get; set; }
     public ICollection<User> Users { get; set; } = [];
     public ICollection<ClassType> ClassTypes { get; set; } = [];
     public ICollection<Schedule> Schedules { get; set; } = [];

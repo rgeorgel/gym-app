@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using GymApp.Api.DTOs;
+using GymApp.Api.Helpers;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
 using GymApp.Infra.Data;
@@ -61,6 +62,7 @@ public static class StudentEndpoints
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
             };
             db.Users.Add(user);
+            await PackageHelper.AssignDefaultPackageIfConfiguredAsync(db, tenant.TenantId, user.Id);
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/students/{user.Id}",

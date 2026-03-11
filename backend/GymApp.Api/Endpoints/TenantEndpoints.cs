@@ -81,6 +81,34 @@ public static class TenantEndpoints
                     tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CustomDomain, tenant.CreatedAt));
         });
 
+        // Admin: tenant settings (default package template)
+        var settingsGroup = app.MapGroup("/api/settings").RequireAuthorization("AdminOrAbove");
+
+        settingsGroup.MapGet("/", async (AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId));
+        });
+
+        settingsGroup.MapPut("/default-package-template", async (SetDefaultTemplateRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            if (req.TemplateId.HasValue)
+            {
+                var templateExists = await db.PackageTemplates.AnyAsync(t =>
+                    t.Id == req.TemplateId.Value && t.TenantId == tenantCtx.TenantId);
+                if (!templateExists) return Results.NotFound("Template not found.");
+            }
+
+            tenant.DefaultPackageTemplateId = req.TemplateId;
+            await db.SaveChangesAsync();
+            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId));
+        });
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             var tenant = await db.Tenants.FindAsync(id);

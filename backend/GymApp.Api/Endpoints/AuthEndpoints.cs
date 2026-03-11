@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using GymApp.Api.DTOs;
+using GymApp.Api.Helpers;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
 using GymApp.Domain.Interfaces;
@@ -82,6 +83,7 @@ public static class AuthEndpoints
             user.RefreshToken = refresh;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(int.Parse(config["Jwt:RefreshExpiryDays"] ?? "30"));
 
+            await PackageHelper.AssignDefaultPackageIfConfiguredAsync(db, tenantCtx.TenantId, user.Id);
             await db.SaveChangesAsync();
 
             return Results.Ok(new LoginResponse(access, refresh, user.Role.ToString(), user.Name, user.Id, tenantCtx.Slug));
