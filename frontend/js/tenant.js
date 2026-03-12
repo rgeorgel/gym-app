@@ -22,7 +22,9 @@ export async function loadTenantTheme() {
     const config = await res.json();
 
     // Set locale before any rendering
-    setLocale(config.language ?? 'pt-BR');
+    const lang = config.language ?? 'pt-BR';
+    setLocale(lang);
+    document.documentElement.lang = lang;
 
     // Apply CSS custom properties
     const root = document.documentElement;

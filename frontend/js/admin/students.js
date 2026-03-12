@@ -200,7 +200,7 @@ async function openPackagesModal(studentId, studentName) {
         <div class="package-card" style="margin-bottom:0.75rem">
           <div class="package-header">
             <span class="package-name">${p.name}</span>
-            <span class="package-expiry">${p.expiresAt ? t('packages.expires') + new Date(p.expiresAt).toLocaleDateString() : t('packages.noExpiry')}</span>
+            <span class="package-expiry">${p.expiresAt ? t('packages.expires') + formatDate(p.expiresAt) : t('packages.noExpiry')}</span>
             <button class="btn btn-danger btn-sm" data-delete-pkg="${p.id}" style="margin-left:auto">${t('btn.delete')}</button>
           </div>
           <div class="package-items">
