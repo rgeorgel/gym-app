@@ -31,6 +31,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.Slug).HasMaxLength(100);
             e.Property(x => x.PrimaryColor).HasMaxLength(20);
             e.Property(x => x.SecondaryColor).HasMaxLength(20);
+            e.Property(x => x.Language).HasMaxLength(10);
             e.HasOne(x => x.DefaultPackageTemplate)
                 .WithMany()
                 .HasForeignKey(x => x.DefaultPackageTemplateId)

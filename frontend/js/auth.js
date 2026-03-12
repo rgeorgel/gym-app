@@ -1,6 +1,7 @@
 import { api } from './api.js';
 import { loadTenantTheme } from './tenant.js';
 import { showToast } from './ui.js';
+import { t } from './i18n.js';
 
 export function getUser() {
   const raw = localStorage.getItem('user');
@@ -69,7 +70,7 @@ export async function initLoginPage() {
     const errorEl = document.getElementById('loginError');
 
     btn.disabled = true;
-    btn.textContent = 'Entrando...';
+    btn.textContent = t('login.submitting');
     errorEl?.classList.add('hidden');
 
     try {
@@ -79,11 +80,11 @@ export async function initLoginPage() {
       storeSession(data);
       redirectByRole(data.role);
     } catch (err) {
-      errorEl.textContent = 'E-mail ou senha incorretos.';
+      errorEl.textContent = t('login.error');
       errorEl?.classList.remove('hidden');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Entrar';
+      btn.textContent = t('login.submit');
     }
   });
 
@@ -104,23 +105,23 @@ export async function initLoginPage() {
     errorEl?.classList.add('hidden');
 
     if (!name || !email || !password) {
-      errorEl.textContent = 'Preencha nome, e-mail e senha.';
+      errorEl.textContent = t('register.error.required');
       errorEl?.classList.remove('hidden');
       return;
     }
     if (password !== confirm) {
-      errorEl.textContent = 'As senhas não coincidem.';
+      errorEl.textContent = t('register.error.passwordMismatch');
       errorEl?.classList.remove('hidden');
       return;
     }
     if (password.length < 6) {
-      errorEl.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+      errorEl.textContent = t('register.error.passwordMin');
       errorEl?.classList.remove('hidden');
       return;
     }
 
     btn.disabled = true;
-    btn.textContent = 'Criando conta...';
+    btn.textContent = t('register.submitting');
 
     try {
       const body = { name, email, password, phone, birthDate: birth || null };
@@ -129,12 +130,12 @@ export async function initLoginPage() {
       redirectByRole(data.role);
     } catch (err) {
       errorEl.textContent = err.message === 'Conflict' || err.status === 409
-        ? 'Este e-mail já está cadastrado.'
-        : 'Erro ao criar conta. Tente novamente.';
+        ? t('register.error.emailExists')
+        : t('register.error.generic');
       errorEl?.classList.remove('hidden');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Criar conta';
+      btn.textContent = t('register.submit');
     }
   });
 }

@@ -1,26 +1,27 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js';
+import { t } from '../i18n.js';
 
 let allStudents = [];
 
 export async function renderStudents(container) {
   container.innerHTML = `
     <div class="filters-bar">
-      <input type="text" id="studentSearch" class="search-input" placeholder="Buscar por nome ou e-mail...">
+      <input type="text" id="studentSearch" class="search-input" placeholder="${t('students.search')}">
       <select id="studentStatus" class="form-control" style="width:auto">
-        <option value="">Todos os status</option>
-        <option value="Active">Ativo</option>
-        <option value="Inactive">Inativo</option>
-        <option value="Suspended">Suspenso</option>
+        <option value="">${t('students.status.all')}</option>
+        <option value="Active">${t('status.active')}</option>
+        <option value="Inactive">${t('status.inactive')}</option>
+        <option value="Suspended">${t('status.suspended')}</option>
       </select>
-      <button class="btn btn-primary" id="btnNewStudent">+ Novo Aluno</button>
+      <button class="btn btn-primary" id="btnNewStudent">${t('students.new')}</button>
     </div>
     <div class="card">
       <div class="table-wrapper">
         <table id="studentsTable">
           <thead>
             <tr>
-              <th>Nome</th><th>E-mail</th><th>Telefone</th><th>Status</th><th>Cadastro</th><th></th>
+              <th>${t('field.name')}</th><th>${t('field.email')}</th><th>${t('field.phone')}</th><th>${t('field.status')}</th><th>${t('students.col.registered')}</th><th></th>
             </tr>
           </thead>
           <tbody id="studentsTbody"><tr><td colspan="6"><div class="loading-center"><span class="spinner"></span></div></td></tr></tbody>
@@ -41,7 +42,7 @@ async function loadStudents() {
     allStudents = await api.get('/students');
     renderTable(allStudents);
   } catch (e) {
-    showToast('Erro ao carregar alunos: ' + e.message, 'error');
+    showToast(t('error.prefix') + e.message, 'error');
   }
 }
 
@@ -59,7 +60,7 @@ function renderTable(students) {
   const tbody = document.getElementById('studentsTbody');
   if (!tbody) return;
   if (!students.length) {
-    tbody.innerHTML = `<tr><td colspan="6">${emptyState('👤', 'Nenhum aluno encontrado')}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6">${emptyState('👤', t('students.none'))}</td></tr>`;
     return;
   }
   tbody.innerHTML = students.map(s => `
@@ -71,8 +72,8 @@ function renderTable(students) {
       <td class="text-sm text-muted">${formatDate(s.createdAt)}</td>
       <td>
         <div class="flex gap-2">
-          <button class="btn btn-secondary btn-sm" onclick="window._editStudent('${s.id}')">Editar</button>
-          <button class="btn btn-secondary btn-sm" onclick="window._viewPackages('${s.id}', '${s.name}')">Pacotes</button>
+          <button class="btn btn-secondary btn-sm" onclick="window._editStudent('${s.id}')">${t('btn.edit')}</button>
+          <button class="btn btn-secondary btn-sm" onclick="window._viewPackages('${s.id}', '${s.name}')">${t('packages.label')}</button>
         </div>
       </td>
     </tr>
@@ -85,49 +86,49 @@ function renderTable(students) {
 function openStudentModal(student = null) {
   const modal = createModal({
     id: 'studentModal',
-    title: student ? 'Editar Aluno' : 'Novo Aluno',
+    title: student ? t('students.title.edit') : t('students.title.new'),
     body: `
       <form id="studentForm">
         <div class="form-group">
-          <label class="form-label">Nome *</label>
+          <label class="form-label">${t('field.name')} *</label>
           <input class="form-control" id="sName" required value="${student?.name ?? ''}">
         </div>
         <div class="form-group">
-          <label class="form-label">E-mail *</label>
+          <label class="form-label">${t('field.email')} *</label>
           <input class="form-control" id="sEmail" type="email" required value="${student?.email ?? ''}" ${student ? 'readonly' : ''}>
         </div>
         <div class="form-group">
-          <label class="form-label">Telefone</label>
+          <label class="form-label">${t('field.phone')}</label>
           <input class="form-control" id="sPhone" value="${student?.phone ?? ''}">
         </div>
         <div class="form-group">
-          <label class="form-label">Data de nascimento</label>
+          <label class="form-label">${t('field.birthDate')}</label>
           <input class="form-control" id="sBirth" type="date" value="${student?.birthDate?.split('T')[0] ?? ''}">
         </div>
         ${student ? `
         <div class="form-group">
-          <label class="form-label">Status</label>
+          <label class="form-label">${t('field.status')}</label>
           <select class="form-control" id="sStatus">
-            <option value="Active" ${student.status==='Active'?'selected':''}>Ativo</option>
-            <option value="Inactive" ${student.status==='Inactive'?'selected':''}>Inativo</option>
-            <option value="Suspended" ${student.status==='Suspended'?'selected':''}>Suspenso</option>
+            <option value="Active" ${student.status==='Active'?'selected':''}>${t('status.active')}</option>
+            <option value="Inactive" ${student.status==='Inactive'?'selected':''}>${t('status.inactive')}</option>
+            <option value="Suspended" ${student.status==='Suspended'?'selected':''}>${t('status.suspended')}</option>
           </select>
         </div>` : ''}
         <div class="form-group">
-          <label class="form-label">Observações de saúde</label>
+          <label class="form-label">${t('students.field.healthNotes')}</label>
           <textarea class="form-control" id="sHealth">${student?.healthNotes ?? ''}</textarea>
         </div>
         ${!student ? `
         <div class="form-group">
-          <label class="form-label">Senha inicial *</label>
-          <input class="form-control" id="sPassword" type="password" placeholder="Mínimo 6 caracteres" required>
+          <label class="form-label">${t('students.field.initialPassword')} *</label>
+          <input class="form-control" id="sPassword" type="password" placeholder="${t('students.field.passwordPlaceholder')}" required>
         </div>` : ''}
       </form>
     `,
     footer: `
-      ${student ? '<button class="btn btn-secondary" id="btnResetLink" style="margin-right:auto">🔗 Gerar link de acesso</button>' : ''}
-      <button class="btn btn-secondary" onclick="closeModal('studentModal')">Cancelar</button>
-      <button class="btn btn-primary" id="btnSaveStudent">Salvar</button>
+      ${student ? `<button class="btn btn-secondary" id="btnResetLink" style="margin-right:auto">${t('students.resetLink')}</button>` : ''}
+      <button class="btn btn-secondary" onclick="closeModal('studentModal')">${t('btn.cancel')}</button>
+      <button class="btn btn-primary" id="btnSaveStudent">${t('btn.save')}</button>
     `
   });
 
@@ -145,18 +146,18 @@ function openStudentModal(student = null) {
       body.status = document.getElementById('sStatus').value;
     } else {
       const pw = document.getElementById('sPassword').value;
-      if (!pw || pw.length < 6) { showToast('Senha deve ter mínimo 6 caracteres', 'error'); return; }
+      if (!pw || pw.length < 6) { showToast(t('students.password.min'), 'error'); return; }
       body.password = pw;
     }
 
     try {
       if (student) await api.put(`/students/${student.id}`, body);
       else await api.post('/students', body);
-      showToast(student ? 'Aluno atualizado' : 'Aluno criado com sucesso', 'success');
+      showToast(student ? t('students.saved') : t('students.created'), 'success');
       closeModal('studentModal');
       await loadStudents();
     } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
+      showToast(t('error.prefix') + e.message, 'error');
     }
   });
 
@@ -165,9 +166,9 @@ function openStudentModal(student = null) {
       const data = await api.post(`/students/${student.id}/reset-link`, {});
       const url = `${location.origin}/reset-password.html?token=${data.token}`;
       await navigator.clipboard.writeText(url);
-      showToast('Link copiado! Envie ao aluno via WhatsApp ou e-mail.', 'success');
+      showToast(t('students.resetLink.copied'), 'success');
     } catch (e) {
-      showToast('Erro ao gerar link: ' + e.message, 'error');
+      showToast(t('students.resetLink.error') + e.message, 'error');
     }
   });
 }
@@ -175,11 +176,11 @@ function openStudentModal(student = null) {
 async function openPackagesModal(studentId, studentName) {
   const modal = createModal({
     id: 'packagesModal',
-    title: `Pacotes — ${studentName}`,
+    title: t('packages.modal.title', { name: studentName }),
     body: '<div class="loading-center"><span class="spinner"></span></div>',
     footer: `
-      <button class="btn btn-secondary" onclick="closeModal('packagesModal')">Fechar</button>
-      <button class="btn btn-primary" id="btnNewPackage">+ Novo Pacote</button>
+      <button class="btn btn-secondary" onclick="closeModal('packagesModal')">${t('btn.close')}</button>
+      <button class="btn btn-primary" id="btnNewPackage">${t('packages.new')}</button>
     `
   });
   openModal('packagesModal');
@@ -193,14 +194,14 @@ async function openPackagesModal(studentId, studentName) {
 
     const body = modal.querySelector('.modal-body');
     if (!packages.length) {
-      body.innerHTML = emptyState('📦', 'Nenhum pacote cadastrado');
+      body.innerHTML = emptyState('📦', t('packages.none.admin'));
     } else {
       body.innerHTML = packages.map(p => `
         <div class="package-card" style="margin-bottom:0.75rem">
           <div class="package-header">
             <span class="package-name">${p.name}</span>
-            <span class="package-expiry">Vence: ${p.expiresAt ? new Date(p.expiresAt).toLocaleDateString('pt-BR') : 'Sem validade'}</span>
-            <button class="btn btn-danger btn-sm" data-delete-pkg="${p.id}" style="margin-left:auto">Apagar</button>
+            <span class="package-expiry">${p.expiresAt ? t('packages.expires') + new Date(p.expiresAt).toLocaleDateString() : t('packages.noExpiry')}</span>
+            <button class="btn btn-danger btn-sm" data-delete-pkg="${p.id}" style="margin-left:auto">${t('btn.delete')}</button>
           </div>
           <div class="package-items">
             ${p.items.map(i => `
@@ -208,7 +209,7 @@ async function openPackagesModal(studentId, studentName) {
                 <div class="credit-color" style="background:${i.classTypeColor}"></div>
                 <div class="credit-info">
                   <div class="credit-type">${i.classTypeName}</div>
-                  <div class="credit-used">${i.usedCredits}/${i.totalCredits} usados · R$ ${i.pricePerCredit}/aula</div>
+                  <div class="credit-used">${t('packages.usedOf', { used: i.usedCredits, total: i.totalCredits })} · R$ ${i.pricePerCredit}${t('packages.pricePerClass')}</div>
                 </div>
                 <div class="credit-remaining">${i.remainingCredits}</div>
               </div>
@@ -219,14 +220,14 @@ async function openPackagesModal(studentId, studentName) {
 
       body.querySelectorAll('[data-delete-pkg]').forEach(btn => {
         btn.addEventListener('click', async () => {
-          if (!await confirm('Apagar este pacote?')) return;
+          if (!await confirm(t('packages.delete.confirm'))) return;
           try {
             await api.delete(`/packages/${btn.dataset.deletePkg}`);
-            showToast('Pacote apagado', 'success');
+            showToast(t('packages.deleted'), 'success');
             closeModal('packagesModal');
             openPackagesModal(studentId, studentName);
           } catch (e) {
-            showToast('Erro: ' + e.message, 'error');
+            showToast(t('error.prefix') + e.message, 'error');
           }
         });
       });
@@ -245,8 +246,8 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
   const activeClassTypes = classTypes.filter(ct => ct.isActive);
 
   const templateOptions = templates.length
-    ? templates.map(t => `<option value="${t.id}">${t.name}${t.durationDays ? ` · ${t.durationDays}d` : ''}</option>`).join('')
-    : '<option disabled>Nenhum modelo cadastrado</option>';
+    ? templates.map(tpl => `<option value="${tpl.id}">${tpl.name}${tpl.durationDays ? ` · ${tpl.durationDays}d` : ''}</option>`).join('')
+    : `<option disabled>${t('packages.noTemplates')}</option>`;
 
   const itemsForm = activeClassTypes.map(ct => `
     <div class="form-group" style="background:var(--gray-50);padding:0.75rem;border-radius:var(--border-radius);border:1px solid var(--gray-200)">
@@ -256,11 +257,11 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
         <div>
-          <label class="form-label" style="font-size:0.7rem">Créditos</label>
+          <label class="form-label" style="font-size:0.7rem">${t('packages.field.credits')}</label>
           <input class="form-control" id="credits_${ct.id}" type="number" min="0" value="0">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.7rem">R$/aula</label>
+          <label class="form-label" style="font-size:0.7rem">${t('packages.field.pricePerClass')}</label>
           <input class="form-control" id="price_${ct.id}" type="number" min="0" step="0.01" value="0">
         </div>
       </div>
@@ -269,39 +270,39 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
 
   createModal({
     id: 'newPackageModal',
-    title: 'Novo Pacote',
+    title: t('packages.modal.new'),
     body: `
       <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem">
-        <button class="btn btn-primary" id="tabTemplate" style="flex:1">Usar modelo</button>
-        <button class="btn btn-secondary" id="tabCustom" style="flex:1">Pacote avulso</button>
+        <button class="btn btn-primary" id="tabTemplate" style="flex:1">${t('packages.tab.template')}</button>
+        <button class="btn btn-secondary" id="tabCustom" style="flex:1">${t('packages.tab.custom')}</button>
       </div>
 
       <div id="sectionTemplate">
         <div class="form-group">
-          <label class="form-label">Modelo</label>
+          <label class="form-label">${t('packages.field.template')}</label>
           <select class="form-control" id="templateSelect">${templateOptions}</select>
         </div>
         <div class="form-group">
-          <label class="form-label">Validade (opcional — substitui a do modelo)</label>
+          <label class="form-label">${t('packages.field.expiryOverride')}</label>
           <input class="form-control" id="templateExpiry" type="date">
         </div>
       </div>
 
       <div id="sectionCustom" class="hidden">
         <div class="form-group">
-          <label class="form-label">Nome do pacote</label>
-          <input class="form-control" id="pkgName" placeholder="ex: Plano Abril 2026">
+          <label class="form-label">${t('packages.field.name')}</label>
+          <input class="form-control" id="pkgName" placeholder="${t('packages.namePlaceholder')}">
         </div>
         <div class="form-group">
-          <label class="form-label">Validade</label>
+          <label class="form-label">${t('packages.field.expiry')}</label>
           <input class="form-control" id="pkgExpiry" type="date">
         </div>
         ${itemsForm}
       </div>
     `,
     footer: `
-      <button class="btn btn-secondary" onclick="closeModal('newPackageModal')">Cancelar</button>
-      <button class="btn btn-primary" id="btnSavePkg">Criar Pacote</button>
+      <button class="btn btn-secondary" onclick="closeModal('newPackageModal')">${t('btn.cancel')}</button>
+      <button class="btn btn-primary" id="btnSavePkg">${t('packages.modal.new')}</button>
     `
   });
   openModal('newPackageModal');
@@ -330,7 +331,7 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
     try {
       if (isTemplate) {
         const templateId = document.getElementById('templateSelect').value;
-        if (!templateId) { showToast('Selecione um modelo', 'error'); return; }
+        if (!templateId) { showToast(t('packages.select.required'), 'error'); return; }
         const expiry = document.getElementById('templateExpiry').value || null;
         await api.post(`/package-templates/${templateId}/assign`, { studentId, expiresAt: expiry });
       } else {
@@ -339,7 +340,7 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
           totalCredits: parseInt(document.getElementById(`credits_${ct.id}`).value) || 0,
           pricePerCredit: parseFloat(document.getElementById(`price_${ct.id}`).value) || 0,
         })).filter(i => i.totalCredits > 0);
-        if (!items.length) { showToast('Adicione pelo menos um tipo de aula', 'error'); return; }
+        if (!items.length) { showToast(t('packages.addCredits'), 'error'); return; }
         await api.post('/packages', {
           studentId,
           name: document.getElementById('pkgName').value.trim() || 'Pacote',
@@ -347,11 +348,11 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
           items
         });
       }
-      showToast('Pacote criado com sucesso!', 'success');
+      showToast(t('packages.created'), 'success');
       closeModal('newPackageModal');
       await onSuccess();
     } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
+      showToast(t('error.prefix') + e.message, 'error');
     }
   });
 }

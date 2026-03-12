@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { emptyState, formatDate } from '../ui.js';
 import { getUser } from '../auth.js';
+import { t } from '../i18n.js';
 
 export async function renderMyPackages(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -10,7 +11,7 @@ export async function renderMyPackages(container) {
     const packages = await api.get(`/students/${user.id}/packages`);
 
     if (!packages.length) {
-      container.innerHTML = emptyState('📦', 'Você não tem pacotes ativos');
+      container.innerHTML = emptyState('📦', t('myPackages.none'));
       return;
     }
 
@@ -27,11 +28,11 @@ export async function renderMyPackages(container) {
             <div>
               <div class="package-name">${p.name}</div>
               ${p.expiresAt ? `<div class="package-expiry ${isExpired ? 'text-danger' : expiring ? 'text-warning' : ''}">
-                ${isExpired ? '❌ Vencido' : expiring ? '⚠️ Vence em breve'  : '📅 Vence'}: ${formatDate(p.expiresAt)}
+                ${isExpired ? t('myPackages.expired') : expiring ? t('myPackages.expiringSoon') : t('myPackages.expires')}: ${formatDate(p.expiresAt)}
               </div>` : ''}
             </div>
             <div style="text-align:right">
-              <div style="font-size:var(--font-size-xs);opacity:0.7">Uso geral</div>
+              <div style="font-size:var(--font-size-xs);opacity:0.7">${t('myPackages.overallUsage')}</div>
               <div style="font-weight:700">${usedCredits}/${totalCredits}</div>
             </div>
           </div>
@@ -46,7 +47,7 @@ export async function renderMyPackages(container) {
                 <div class="credit-color" style="background:${i.classTypeColor}"></div>
                 <div class="credit-info">
                   <div class="credit-type">${i.classTypeName}</div>
-                  <div class="credit-used">${i.usedCredits} de ${i.totalCredits} usados</div>
+                  <div class="credit-used">${t('myPackages.usedOf', { used: i.usedCredits, total: i.totalCredits })}</div>
                 </div>
                 <div class="credit-remaining" style="color:${i.remainingCredits === 0 ? 'var(--color-danger)' : i.remainingCredits <= 2 ? 'var(--color-warning)' : 'var(--gray-900)'}">
                   ${i.remainingCredits}
@@ -58,6 +59,6 @@ export async function renderMyPackages(container) {
       `;
     }).join('');
   } catch (e) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-text">Erro: ${e.message}</div></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
 }

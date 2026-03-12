@@ -1,4 +1,12 @@
-// Loads tenant config and applies white label theme
+import { setLocale, loadTranslations, t } from './i18n.js';
+import ptBR from './locales/pt-BR.js';
+import enUS from './locales/en-US.js';
+
+// Pre-load both locale dictionaries
+loadTranslations('pt-BR', ptBR);
+loadTranslations('en-US', enUS);
+
+// Loads tenant config and applies white label theme + locale
 export async function loadTenantTheme() {
   try {
     const host = location.hostname;
@@ -12,6 +20,9 @@ export async function loadTenantTheme() {
     if (!res.ok) return;
 
     const config = await res.json();
+
+    // Set locale before any rendering
+    setLocale(config.language ?? 'pt-BR');
 
     // Apply CSS custom properties
     const root = document.documentElement;
@@ -32,6 +43,11 @@ export async function loadTenantTheme() {
     // Update tenant name placeholders
     const names = document.querySelectorAll('[data-tenant-name]');
     names.forEach(el => el.textContent = config.name);
+
+    // Apply static translations
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
 
     return config;
   } catch (e) {

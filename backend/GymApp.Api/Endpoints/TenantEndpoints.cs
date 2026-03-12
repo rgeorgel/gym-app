@@ -34,7 +34,7 @@ public static class TenantEndpoints
             if (tenant is null) return Results.NotFound();
 
             return Results.Ok(new TenantConfigResponse(
-                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug));
+                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language));
         }).AllowAnonymous();
 
         // Super Admin: list all tenants
@@ -89,7 +89,7 @@ public static class TenantEndpoints
             var tenant = await db.Tenants.AsNoTracking()
                 .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
             if (tenant is null) return Results.NotFound();
-            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId));
+            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
         });
 
         settingsGroup.MapPut("/default-package-template", async (SetDefaultTemplateRequest req, AppDbContext db, TenantContext tenantCtx) =>
@@ -106,7 +106,20 @@ public static class TenantEndpoints
 
             tenant.DefaultPackageTemplateId = req.TemplateId;
             await db.SaveChangesAsync();
-            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId));
+            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
+        });
+
+        settingsGroup.MapPut("/language", async (SetLanguageRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var allowed = new[] { "pt-BR", "en-US" };
+            if (!allowed.Contains(req.Language)) return Results.BadRequest("Unsupported language.");
+
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.Language = req.Language;
+            await db.SaveChangesAsync();
+            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
         });
 
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>

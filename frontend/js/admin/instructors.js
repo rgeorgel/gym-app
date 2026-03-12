@@ -1,10 +1,11 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js';
+import { t } from '../i18n.js';
 
 export async function renderInstructors(container) {
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-      <button class="btn btn-primary" id="btnNewInstructor">+ Novo Instrutor</button>
+      <button class="btn btn-primary" id="btnNewInstructor">${t('instructors.new')}</button>
     </div>
     <div id="instructorsList"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
@@ -20,7 +21,7 @@ async function loadInstructors() {
     const instructors = await api.get('/instructors');
 
     if (!instructors.length) {
-      list.innerHTML = emptyState('👤', 'Nenhum instrutor cadastrado');
+      list.innerHTML = emptyState('👤', t('instructors.none'));
       return;
     }
 
@@ -30,10 +31,10 @@ async function loadInstructors() {
           <table>
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Telefone</th>
-                <th>Especialidades</th>
+                <th>${t('field.name')}</th>
+                <th>${t('field.email')}</th>
+                <th>${t('field.phone')}</th>
+                <th>${t('instructors.col.specialties')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -49,8 +50,8 @@ async function loadInstructors() {
                   <td class="text-sm">${i.specialties ?? '—'}</td>
                   <td>
                     <div class="flex gap-2">
-                      <button class="btn btn-secondary btn-sm" data-edit="${i.id}">Editar</button>
-                      <button class="btn btn-danger btn-sm" data-delete="${i.id}">Remover</button>
+                      <button class="btn btn-secondary btn-sm" data-edit="${i.id}">${t('btn.edit')}</button>
+                      <button class="btn btn-danger btn-sm" data-delete="${i.id}">${t('btn.remove')}</button>
                     </div>
                   </td>
                 </tr>
@@ -69,50 +70,50 @@ async function loadInstructors() {
 
     list.querySelectorAll('[data-delete]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (!await confirm('Remover este instrutor?')) return;
+        if (!await confirm(t('instructors.remove.confirm'))) return;
         try {
           await api.delete(`/instructors/${btn.dataset.delete}`);
-          showToast('Instrutor removido', 'success');
+          showToast(t('instructors.removed'), 'success');
           await loadInstructors();
         } catch (e) {
-          showToast('Erro: ' + e.message, 'error');
+          showToast(t('error.prefix') + e.message, 'error');
         }
       });
     });
   } catch (e) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-text">Erro: ${e.message}</div></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
 }
 
 function openInstructorModal(instructor = null) {
   createModal({
     id: 'instructorModal',
-    title: instructor ? 'Editar Instrutor' : 'Novo Instrutor',
+    title: instructor ? t('instructors.title.edit') : t('instructors.title.new'),
     body: `
       <div class="form-group">
-        <label class="form-label">Nome *</label>
+        <label class="form-label">${t('field.name')} *</label>
         <input class="form-control" id="iName" value="${instructor?.name ?? ''}">
       </div>
       <div class="form-group">
-        <label class="form-label">E-mail *</label>
+        <label class="form-label">${t('field.email')} *</label>
         <input class="form-control" id="iEmail" type="email" value="${instructor?.email ?? ''}" ${instructor ? 'readonly' : ''}>
       </div>
       <div class="form-group">
-        <label class="form-label">Telefone</label>
+        <label class="form-label">${t('field.phone')}</label>
         <input class="form-control" id="iPhone" value="${instructor?.phone ?? ''}">
       </div>
       <div class="form-group">
-        <label class="form-label">Bio</label>
+        <label class="form-label">${t('instructors.field.bio')}</label>
         <textarea class="form-control" id="iBio" rows="2">${instructor?.bio ?? ''}</textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">Especialidades</label>
-        <input class="form-control" id="iSpecialties" placeholder="ex: Boxe, Muay Thai" value="${instructor?.specialties ?? ''}">
+        <label class="form-label">${t('instructors.field.specialties')}</label>
+        <input class="form-control" id="iSpecialties" placeholder="${t('instructors.field.specialtiesPlaceholder')}" value="${instructor?.specialties ?? ''}">
       </div>
     `,
     footer: `
-      <button class="btn btn-secondary" onclick="closeModal('instructorModal')">Cancelar</button>
-      <button class="btn btn-primary" id="btnSaveInstructor">Salvar</button>
+      <button class="btn btn-secondary" onclick="closeModal('instructorModal')">${t('btn.cancel')}</button>
+      <button class="btn btn-primary" id="btnSaveInstructor">${t('btn.save')}</button>
     `
   });
   openModal('instructorModal');
@@ -120,7 +121,7 @@ function openInstructorModal(instructor = null) {
   document.getElementById('btnSaveInstructor').addEventListener('click', async () => {
     const name = document.getElementById('iName').value.trim();
     const email = document.getElementById('iEmail').value.trim();
-    if (!name || !email) { showToast('Nome e e-mail são obrigatórios', 'error'); return; }
+    if (!name || !email) { showToast(t('instructors.required'), 'error'); return; }
 
     const body = {
       name,
@@ -132,15 +133,15 @@ function openInstructorModal(instructor = null) {
     try {
       if (instructor) {
         await api.put(`/instructors/${instructor.id}`, body);
-        showToast('Instrutor atualizado', 'success');
+        showToast(t('instructors.saved'), 'success');
       } else {
         await api.post('/instructors', { ...body, email });
-        showToast('Instrutor cadastrado', 'success');
+        showToast(t('instructors.created'), 'success');
       }
       closeModal('instructorModal');
       await loadInstructors();
     } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
+      showToast(t('error.prefix') + e.message, 'error');
     }
   });
 }

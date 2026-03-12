@@ -14,6 +14,7 @@ public class Tenant
     public bool IsActive { get; set; } = true;
     public string? CustomDomain { get; set; }
     public int CancellationHoursLimit { get; set; } = 2;
+    public string Language { get; set; } = "pt-BR";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Guid? DefaultPackageTemplateId { get; set; }

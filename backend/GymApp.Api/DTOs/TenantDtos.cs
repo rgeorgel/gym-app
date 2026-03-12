@@ -7,7 +7,8 @@ public record TenantConfigResponse(
     string? LogoUrl,
     string PrimaryColor,
     string SecondaryColor,
-    string Slug
+    string Slug,
+    string Language
 );
 
 public record CreateTenantRequest(
@@ -45,9 +46,14 @@ public record UpdateTenantRequest(
 );
 
 public record TenantSettingsResponse(
-    Guid? DefaultPackageTemplateId
+    Guid? DefaultPackageTemplateId,
+    string Language
 );
 
 public record SetDefaultTemplateRequest(
     Guid? TemplateId
+);
+
+public record SetLanguageRequest(
+    string Language
 );

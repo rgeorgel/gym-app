@@ -19,15 +19,15 @@
       </div>
       <div class="app-navbar-actions">
         <span id="navUserName" style="font-size:var(--font-size-sm);opacity:0.8"></span>
-        <button class="btn btn-sm" id="btnAppLogout" style="background:rgba(255,255,255,0.15);color:white;border:none">Sair</button>
+        <button class="btn btn-sm" id="btnAppLogout" style="background:rgba(255,255,255,0.15);color:white;border:none" data-i18n="btn.logout"></button>
       </div>
     </nav>
 
     <!-- Desktop tabs -->
     <div class="app-tabs">
-      <div class="app-tab active" data-tab="schedule">📅 Grade de Aulas</div>
-      <div class="app-tab" data-tab="bookings">🎫 Meus Agendamentos</div>
-      <div class="app-tab" data-tab="packages">📦 Meu Plano</div>
+      <div class="app-tab active" data-tab="schedule" data-i18n="app.schedule"></div>
+      <div class="app-tab" data-tab="bookings" data-i18n="app.bookings"></div>
+      <div class="app-tab" data-tab="packages" data-i18n="app.packages"></div>
     </div>
 
     <!-- Content -->
@@ -39,15 +39,15 @@
     <nav class="bottom-nav">
       <div class="bottom-nav-item active" data-tab="schedule">
         <span class="bottom-nav-icon">📅</span>
-        Grade
+        <span data-i18n="app.schedule.short"></span>
       </div>
       <div class="bottom-nav-item" data-tab="bookings">
         <span class="bottom-nav-icon">🎫</span>
-        Agendamentos
+        <span data-i18n="app.bookings.short"></span>
       </div>
       <div class="bottom-nav-item" data-tab="packages">
         <span class="bottom-nav-icon">📦</span>
-        Plano
+        <span data-i18n="app.packages.short"></span>
       </div>
     </nav>
   </div>

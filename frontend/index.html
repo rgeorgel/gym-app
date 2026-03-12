@@ -24,25 +24,23 @@
             placeholder="seu@email.com" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="password">Senha</label>
+          <label class="form-label" for="password" data-i18n="login.password"></label>
           <input class="form-control" id="password" type="password" autocomplete="current-password"
             placeholder="••••••••" required>
         </div>
 
         <div id="loginError" class="form-error hidden"></div>
 
-        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem">
-          Entrar
-        </button>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem" data-i18n="login.submit"></button>
         <div class="text-center text-sm" style="margin-top:0.75rem">
-          <a href="/reset-password.html" style="color:var(--text-muted)">Esqueci minha senha</a>
+          <a href="/reset-password.html" style="color:var(--text-muted)" data-i18n="login.forgotPassword"></a>
         </div>
       </form>
 
       <!-- Register form (hidden by default) -->
       <form id="registerForm" class="hidden" novalidate>
         <div class="form-group">
-          <label class="form-label" for="regName">Nome completo *</label>
+          <label class="form-label" for="regName" data-i18n="register.name"></label>
           <input class="form-control" id="regName" type="text" autocomplete="name" placeholder="Seu nome" required>
         </div>
         <div class="form-group">
@@ -51,38 +49,36 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
           <div class="form-group">
-            <label class="form-label" for="regPhone">Telefone</label>
+            <label class="form-label" for="regPhone" data-i18n="register.phone"></label>
             <input class="form-control" id="regPhone" type="tel" autocomplete="tel" placeholder="(11) 99999-0000">
           </div>
           <div class="form-group">
-            <label class="form-label" for="regBirth">Data de nascimento</label>
+            <label class="form-label" for="regBirth" data-i18n="register.birthDate"></label>
             <input class="form-control" id="regBirth" type="date">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="regPassword">Senha *</label>
+          <label class="form-label" for="regPassword" data-i18n="field.password"></label>
           <input class="form-control" id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="regPasswordConfirm">Confirmar senha *</label>
+          <label class="form-label" for="regPasswordConfirm" data-i18n="register.confirmPassword"></label>
           <input class="form-control" id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="••••••••" required>
         </div>
 
         <div id="registerError" class="form-error hidden"></div>
 
-        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem">
-          Criar conta
-        </button>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem" data-i18n="register.submit"></button>
       </form>
 
       <!-- Toggle links -->
       <div id="toRegister" class="text-center text-sm" style="margin-top:1.25rem">
-        Ainda não tem conta?
-        <a href="#" id="linkRegister" style="font-weight:600">Cadastre-se</a>
+        <span data-i18n="login.noAccount"></span>
+        <a href="#" id="linkRegister" style="font-weight:600" data-i18n="login.registerLink"></a>
       </div>
       <div id="toLogin" class="hidden text-center text-sm" style="margin-top:1.25rem">
-        Já tem conta?
-        <a href="#" id="linkLogin" style="font-weight:600">Entrar</a>
+        <span data-i18n="login.hasAccount"></span>
+        <a href="#" id="linkLogin" style="font-weight:600" data-i18n="login.loginLink"></a>
       </div>
     </div>
   </div>

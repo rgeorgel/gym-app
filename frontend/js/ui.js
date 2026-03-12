@@ -1,4 +1,6 @@
 // Shared UI utilities
+import { t, getLocale, getWeekdays, getWeekdaysFull } from './i18n.js';
+export { getWeekdays, getWeekdaysFull };
 
 // Toast notifications
 let toastContainer;
@@ -70,12 +72,12 @@ export function setLoading(el, loading, text = 'Carregando...') {
 export function formatDate(dateStr) {
   if (!dateStr) return '—';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-BR');
+  return d.toLocaleDateString(getLocale());
 }
 
 export function formatDateTime(dateStr) {
   if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleString('pt-BR');
+  return new Date(dateStr).toLocaleString(getLocale());
 }
 
 export function formatTime(timeStr) {
@@ -87,6 +89,7 @@ export function formatCurrency(value) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 }
 
+// Kept for backward compat — prefer getWeekdays() / getWeekdaysFull() for locale-aware arrays
 export const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 export const WEEKDAYS_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
@@ -94,18 +97,17 @@ export function badge(text, type = 'gray') {
   return `<span class="badge badge-${type}">${text}</span>`;
 }
 
-export const STATUS_LABELS = {
-  Confirmed: { label: 'Confirmado', type: 'success' },
-  CheckedIn: { label: 'Check-in', type: 'info' },
-  Cancelled: { label: 'Cancelado', type: 'danger' },
-  Active: { label: 'Ativo', type: 'success' },
-  Inactive: { label: 'Inativo', type: 'gray' },
-  Suspended: { label: 'Suspenso', type: 'danger' },
+const STATUS_TYPE = {
+  Confirmed: 'success', CheckedIn: 'info', Cancelled: 'danger',
+  Active: 'success', Inactive: 'gray', Suspended: 'danger',
+};
+const STATUS_KEY = {
+  Confirmed: 'status.confirmed', CheckedIn: 'status.checkedIn', Cancelled: 'status.cancelled',
+  Active: 'status.active', Inactive: 'status.inactive', Suspended: 'status.suspended',
 };
 
 export function statusBadge(status) {
-  const s = STATUS_LABELS[status] ?? { label: status, type: 'gray' };
-  return badge(s.label, s.type);
+  return badge(t(STATUS_KEY[status] ?? status, {}), STATUS_TYPE[status] ?? 'gray');
 }
 
 // Confirm dialog (custom async — avoids browser blocking window.confirm)
@@ -123,8 +125,8 @@ export function confirm(message) {
       <div class="modal" style="max-width:380px">
         <div class="modal-body" style="padding:1.5rem;text-align:center;font-size:0.95rem">${message}</div>
         <div class="modal-footer" style="justify-content:center;gap:0.75rem">
-          <button class="btn btn-secondary" id="confirmNo">Cancelar</button>
-          <button class="btn btn-danger" id="confirmYes">Confirmar</button>
+          <button class="btn btn-secondary" id="confirmNo">${t('btn.cancel')}</button>
+          <button class="btn btn-danger" id="confirmYes">${t('btn.confirm')}</button>
         </div>
       </div>
     `;

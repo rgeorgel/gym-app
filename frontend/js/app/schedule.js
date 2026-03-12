@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js';
 import { getUser } from '../auth.js';
+import { t, getWeekdays } from '../i18n.js';
 
 let currentDate = new Date();
 let sessions = [];
@@ -32,9 +33,9 @@ function renderDaySelector() {
     d.setDate(d.getDate() + i);
     days.push(d);
   }
+  const dayNames = getWeekdays();
   container.innerHTML = days.map((d, i) => {
     const isActive = d.toDateString() === currentDate.toDateString();
-    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     return `
       <button class="day-btn ${isActive ? 'active' : ''}" data-date="${d.toISOString().split('T')[0]}">
         <span class="day-btn-name">${dayNames[d.getDay()]}</span>
@@ -63,7 +64,7 @@ async function loadSessions() {
     sessions = await api.get(`/sessions?from=${dateStr}&to=${dateStr}`);
 
     if (!sessions.length) {
-      list.innerHTML = emptyState('📅', 'Nenhuma aula hoje');
+      list.innerHTML = emptyState('📅', t('schedule.noClasses'));
       return;
     }
 
@@ -72,6 +73,12 @@ async function loadSessions() {
     const activeBookings = myBookings.filter(b => b.status === 'Confirmed' || b.status === 'CheckedIn');
     const bookedSessionIds = new Set(activeBookings.map(b => b.sessionId));
     const bookingBySession = Object.fromEntries(activeBookings.map(b => [b.sessionId, b.id]));
+
+    const modalityLabels = {
+      Group: t('schedule.modality.group'),
+      Individual: t('schedule.modality.individual'),
+      Pair: t('schedule.modality.pair'),
+    };
 
     list.innerHTML = sessions.map(s => {
       const isBooked = bookedSessionIds.has(s.id);
@@ -83,31 +90,31 @@ async function loadSessions() {
              onclick="window._openSession('${s.id}', ${isBooked}, ${isFull}, '${bookingId}')">
           <div class="session-time-block">
             <div class="session-time">${formatTime(s.startTime?.toString())}</div>
-            <div class="session-duration">${s.durationMinutes}min</div>
+            <div class="session-duration">${s.durationMinutes}${t('schedule.duration')}</div>
           </div>
           <div class="session-color-dot" style="background:${s.classTypeColor}"></div>
           <div class="session-info">
             <div class="session-name">${s.classTypeName}</div>
             <div class="session-meta">
               ${s.instructorName ? `<span>👤 ${s.instructorName}</span>` : ''}
-              <span>{{ modalityLabel }}</span>
+              <span>${modalityLabels[s.modalityType] ?? ''}</span>
             </div>
           </div>
           <div class="session-slots">
             ${isCancelled
-              ? '<span class="badge badge-danger">Cancelada</span>'
+              ? `<span class="badge badge-danger">${t('schedule.cancelled')}</span>`
               : isBooked
-                ? '<span class="badge badge-success">✓ Agendado</span>'
-                : `<div class="slots-count">Vagas</div>
+                ? `<span class="badge badge-success">✓ ${t('schedule.booked').replace('✓ ', '').split('.')[0]}</span>`
+                : `<div class="slots-count">${t('schedule.slots')}</div>
                    <div class="slots-available ${s.slotsAvailable <= 3 ? 'low' : ''} ${isFull ? 'full' : ''}">${isFull ? '0' : s.slotsAvailable}</div>`}
           </div>
         </div>
-      `.replace('{{ modalityLabel }}', { Group: 'Grupo', Individual: 'Individual', Pair: 'Dupla' }[s.modalityType] ?? '');
+      `;
     }).join('');
 
     window._openSession = (id, isBooked, isFull, bookingId) => openSessionModal(id, isBooked, isFull, bookingId);
   } catch (e) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-text">Erro ao carregar: ${e.message}</div></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('schedule.loadError')}${e.message}</div></div>`;
   }
 }
 
@@ -125,38 +132,38 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
     body: `
       <div style="margin-bottom:1rem">
         <div style="font-size:var(--font-size-sm);color:var(--gray-500)">
-          🕐 ${formatTime(session.startTime?.toString())} · ${session.durationMinutes}min
+          🕐 ${formatTime(session.startTime?.toString())} · ${session.durationMinutes}${t('schedule.duration')}
           ${session.instructorName ? `· 👤 ${session.instructorName}` : ''}
         </div>
         <div style="font-size:var(--font-size-sm);color:var(--gray-500);margin-top:0.25rem">
-          ${session.slotsAvailable} vagas disponíveis
+          ${session.slotsAvailable} ${t('schedule.slotsAvailable')}
         </div>
       </div>
 
       ${isBooked
-        ? `<div class="badge badge-success" style="font-size:var(--font-size-sm);padding:0.5rem 1rem">✓ Você já está agendado nesta aula</div>`
+        ? `<div class="badge badge-success" style="font-size:var(--font-size-sm);padding:0.5rem 1rem">${t('schedule.booked')}</div>`
         : isFull
-          ? `<p class="text-sm">Esta aula está cheia. Deseja entrar na lista de espera?</p>`
+          ? `<p class="text-sm">${t('schedule.full')}</p>`
           : items.length === 0
-            ? `<p class="text-sm text-muted">Você não tem créditos disponíveis para esta modalidade.</p>`
+            ? `<p class="text-sm text-muted">${t('schedule.noCredits')}</p>`
             : `
               <div class="form-group">
-                <label class="form-label">Usar créditos de:</label>
+                <label class="form-label">${t('schedule.useCreditsFrom')}</label>
                 <select class="form-control" id="pkgItemSelect">
-                  ${items.map(i => `<option value="${i.id}">${i.classTypeName} — ${i.remainingCredits} créditos (${i.classTypeName})</option>`).join('')}
+                  ${items.map(i => `<option value="${i.id}">${i.classTypeName} — ${i.remainingCredits} ${t('dash.credits')}</option>`).join('')}
                 </select>
               </div>
             `
       }
     `,
     footer: `
-      <button class="btn btn-secondary" onclick="closeModal('sessionModal')">Fechar</button>
+      <button class="btn btn-secondary" onclick="closeModal('sessionModal')">${t('btn.close')}</button>
       ${!isBooked && !isFull && items.length > 0
-        ? `<button class="btn btn-primary" id="btnBook">Agendar</button>`
+        ? `<button class="btn btn-primary" id="btnBook">${t('schedule.book')}</button>`
         : !isBooked && isFull
-          ? `<button class="btn btn-secondary" id="btnWaitlist">Entrar na fila</button>`
+          ? `<button class="btn btn-secondary" id="btnWaitlist">${t('schedule.joinWaitlist')}</button>`
           : ''}
-      ${isBooked ? `<button class="btn btn-danger" id="btnCancel">Cancelar agendamento</button>` : ''}
+      ${isBooked ? `<button class="btn btn-danger" id="btnCancel">${t('schedule.cancelBooking')}</button>` : ''}
     `
   });
   openModal('sessionModal');
@@ -165,25 +172,25 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
     const pkgItemId = document.getElementById('pkgItemSelect').value;
     try {
       await api.post('/bookings', { sessionId, studentId: user.id, packageItemId: pkgItemId });
-      showToast('Agendamento confirmado!', 'success');
+      showToast(t('schedule.book.success'), 'success');
       closeModal('sessionModal');
       await loadPackages();
       await loadSessions();
     } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
+      showToast(t('error.prefix') + e.message, 'error');
     }
   });
 
   document.getElementById('btnCancel')?.addEventListener('click', async () => {
-    if (!await confirm('Cancelar este agendamento?')) return;
+    if (!await confirm(t('schedule.cancelBooking.confirm'))) return;
     try {
       await api.delete(`/bookings/${bookingId}`);
-      showToast('Agendamento cancelado', 'success');
+      showToast(t('schedule.cancelBooking.success'), 'success');
       closeModal('sessionModal');
       await loadPackages();
       await loadSessions();
     } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
+      showToast(t('error.prefix') + e.message, 'error');
     }
   });
 }

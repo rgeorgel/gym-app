@@ -1,5 +1,6 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatTime, emptyState, statusBadge, confirm } from '../ui.js';
+import { t, getLocale } from '../i18n.js';
 
 export async function renderSessions(container) {
   const today = new Date().toISOString().split('T')[0];
@@ -7,11 +8,11 @@ export async function renderSessions(container) {
 
   container.innerHTML = `
     <div class="filters-bar">
-      <label class="form-label" style="margin:0">De:</label>
+      <label class="form-label" style="margin:0">${t('sessions.from')}</label>
       <input class="form-control" id="sessFrom" type="date" value="${today}" style="width:140px">
-      <label class="form-label" style="margin:0">Até:</label>
+      <label class="form-label" style="margin:0">${t('sessions.to')}</label>
       <input class="form-control" id="sessTo" type="date" value="${nextWeek}" style="width:140px">
-      <button class="btn btn-secondary" id="btnLoadSess">Carregar</button>
+      <button class="btn btn-secondary" id="btnLoadSess">${t('btn.load')}</button>
     </div>
     <div id="sessionsContent"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
@@ -31,7 +32,7 @@ async function loadSessions() {
     const sessions = await api.get(`/sessions?from=${from}&to=${to}`);
 
     if (!sessions.length) {
-      content.innerHTML = emptyState('📅', 'Nenhuma aula neste período');
+      content.innerHTML = emptyState('📅', t('sessions.none'));
       return;
     }
 
@@ -50,7 +51,7 @@ async function loadSessions() {
         <div class="card">
           <div class="table-wrapper">
             <table>
-              <thead><tr><th>Horário</th><th>Aula</th><th>Instrutor</th><th>Vagas</th><th>Status</th><th></th></tr></thead>
+              <thead><tr><th>${t('sessions.col.time')}</th><th>${t('sessions.col.class')}</th><th>${t('field.instructor')}</th><th>${t('sessions.col.slots')}</th><th>${t('field.status')}</th><th></th></tr></thead>
               <tbody>
                 ${list.map(s => `
                   <tr>
@@ -67,11 +68,11 @@ async function loadSessions() {
                         ${s.bookingsCount}/${s.capacity}
                       </span>
                     </td>
-                    <td>${s.status === 'Cancelled' ? '<span class="badge badge-danger">Cancelada</span>' : '<span class="badge badge-success">Ativa</span>'}</td>
+                    <td>${s.status === 'Cancelled' ? `<span class="badge badge-danger">${t('sessions.status.cancelled')}</span>` : `<span class="badge badge-success">${t('sessions.status.active')}</span>`}</td>
                     <td>
                       <div class="flex gap-2">
-                        <button class="btn btn-secondary btn-sm" onclick="window._viewCheckin('${s.id}')">Check-in</button>
-                        ${s.status !== 'Cancelled' ? `<button class="btn btn-danger btn-sm" onclick="window._cancelSession('${s.id}')">Cancelar</button>` : ''}
+                        <button class="btn btn-secondary btn-sm" onclick="window._viewCheckin('${s.id}')">${t('sessions.checkin')}</button>
+                        ${s.status !== 'Cancelled' ? `<button class="btn btn-danger btn-sm" onclick="window._cancelSession('${s.id}')">${t('btn.cancel')}</button>` : ''}
                       </div>
                     </td>
                   </tr>
@@ -93,9 +94,9 @@ async function loadSessions() {
 async function openCheckinModal(sessionId) {
   createModal({
     id: 'checkinModal',
-    title: 'Check-in da Aula',
+    title: t('sessions.checkin.title'),
     body: '<div class="loading-center"><span class="spinner"></span></div>',
-    footer: `<button class="btn btn-secondary" onclick="closeModal('checkinModal')">Fechar</button>`
+    footer: `<button class="btn btn-secondary" onclick="closeModal('checkinModal')">${t('btn.close')}</button>`
   });
   openModal('checkinModal');
 
@@ -110,14 +111,14 @@ async function openCheckinModal(sessionId) {
     title.textContent = `Check-in — ${sessionData.classTypeName} ${formatTime(sessionData.startTime?.toString())}`;
 
     if (!bookings.length) {
-      body.innerHTML = emptyState('👤', 'Nenhum aluno agendado');
+      body.innerHTML = emptyState('👤', t('sessions.checkin.none'));
       return;
     }
 
     const renderList = (list) => {
       body.innerHTML = `
         <div style="margin-bottom:0.75rem;font-size:var(--font-size-xs);color:var(--gray-500)">
-          ${list.filter(b=>b.status==='CheckedIn').length} check-ins de ${list.length}
+          ${list.filter(b=>b.status==='CheckedIn').length} ${t('sessions.checkin.of')} ${list.length}
         </div>
         ${list.map(b => `
           <div class="checkin-row">
@@ -142,7 +143,7 @@ async function openCheckinModal(sessionId) {
         await api.post(`/bookings/${bookingId}/checkin`, {});
         const updated = await api.get(`/sessions/${sessionId}/bookings`);
         renderList(updated);
-        showToast('Check-in realizado!', 'success');
+        showToast(t('sessions.checkin.success'), 'success');
       } catch (e) {
         showToast('Erro: ' + e.message, 'error');
       }
@@ -153,10 +154,10 @@ async function openCheckinModal(sessionId) {
 }
 
 async function cancelSession(sessionId) {
-  if (!await confirm('Cancelar esta aula? Os créditos serão devolvidos para os alunos agendados.')) return;
+  if (!await confirm(t('sessions.cancel.confirm'))) return;
   try {
     await api.post(`/sessions/${sessionId}/cancel`, { reason: 'Cancelado pelo admin' });
-    showToast('Aula cancelada. Créditos devolvidos.', 'success');
+    showToast(t('sessions.cancel.success'), 'success');
     await loadSessions();
   } catch (e) {
     showToast('Erro: ' + e.message, 'error');

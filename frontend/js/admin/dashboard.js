@@ -1,8 +1,9 @@
 import { api } from '../api.js';
-import { formatDate, formatCurrency, WEEKDAYS } from '../ui.js';
+import { formatDate, formatCurrency, getWeekdays } from '../ui.js';
+import { t, getLocale } from '../i18n.js';
 
 export async function renderDashboard(container) {
-  container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
+  container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
   try {
     const [stats, todaySessions, occupancy, expiring, topStudents, inactiveStudents, weeklyCheckins] = await Promise.all([
@@ -29,7 +30,7 @@ export async function renderDashboard(container) {
       ${renderInactiveStudents(inactiveStudents)}
     `;
   } catch (e) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Erro ao carregar dashboard: ${e.message}</div></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
 }
 
@@ -38,7 +39,7 @@ function renderTodaySessions(sessions) {
     return `
       <div class="card" style="margin-bottom:1.25rem">
         <div class="card-body" style="padding:1rem 1.25rem;color:var(--gray-400);font-size:var(--font-size-sm)">
-          📅 Nenhuma aula programada para hoje
+          ${t('dash.today.none')}
         </div>
       </div>
     `;
@@ -47,8 +48,8 @@ function renderTodaySessions(sessions) {
   return `
     <div class="card" style="margin-bottom:1.25rem">
       <div class="card-header">
-        <span class="card-title">Aulas de Hoje</span>
-        <span class="text-sm text-muted">${sessions.length} aula${sessions.length !== 1 ? 's' : ''}</span>
+        <span class="card-title">${t('dash.today')}</span>
+        <span class="text-sm text-muted">${sessions.length}</span>
       </div>
       <div style="display:flex;gap:0.75rem;padding:0.75rem 1.25rem 1rem;flex-wrap:wrap">
         ${sessions.map(s => {
@@ -59,7 +60,7 @@ function renderTodaySessions(sessions) {
               <div style="font-weight:700;font-size:var(--font-size-sm)">${s.startTime?.slice(0,5)}</div>
               <div style="font-size:var(--font-size-xs);color:var(--gray-600);margin:0.1rem 0">${s.classType}</div>
               <div style="font-size:var(--font-size-xs);color:${color};font-weight:500">
-                ${s.status === 'Cancelled' ? '✕ Cancelada' : `${s.bookings}/${s.capacity} · ${s.checkedIn} ✓`}
+                ${s.status === 'Cancelled' ? t('dash.cancelled') : `${s.bookings}/${s.capacity} · ${s.checkedIn} ✓`}
               </div>
             </div>
           `;
@@ -71,14 +72,14 @@ function renderTodaySessions(sessions) {
 
 function renderKpiGrid(stats) {
   const kpis = [
-    { label: 'Alunos ativos', value: stats.totalStudents, icon: '👥' },
-    { label: 'Novos no mês', value: stats.newStudentsThisMonth, icon: '🆕' },
-    { label: 'Aulas hoje', value: stats.sessionsToday, icon: '📅' },
-    { label: 'Agendamentos no mês', value: stats.bookingsThisMonth, icon: '🎫' },
-    { label: 'Ocupação média', value: `${stats.avgOccupancyPct}%`, icon: '📊', meta: 'últimos 30 dias' },
-    { label: 'Taxa de cancelamento', value: `${stats.cancellationRatePct}%`, icon: '❌', meta: 'este mês', warn: stats.cancellationRatePct > 20 },
-    { label: 'Receita do mês', value: formatCurrency(stats.revenueThisMonth), icon: '💰' },
-    { label: 'Alunos sem créditos', value: stats.studentsWithNoCredits, icon: '⚠️', meta: 'a renovar', warn: stats.studentsWithNoCredits > 0 },
+    { label: t('dash.kpi.activeStudents'), value: stats.totalStudents, icon: '👥' },
+    { label: t('dash.kpi.newThisMonth'), value: stats.newStudentsThisMonth, icon: '🆕' },
+    { label: t('dash.kpi.classesToday'), value: stats.sessionsToday, icon: '📅' },
+    { label: t('dash.kpi.bookingsThisMonth'), value: stats.bookingsThisMonth, icon: '🎫' },
+    { label: t('dash.kpi.avgOccupancy'), value: `${stats.avgOccupancyPct}%`, icon: '📊', meta: t('dash.kpi.last30') },
+    { label: t('dash.kpi.cancellationRate'), value: `${stats.cancellationRatePct}%`, icon: '❌', meta: t('dash.kpi.thisMonth'), warn: stats.cancellationRatePct > 20 },
+    { label: t('dash.kpi.revenue'), value: formatCurrency(stats.revenueThisMonth), icon: '💰' },
+    { label: t('dash.kpi.noCredits'), value: stats.studentsWithNoCredits, icon: '⚠️', meta: t('dash.kpi.toRenew'), warn: stats.studentsWithNoCredits > 0 },
   ];
 
   return `
@@ -98,17 +99,17 @@ function renderOccupancy(sessions) {
   return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Ocupação — próximos 7 dias</span>
+        <span class="card-title">${t('dash.occupancy')}</span>
       </div>
       <div class="card-body" style="padding:0;max-height:340px;overflow-y:auto">
         ${sessions.length === 0
-          ? '<div class="empty-state"><div class="empty-state-text">Nenhuma aula programada</div></div>'
+          ? `<div class="empty-state"><div class="empty-state-text">${t('dash.occupancy.none')}</div></div>`
           : sessions.map(s => {
               const pct = s.occupancyPct;
               const color = pct >= 80 ? 'var(--color-danger)' : pct >= 50 ? 'var(--color-warning)' : 'var(--color-success)';
               const dot = pct >= 80 ? '🔴' : pct >= 50 ? '🟡' : '🟢';
               const dateObj = new Date(s.date + 'T12:00:00');
-              const dateLabel = `${WEEKDAYS[dateObj.getDay()]} ${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}`;
+              const dateLabel = `${getWeekdays()[dateObj.getDay()]} ${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}`;
               return `
                 <div style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--gray-100)">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.375rem">
@@ -136,22 +137,22 @@ function renderExpiringPackages(packages) {
   return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Pacotes a renovar</span>
+        <span class="card-title">${t('dash.expiring')}</span>
         ${packages.length ? `<span class="badge badge-warning">${packages.length}</span>` : ''}
       </div>
       <div class="card-body" style="padding:0;max-height:340px;overflow-y:auto">
         ${packages.length === 0
-          ? '<div class="empty-state"><div class="empty-state-text">Nenhum pacote vencendo</div></div>'
+          ? `<div class="empty-state"><div class="empty-state-text">${t('dash.expiring.none')}</div></div>`
           : `
             ${expired.length ? `
               <div style="padding:0.375rem 1.25rem;background:rgba(239,68,68,0.06);font-size:0.68rem;font-weight:600;color:var(--color-danger);text-transform:uppercase;letter-spacing:0.05em">
-                Vencidos — ${expired.length}
+                ${t('dash.expired.label')} — ${expired.length}
               </div>
               ${expired.map(p => renderPkgRow(p, true)).join('')}
             ` : ''}
             ${expiring.length ? `
               <div style="padding:0.375rem 1.25rem;background:rgba(245,158,11,0.06);font-size:0.68rem;font-weight:600;color:var(--color-warning);text-transform:uppercase;letter-spacing:0.05em">
-                Vencendo em breve — ${expiring.length}
+                ${t('dash.expiringSoon.label')} — ${expiring.length}
               </div>
               ${expiring.map(p => renderPkgRow(p, false)).join('')}
             ` : ''}
@@ -168,9 +169,9 @@ function renderPkgRow(p, isExpired) {
       <div class="text-xs text-muted">
         ${p.name} ·
         ${isExpired
-          ? `<span style="color:var(--color-danger)">venceu ${formatDate(p.expiresAt)}</span>`
-          : `vence ${formatDate(p.expiresAt)}`}
-        · ${p.remainingCredits} crédito${p.remainingCredits !== 1 ? 's' : ''}
+          ? `<span style="color:var(--color-danger)">${t('dash.session.expired')} ${formatDate(p.expiresAt)}</span>`
+          : `${t('dash.session.expires')} ${formatDate(p.expiresAt)}`}
+        · ${p.remainingCredits} ${p.remainingCredits !== 1 ? t('dash.credits') : t('dash.credit')}
       </div>
     </div>
   `;
@@ -182,8 +183,8 @@ function renderWeeklyChart(weeks) {
   return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Frequência semanal</span>
-        <span class="text-sm text-muted">últimas 8 semanas</span>
+        <span class="card-title">${t('dash.weekly')}</span>
+        <span class="text-sm text-muted">${t('dash.weekly.subtitle')}</span>
       </div>
       <div class="card-body">
         <div style="display:flex;flex-direction:column;gap:0.5rem">
@@ -216,12 +217,12 @@ function renderTopStudents(students) {
   return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Top 5 frequentes</span>
-        <span class="text-sm text-muted">este mês</span>
+        <span class="card-title">${t('dash.top5')}</span>
+        <span class="text-sm text-muted">${t('dash.top5.subtitle')}</span>
       </div>
       <div class="card-body" style="padding:0">
         ${students.length === 0
-          ? '<div class="empty-state"><div class="empty-state-text">Sem check-ins no mês</div></div>'
+          ? `<div class="empty-state"><div class="empty-state-text">${t('dash.top5.none')}</div></div>`
           : students.map((s, i) => `
             <div style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:0.75rem">
               <div style="width:22px;height:22px;border-radius:50%;background:${medals[i] ?? 'var(--gray-200)'};display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:${i < 3 ? 'white' : 'var(--gray-600)'};flex-shrink:0">
@@ -242,13 +243,13 @@ function renderInactiveStudents(students) {
   return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Alunos sem agendamento há 14+ dias</span>
+        <span class="card-title">${t('dash.inactive')}</span>
         <span class="badge badge-warning">${students.length}</span>
       </div>
       <div class="card-body" style="padding:0;max-height:220px;overflow-y:auto">
         <div class="table-wrapper">
           <table>
-            <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th></tr></thead>
+            <thead><tr><th>${t('field.name')}</th><th>${t('field.email')}</th><th>${t('field.phone')}</th></tr></thead>
             <tbody>
               ${students.map(s => `
                 <tr>
