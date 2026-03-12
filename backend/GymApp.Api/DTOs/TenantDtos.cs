@@ -33,7 +33,8 @@ public record TenantResponse(
     TenantPlan Plan,
     bool IsActive,
     string? CustomDomain,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    bool PaymentsAllowedBySuperAdmin
 );
 
 public record UpdateTenantRequest(
@@ -47,7 +48,10 @@ public record UpdateTenantRequest(
 
 public record TenantSettingsResponse(
     Guid? DefaultPackageTemplateId,
-    string Language
+    string Language,
+    string? EfiPayeeCode,
+    bool PaymentsEnabled,
+    bool PaymentsAllowedBySuperAdmin
 );
 
 public record SetDefaultTemplateRequest(
@@ -56,4 +60,16 @@ public record SetDefaultTemplateRequest(
 
 public record SetLanguageRequest(
     string Language
+);
+
+public record SetEfiPayeeCodeRequest(
+    string? PayeeCode
+);
+
+public record SetPaymentsEnabledRequest(
+    bool Enabled
+);
+
+public record SetPaymentsAllowedRequest(
+    bool Allowed
 );

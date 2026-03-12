@@ -260,6 +260,12 @@ export default {
   'tenants.admin.passwordPlaceholder': 'Mínimo 6 caracteres',
   'tenants.required': 'Nome e slug são obrigatórios',
   'tenants.admin.required': 'Preencha os dados do administrador',
+  'tenants.col.payments': 'Pagamentos',
+  'tenants.payments.allowed': 'Permitido',
+  'tenants.payments.blocked': 'Bloqueado',
+  'tenants.payments.allow': 'Permitir',
+  'tenants.payments.block': 'Bloquear',
+  'tenants.payments.saved': 'Status de pagamentos atualizado',
 
   // Login / Auth
   'login.password': 'Senha',
@@ -320,6 +326,43 @@ export default {
   'bookings.cancelConfirm': 'Cancelar este agendamento?',
   'bookings.cancel.success': 'Agendamento cancelado',
   'bookings.cancel': 'Cancelar',
+
+  // Payments / Store
+  'store.tab': '🛒 Comprar Plano',
+  'store.tab.short': 'Loja',
+  'store.none': 'Nenhum plano disponível para compra',
+  'store.duration': 'dias de validade',
+  'store.noDuration': 'Sem validade',
+  'store.buy': 'Comprar',
+  'store.total': 'Total:',
+  'store.payment.title': 'Pagamento via PIX',
+  'store.payment.scan': 'Escaneie o QR Code ou copie o código PIX',
+  'store.payment.copy': '📋 Copiar código PIX',
+  'store.payment.copied': 'Código copiado!',
+  'store.payment.waiting': 'Aguardando pagamento...',
+  'store.payment.success': '✅ Pagamento confirmado! Seu plano foi ativado.',
+  'store.payment.expired': 'PIX expirado. Tente novamente.',
+  'store.payment.error': 'Erro ao iniciar pagamento: ',
+  'store.notConfigured': 'Pagamentos não configurados para esta academia.',
+  'store.credits': 'créditos',
+
+  // Settings — Payments toggle
+  'settings.payments.title': 'Pagamentos online',
+  'settings.payments.desc': 'Permite que alunos comprem planos diretamente pelo app via PIX.',
+  'settings.payments.enable': 'Ativar pagamentos',
+  'settings.payments.disable': 'Desativar pagamentos',
+  'settings.payments.enabled': 'Pagamentos ativados',
+  'settings.payments.disabled': 'Pagamentos desativados',
+  'settings.payments.blockedBySuperAdmin': 'Desativado pela plataforma',
+  'settings.payments.saved': 'Status de pagamentos atualizado',
+
+  // Settings — Efí Bank
+  'settings.efi.title': 'Pagamentos — Efí Bank',
+  'settings.efi.desc': 'Informe o seu payee_code do Efí Bank para receber pagamentos dos alunos diretamente na sua conta. Crie sua conta em sejaefi.com.br.',
+  'settings.efi.field': 'Payee Code (Efí Bank)',
+  'settings.efi.placeholder': 'Cole aqui seu payee_code',
+  'settings.efi.saved': 'Configuração de pagamento salva',
+  'settings.efi.notConfigured': 'Não configurado — pagamentos desativados',
 
   // App — My Packages
   'myPackages.none': 'Você não tem pacotes ativos',

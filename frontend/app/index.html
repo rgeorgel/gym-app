@@ -28,6 +28,7 @@
       <div class="app-tab active" data-tab="schedule" data-i18n="app.schedule"></div>
       <div class="app-tab" data-tab="bookings" data-i18n="app.bookings"></div>
       <div class="app-tab" data-tab="packages" data-i18n="app.packages"></div>
+      <div class="app-tab" data-tab="store" data-i18n="store.tab"></div>
     </div>
 
     <!-- Content -->
@@ -49,6 +50,10 @@
         <span class="bottom-nav-icon">📦</span>
         <span data-i18n="app.packages.short"></span>
       </div>
+      <div class="bottom-nav-item" data-tab="store">
+        <span class="bottom-nav-icon">🛒</span>
+        <span data-i18n="store.tab.short"></span>
+      </div>
     </nav>
   </div>
 
@@ -59,6 +64,7 @@
     import { renderSchedule } from '/js/app/schedule.js';
     import { renderMyBookings } from '/js/app/my-bookings.js';
     import { renderMyPackages } from '/js/app/my-packages.js';
+    import { renderPlans } from '/js/app/plans.js';
 
     if (!requireAuth(['Student', 'Admin', 'SuperAdmin'])) throw new Error('unauthorized');
 
@@ -71,6 +77,7 @@
       schedule: renderSchedule,
       bookings: renderMyBookings,
       packages: renderMyPackages,
+      store: renderPlans,
     };
 
     let currentTab = 'schedule';

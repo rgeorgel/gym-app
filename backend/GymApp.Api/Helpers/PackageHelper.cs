@@ -48,4 +48,41 @@ public static class PackageHelper
 
         db.Packages.Add(package);
     }
+
+    /// <summary>
+    /// Creates a Package from a specific template and assigns it to a student.
+    /// Returns the created Package (not yet saved — caller must call SaveChangesAsync).
+    /// </summary>
+    public static async Task<Package?> AssignFromTemplateAsync(
+        AppDbContext db, Guid tenantId, Guid studentId, Guid templateId)
+    {
+        var template = await db.PackageTemplates.AsNoTracking()
+            .Include(t => t.Items)
+            .FirstOrDefaultAsync(t => t.Id == templateId && t.TenantId == tenantId);
+
+        if (template is null) return null;
+
+        var expiresAt = template.DurationDays.HasValue
+            ? DateOnly.FromDateTime(DateTime.UtcNow.AddDays(template.DurationDays.Value))
+            : (DateOnly?)null;
+
+        var package = new Package
+        {
+            TenantId = tenantId,
+            StudentId = studentId,
+            Name = template.Name,
+            ExpiresAt = expiresAt
+        };
+
+        foreach (var item in template.Items)
+            package.Items.Add(new PackageItem
+            {
+                ClassTypeId = item.ClassTypeId,
+                TotalCredits = item.TotalCredits,
+                PricePerCredit = item.PricePerCredit
+            });
+
+        db.Packages.Add(package);
+        return package;
+    }
 }

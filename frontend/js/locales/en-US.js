@@ -260,6 +260,12 @@ export default {
   'tenants.admin.passwordPlaceholder': 'Minimum 6 characters',
   'tenants.required': 'Name and slug are required',
   'tenants.admin.required': 'Fill in the administrator data',
+  'tenants.col.payments': 'Payments',
+  'tenants.payments.allowed': 'Allowed',
+  'tenants.payments.blocked': 'Blocked',
+  'tenants.payments.allow': 'Allow',
+  'tenants.payments.block': 'Block',
+  'tenants.payments.saved': 'Payment status updated',
 
   // Login / Auth
   'login.password': 'Password',
@@ -320,6 +326,43 @@ export default {
   'bookings.cancelConfirm': 'Cancel this booking?',
   'bookings.cancel.success': 'Booking cancelled',
   'bookings.cancel': 'Cancel',
+
+  // Payments / Store
+  'store.tab': '🛒 Buy a Plan',
+  'store.tab.short': 'Store',
+  'store.none': 'No plans available for purchase',
+  'store.duration': 'days validity',
+  'store.noDuration': 'No expiry',
+  'store.buy': 'Buy',
+  'store.total': 'Total:',
+  'store.payment.title': 'PIX Payment',
+  'store.payment.scan': 'Scan the QR Code or copy the PIX code',
+  'store.payment.copy': '📋 Copy PIX code',
+  'store.payment.copied': 'Code copied!',
+  'store.payment.waiting': 'Waiting for payment...',
+  'store.payment.success': '✅ Payment confirmed! Your plan has been activated.',
+  'store.payment.expired': 'PIX expired. Please try again.',
+  'store.payment.error': 'Error initiating payment: ',
+  'store.notConfigured': 'Payments not configured for this gym.',
+  'store.credits': 'credits',
+
+  // Settings — Payments toggle
+  'settings.payments.title': 'Online payments',
+  'settings.payments.desc': 'Allow students to purchase plans directly in the app via PIX.',
+  'settings.payments.enable': 'Enable payments',
+  'settings.payments.disable': 'Disable payments',
+  'settings.payments.enabled': 'Payments enabled',
+  'settings.payments.disabled': 'Payments disabled',
+  'settings.payments.blockedBySuperAdmin': 'Disabled by platform',
+  'settings.payments.saved': 'Payment status updated',
+
+  // Settings — Efí Bank
+  'settings.efi.title': 'Payments — Efí Bank',
+  'settings.efi.desc': 'Enter your Efí Bank payee_code to receive student payments directly in your account. Create your account at sejaefi.com.br.',
+  'settings.efi.field': 'Payee Code (Efí Bank)',
+  'settings.efi.placeholder': 'Paste your payee_code here',
+  'settings.efi.saved': 'Payment configuration saved',
+  'settings.efi.notConfigured': 'Not configured — payments disabled',
 
   // App — My Packages
   'myPackages.none': "You don't have any active packages",

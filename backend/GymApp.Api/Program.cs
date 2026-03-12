@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using GymApp.Api.Endpoints;
 using GymApp.Api.Middleware;
+using GymApp.Api.Services;
 using GymApp.Domain.Interfaces;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
@@ -83,6 +84,20 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Efí Bank payment gateway
+builder.Services.AddSingleton(new EfiOptions
+{
+    ClientId = builder.Configuration["Efi:ClientId"] ?? string.Empty,
+    ClientSecret = builder.Configuration["Efi:ClientSecret"] ?? string.Empty,
+    CertificateBase64 = builder.Configuration["Efi:CertificateBase64"] ?? string.Empty,
+    CertificatePassword = builder.Configuration["Efi:CertificatePassword"] ?? string.Empty,
+    PixKey = builder.Configuration["Efi:PixKey"] ?? string.Empty,
+    PlatformPayeeCode = builder.Configuration["Efi:PlatformPayeeCode"],
+    PlatformFeePercent = decimal.TryParse(builder.Configuration["Efi:PlatformFeePercent"], out var fee) ? fee : 0,
+    Sandbox = !builder.Environment.IsProduction()
+});
+builder.Services.AddSingleton<EfiService>();
+
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
@@ -113,6 +128,7 @@ app.MapPackageEndpoints();
 app.MapPackageTemplateEndpoints();
 app.MapInstructorEndpoints();
 app.MapDashboardEndpoints();
+app.MapPaymentEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

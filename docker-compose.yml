@@ -45,6 +45,13 @@ services:
       Resend__ApiKey: "${RESEND_API_KEY:-}"
       Resend__FromEmail: "${RESEND_FROM_EMAIL:-noreply@seudominio.com}"
       Resend__FromName: "${RESEND_FROM_NAME:-Gym App}"
+      Efi__ClientId: "${EFI_CLIENT_ID:-}"
+      Efi__ClientSecret: "${EFI_CLIENT_SECRET:-}"
+      Efi__CertificateBase64: "${EFI_CERTIFICATE_BASE64:-}"
+      Efi__CertificatePassword: "${EFI_CERTIFICATE_PASSWORD:-}"
+      Efi__PixKey: "${EFI_PIX_KEY:-}"
+      Efi__PlatformPayeeCode: "${EFI_PLATFORM_PAYEE_CODE:-}"
+      Efi__PlatformFeePercent: "${EFI_PLATFORM_FEE_PERCENT:-0}"
     networks:
       - gymapp
     healthcheck:

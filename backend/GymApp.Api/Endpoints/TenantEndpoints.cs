@@ -44,7 +44,8 @@ public static class TenantEndpoints
         {
             var tenants = await db.Tenants.AsNoTracking()
                 .OrderBy(t => t.Name)
-                .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor, t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt))
+                .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor,
+                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin))
                 .ToListAsync();
             return Results.Ok(tenants);
         });
@@ -78,10 +79,24 @@ public static class TenantEndpoints
             await db.SaveChangesAsync();
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
                 new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
-                    tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CustomDomain, tenant.CreatedAt));
+                    tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
+                    tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
         });
 
-        // Admin: tenant settings (default package template)
+        // Super Admin: toggle payments allowed per tenant
+        adminGroup.MapPut("/{id:guid}/payments-allowed", async (Guid id, SetPaymentsAllowedRequest req, AppDbContext db) =>
+        {
+            var tenant = await db.Tenants.FindAsync(id);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.PaymentsAllowedBySuperAdmin = req.Allowed;
+            await db.SaveChangesAsync();
+            return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
+                tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
+        });
+
+        // Admin: tenant settings
         var settingsGroup = app.MapGroup("/api/settings").RequireAuthorization("AdminOrAbove");
 
         settingsGroup.MapGet("/", async (AppDbContext db, TenantContext tenantCtx) =>
@@ -89,7 +104,7 @@ public static class TenantEndpoints
             var tenant = await db.Tenants.AsNoTracking()
                 .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
             if (tenant is null) return Results.NotFound();
-            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
+            return Results.Ok(ToSettingsResponse(tenant));
         });
 
         settingsGroup.MapPut("/default-package-template", async (SetDefaultTemplateRequest req, AppDbContext db, TenantContext tenantCtx) =>
@@ -106,7 +121,7 @@ public static class TenantEndpoints
 
             tenant.DefaultPackageTemplateId = req.TemplateId;
             await db.SaveChangesAsync();
-            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
+            return Results.Ok(ToSettingsResponse(tenant));
         });
 
         settingsGroup.MapPut("/language", async (SetLanguageRequest req, AppDbContext db, TenantContext tenantCtx) =>
@@ -119,7 +134,31 @@ public static class TenantEndpoints
 
             tenant.Language = req.Language;
             await db.SaveChangesAsync();
-            return Results.Ok(new TenantSettingsResponse(tenant.DefaultPackageTemplateId, tenant.Language));
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
+        settingsGroup.MapPut("/efi-payee-code", async (SetEfiPayeeCodeRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.EfiPayeeCode = string.IsNullOrWhiteSpace(req.PayeeCode) ? null : req.PayeeCode.Trim();
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
+        settingsGroup.MapPut("/payments", async (SetPaymentsEnabledRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            // Tenant cannot enable payments if super admin has blocked it
+            if (req.Enabled && !tenant.PaymentsAllowedBySuperAdmin)
+                return Results.Forbid();
+
+            tenant.PaymentsEnabled = req.Enabled;
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
         });
 
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
@@ -136,9 +175,13 @@ public static class TenantEndpoints
 
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
-                tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive, tenant.CustomDomain, tenant.CreatedAt));
+                tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
         });
     }
+
+    private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
+        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin);
 
     private static string? ExtractSlug(string host)
     {

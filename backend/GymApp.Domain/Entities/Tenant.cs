@@ -18,6 +18,11 @@ public class Tenant
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Guid? DefaultPackageTemplateId { get; set; }
+    public string? EfiPayeeCode { get; set; }
+    public bool PaymentsEnabled { get; set; } = false;
+    public bool PaymentsAllowedBySuperAdmin { get; set; } = true;
+
+    public bool PaymentsActive => PaymentsEnabled && PaymentsAllowedBySuperAdmin;
 
     public PackageTemplate? DefaultPackageTemplate { get; set; }
     public ICollection<User> Users { get; set; } = [];

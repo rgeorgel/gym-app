@@ -17,6 +17,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<WaitingListEntry> WaitingList => Set<WaitingListEntry>();
     public DbSet<PackageTemplate> PackageTemplates => Set<PackageTemplate>();
     public DbSet<PackageTemplateItem> PackageTemplateItems => Set<PackageTemplateItem>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +33,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.PrimaryColor).HasMaxLength(20);
             e.Property(x => x.SecondaryColor).HasMaxLength(20);
             e.Property(x => x.Language).HasMaxLength(10);
+            e.Property(x => x.EfiPayeeCode).HasMaxLength(100);
             e.HasOne(x => x.DefaultPackageTemplate)
                 .WithMany()
                 .HasForeignKey(x => x.DefaultPackageTemplateId)
@@ -134,6 +136,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(x => new { x.SessionId, x.StudentId }).IsUnique();
             e.HasOne(x => x.Session).WithMany(s => s.WaitingList).HasForeignKey(x => x.SessionId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Student).WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Payment
+        modelBuilder.Entity<Payment>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Amount).HasPrecision(10, 2);
+            e.HasIndex(x => x.EfiTxId);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Student).WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.PackageTemplate).WithMany().HasForeignKey(x => x.PackageTemplateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AssignedPackage).WithMany().HasForeignKey(x => x.AssignedPackageId).OnDelete(DeleteBehavior.SetNull);
         });
     }
 

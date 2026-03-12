@@ -37,6 +37,7 @@ async function loadTenants() {
                 <th>Slug</th>
                 <th>${t('tenants.col.plan')}</th>
                 <th>${t('field.status')}</th>
+                <th>${t('tenants.col.payments')}</th>
                 <th>${t('tenants.col.createdAt')}</th>
                 <th></th>
               </tr>
@@ -48,6 +49,12 @@ async function loadTenants() {
                   <td class="text-sm text-muted">${ten.slug}</td>
                   <td class="text-sm">${PLANS[ten.plan] ?? ten.plan}</td>
                   <td><span class="badge ${ten.isActive ? 'badge-success' : 'badge-gray'}">${ten.isActive ? t('tenants.status.active') : t('tenants.status.inactive')}</span></td>
+                  <td>
+                    <span class="badge ${ten.paymentsAllowedBySuperAdmin ? 'badge-success' : 'badge-gray'}">${ten.paymentsAllowedBySuperAdmin ? t('tenants.payments.allowed') : t('tenants.payments.blocked')}</span>
+                    <button class="btn btn-sm ${ten.paymentsAllowedBySuperAdmin ? 'btn-secondary' : 'btn-primary'}" style="margin-left:0.5rem" data-toggle-payments="${ten.id}" data-current="${ten.paymentsAllowedBySuperAdmin}">
+                      ${ten.paymentsAllowedBySuperAdmin ? t('tenants.payments.block') : t('tenants.payments.allow')}
+                    </button>
+                  </td>
                   <td class="text-sm text-muted">${formatDate(ten.createdAt)}</td>
                   <td>
                     <button class="btn btn-secondary btn-sm" data-edit="${ten.id}">${t('btn.edit')}</button>
@@ -62,6 +69,22 @@ async function loadTenants() {
 
     list.querySelectorAll('[data-edit]').forEach(btn => {
       btn.addEventListener('click', () => openTenantModal(tenants.find(ten => ten.id === btn.dataset.edit)));
+    });
+
+    list.querySelectorAll('[data-toggle-payments]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.togglePayments;
+        const current = btn.dataset.current === 'true';
+        btn.disabled = true;
+        try {
+          await api.put(`/admin/tenants/${id}/payments-allowed`, { allowed: !current });
+          showToast(t('tenants.payments.saved'), 'success');
+          await loadTenants();
+        } catch (e) {
+          showToast(t('error.prefix') + e.message, 'error');
+          btn.disabled = false;
+        }
+      });
     });
   } catch (e) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;

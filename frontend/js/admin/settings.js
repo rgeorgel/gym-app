@@ -23,6 +23,10 @@ export async function renderSettings(container) {
     return `<option value="${tpl.id}" ${selected}>${tpl.name}${duration} — ${credits}</option>`;
   }).join('');
 
+  const efiStatus = settings.efiPayeeCode
+    ? `<span class="badge badge-success" style="font-size:0.75rem">${settings.efiPayeeCode}</span>`
+    : `<span class="text-muted text-sm">${t('settings.efi.notConfigured')}</span>`;
+
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:1.25rem;max-width:600px">
       <div class="card">
@@ -62,8 +66,56 @@ export async function renderSettings(container) {
           </div>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">${t('settings.payments.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.payments.desc')}</p>
+          ${settings.paymentsAllowedBySuperAdmin === false
+            ? `<span class="badge badge-gray">${t('settings.payments.blockedBySuperAdmin')}</span>`
+            : settings.paymentsEnabled
+              ? `<div style="display:flex;align-items:center;gap:1rem">
+                   <span class="badge badge-success">${t('settings.payments.enabled')}</span>
+                   <button class="btn btn-secondary btn-sm" id="btnTogglePayments">${t('settings.payments.disable')}</button>
+                 </div>`
+              : `<div style="display:flex;align-items:center;gap:1rem">
+                   <span class="badge badge-gray">${t('settings.payments.disabled')}</span>
+                   <button class="btn btn-primary btn-sm" id="btnTogglePayments">${t('settings.payments.enable')}</button>
+                 </div>`
+          }
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">${t('settings.efi.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.efi.desc')}</p>
+          <div style="margin-bottom:0.75rem">${efiStatus}</div>
+          <div class="form-group">
+            <label class="form-label">${t('settings.efi.field')}</label>
+            <input class="form-control" id="inputEfiPayeeCode" placeholder="${t('settings.efi.placeholder')}"
+              value="${settings.efiPayeeCode ?? ''}">
+          </div>
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" id="btnSaveEfi">${t('btn.save')}</button>
+          </div>
+        </div>
+      </div>
     </div>
   `;
+
+  document.getElementById('btnTogglePayments')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btnTogglePayments');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/payments', { enabled: !settings.paymentsEnabled });
+      showToast(t('settings.payments.saved'), 'success');
+      await renderSettings(container);
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+      btn.disabled = false;
+    }
+  });
 
   document.getElementById('btnSaveDefaultPkg').addEventListener('click', async () => {
     const val = document.getElementById('selectDefaultTemplate').value;
@@ -72,6 +124,21 @@ export async function renderSettings(container) {
     try {
       await api.put('/settings/default-package-template', { templateId: val || null });
       showToast(t('settings.saved'), 'success');
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnSaveEfi').addEventListener('click', async () => {
+    const val = document.getElementById('inputEfiPayeeCode').value.trim();
+    const btn = document.getElementById('btnSaveEfi');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/efi-payee-code', { payeeCode: val || null });
+      showToast(t('settings.efi.saved'), 'success');
+      await renderSettings(container);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {
