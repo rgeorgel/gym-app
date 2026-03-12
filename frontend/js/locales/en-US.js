@@ -207,6 +207,11 @@ export default {
   'templates.field.credits': 'Credits per class type',
   'templates.name.required': 'Enter the template name',
   'templates.credits.required': 'Add credits for at least one class type',
+  'templates.store.visible': 'Visible in store',
+  'templates.store.hidden': 'Hidden from store',
+  'templates.store.hide': 'Hide from store',
+  'templates.store.show': 'Show in store',
+  'templates.store.saved': 'Visibility updated',
 
   // Instructors
   'instructors.new': '+ New Instructor',

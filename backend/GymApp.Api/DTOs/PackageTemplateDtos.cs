@@ -15,6 +15,9 @@ public record PackageTemplateResponse(
     Guid Id,
     string Name,
     int? DurationDays,
+    bool IsVisibleInStore,
     DateTime CreatedAt,
     List<PackageItemResponse> Items
 );
+
+public record SetStoreVisibilityRequest(bool IsVisibleInStore);

@@ -33,7 +33,12 @@ async function loadTemplates() {
         <div class="card-body" style="padding:1rem 1.25rem">
           <div style="display:flex;align-items:center;gap:1rem">
             <div style="flex:1">
-              <div class="font-medium">${tpl.name}</div>
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <div class="font-medium">${tpl.name}</div>
+                <span class="badge ${tpl.isVisibleInStore ? 'badge-success' : 'badge-gray'}" style="font-size:0.65rem">
+                  ${tpl.isVisibleInStore ? t('templates.store.visible') : t('templates.store.hidden')}
+                </span>
+              </div>
               <div class="text-sm text-muted" style="margin-top:0.2rem">
                 ${tpl.durationDays ? `${t('templates.validity')} ${tpl.durationDays} ${t('templates.days')}` : t('templates.noValidity')}
               </div>
@@ -47,6 +52,9 @@ async function loadTemplates() {
               </div>
             </div>
             <div style="display:flex;gap:0.5rem;flex-shrink:0">
+              <button class="btn btn-secondary btn-sm" data-toggle-visibility="${tpl.id}" data-current="${tpl.isVisibleInStore}">
+                ${tpl.isVisibleInStore ? t('templates.store.hide') : t('templates.store.show')}
+              </button>
               <button class="btn btn-secondary btn-sm" data-edit="${tpl.id}">${t('btn.edit')}</button>
               <button class="btn btn-danger btn-sm" data-delete="${tpl.id}">${t('btn.delete')}</button>
             </div>
@@ -54,6 +62,22 @@ async function loadTemplates() {
         </div>
       </div>
     `).join('');
+
+    list.querySelectorAll('[data-toggle-visibility]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.toggleVisibility;
+        const current = btn.dataset.current === 'true';
+        btn.disabled = true;
+        try {
+          await api.patch(`/package-templates/${id}/store-visibility`, { isVisibleInStore: !current });
+          showToast(t('templates.store.saved'), 'success');
+          await loadTemplates();
+        } catch (e) {
+          showToast(t('error.prefix') + e.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
 
     list.querySelectorAll('[data-edit]').forEach(btn => {
       btn.addEventListener('click', () => openTemplateModal(templates.find(tpl => tpl.id === btn.dataset.edit), classTypes));

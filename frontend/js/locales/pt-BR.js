@@ -207,6 +207,11 @@ export default {
   'templates.field.credits': 'Créditos por modalidade',
   'templates.name.required': 'Informe o nome do modelo',
   'templates.credits.required': 'Adicione créditos para pelo menos uma modalidade',
+  'templates.store.visible': 'Visível na loja',
+  'templates.store.hidden': 'Oculto na loja',
+  'templates.store.hide': 'Ocultar da loja',
+  'templates.store.show': 'Mostrar na loja',
+  'templates.store.saved': 'Visibilidade atualizada',
 
   // Instructors
   'instructors.new': '+ Novo Instrutor',

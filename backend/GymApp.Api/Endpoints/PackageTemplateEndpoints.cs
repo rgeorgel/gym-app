@@ -50,6 +50,17 @@ public static class PackageTemplateEndpoints
             return Results.Created($"/api/package-templates/{template.Id}", ToResponse(created));
         });
 
+        group.MapPatch("/{id:guid}/store-visibility", async (Guid id, SetStoreVisibilityRequest req, AppDbContext db, TenantContext tenant) =>
+        {
+            var template = await db.PackageTemplates
+                .FirstOrDefaultAsync(t => t.Id == id && t.TenantId == tenant.TenantId);
+
+            if (template is null) return Results.NotFound();
+            template.IsVisibleInStore = req.IsVisibleInStore;
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
         group.MapDelete("/{id:guid}", async (Guid id, AppDbContext db, TenantContext tenant) =>
         {
             var template = await db.PackageTemplates
@@ -103,7 +114,7 @@ public static class PackageTemplateEndpoints
     }
 
     private static PackageTemplateResponse ToResponse(PackageTemplate t) => new(
-        t.Id, t.Name, t.DurationDays, t.CreatedAt,
+        t.Id, t.Name, t.DurationDays, t.IsVisibleInStore, t.CreatedAt,
         t.Items.Select(i => new PackageItemResponse(
             i.Id, i.ClassTypeId, i.ClassType.Name, i.ClassType.Color,
             i.TotalCredits, 0, i.TotalCredits, i.PricePerCredit

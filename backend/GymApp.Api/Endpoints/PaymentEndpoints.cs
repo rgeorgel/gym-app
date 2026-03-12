@@ -26,7 +26,7 @@ public static class PaymentEndpoints
 
             var templates = await db.PackageTemplates.AsNoTracking()
                 .Include(t => t.Items).ThenInclude(i => i.ClassType)
-                .Where(t => t.TenantId == tenant.TenantId)
+                .Where(t => t.TenantId == tenant.TenantId && t.IsVisibleInStore)
                 .OrderBy(t => t.Name)
                 .ToListAsync();
 
