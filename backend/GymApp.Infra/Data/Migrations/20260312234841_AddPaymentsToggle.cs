@@ -15,7 +15,7 @@ namespace GymApp.Infra.Data.Migrations
                 table: "Tenants",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "PaymentsEnabled",
