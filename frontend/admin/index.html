@@ -43,11 +43,6 @@
           <span class="nav-icon">📋</span> <span data-i18n="nav.packageTemplates">Modelos de Pacote</span>
         </div>
 
-        <div class="nav-section-label" data-i18n="nav.reports">Relatórios</div>
-        <div class="nav-item" data-page="reports">
-          <span class="nav-icon">📈</span> <span data-i18n="nav.reports">Relatórios</span>
-        </div>
-
         <div class="nav-section-label" data-i18n="nav.config">Configurações</div>
         <div class="nav-item" data-page="settings">
           <span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Configurações</span>
@@ -93,7 +88,6 @@
     import { renderClassTypes } from '/js/admin/class-types.js';
     import { renderSchedules } from '/js/admin/schedules.js';
     import { renderSessions } from '/js/admin/sessions.js';
-    import { renderReports } from '/js/admin/reports.js';
     import { renderPackageTemplates } from '/js/admin/package-templates.js';
     import { renderInstructors } from '/js/admin/instructors.js';
     import { renderSettings } from '/js/admin/settings.js';
@@ -119,7 +113,6 @@
       schedules: { titleKey: 'nav.schedules', render: renderSchedules },
       'class-types': { titleKey: 'nav.classTypes', render: renderClassTypes },
       sessions: { titleKey: 'nav.sessions', render: renderSessions },
-      reports: { titleKey: 'nav.reports', render: renderReports },
       'package-templates': { titleKey: 'nav.packageTemplates', render: renderPackageTemplates },
       instructors: { titleKey: 'nav.instructors', render: renderInstructors },
       settings: { titleKey: 'nav.settings', render: renderSettings },
