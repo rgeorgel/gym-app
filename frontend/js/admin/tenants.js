@@ -74,7 +74,48 @@ async function loadTenants() {
   }
 }
 
+function buildPaymentsSection(tenant) {
+  const efiHtml = tenant.efiPayeeCode
+    ? `<span class="badge badge-success" style="font-size:0.75rem;font-family:monospace">${tenant.efiPayeeCode}</span>`
+    : `<span class="text-sm text-muted">${t('settings.efi.notConfigured')}</span>`;
+
+  return `
+    <div class="form-group" style="grid-column:1/-1">
+      <div style="border-top:1px solid var(--gray-200);padding-top:1rem;margin-top:0.25rem">
+        <div class="text-sm font-medium" style="margin-bottom:0.75rem;color:var(--gray-600)">${t('tenants.payments.section')}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div>
+            <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.allowedBySuperAdmin')}</div>
+            <span class="badge ${tenant.paymentsAllowedBySuperAdmin ? 'badge-success' : 'badge-gray'}">
+              ${tenant.paymentsAllowedBySuperAdmin ? t('tenants.payments.allowed') : t('tenants.payments.blocked')}
+            </span>
+          </div>
+          <div>
+            <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.enabledByTenant')}</div>
+            <span class="badge ${tenant.paymentsEnabled ? 'badge-success' : 'badge-gray'}">
+              ${tenant.paymentsEnabled ? t('settings.payments.enabled') : t('settings.payments.disabled')}
+            </span>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.efiCode')}</div>
+            ${efiHtml}
+          </div>
+          <div style="grid-column:1/-1;margin-top:0.25rem">
+            <label class="form-label">${t('tenants.payments.allowToggleLabel')}</label>
+            <select class="form-control" id="tPaymentsAllowed">
+              <option value="true" ${tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.allow')}</option>
+              <option value="false" ${!tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.block')}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function openTenantModal(tenant = null) {
+  const paymentsSection = tenant ? buildPaymentsSection(tenant) : '';
+
   createModal({
     id: 'tenantModal',
     title: tenant ? t('tenants.title.edit') : t('tenants.title.new'),
@@ -121,39 +162,7 @@ function openTenantModal(tenant = null) {
             <option value="false" ${!tenant.isActive ? 'selected' : ''}>${t('tenants.status.inactive')}</option>
           </select>
         </div>
-        <div class="form-group" style="grid-column:1/-1">
-          <div style="border-top:1px solid var(--gray-200);padding-top:1rem;margin-top:0.25rem">
-            <div class="text-sm font-medium" style="margin-bottom:0.75rem;color:var(--gray-600)">${t('tenants.payments.section')}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-              <div>
-                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.allowedBySuperAdmin')}</div>
-                <span class="badge ${tenant.paymentsAllowedBySuperAdmin ? 'badge-success' : 'badge-gray'}">
-                  ${tenant.paymentsAllowedBySuperAdmin ? t('tenants.payments.allowed') : t('tenants.payments.blocked')}
-                </span>
-              </div>
-              <div>
-                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.enabledByTenant')}</div>
-                <span class="badge ${tenant.paymentsEnabled ? 'badge-success' : 'badge-gray'}">
-                  ${tenant.paymentsEnabled ? t('settings.payments.enabled') : t('settings.payments.disabled')}
-                </span>
-              </div>
-              <div style="grid-column:1/-1">
-                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.efiCode')}</div>
-                ${tenant.efiPayeeCode
-                  ? `<span class="badge badge-success" style="font-size:0.75rem;font-family:monospace">${tenant.efiPayeeCode}</span>`
-                  : `<span class="text-sm text-muted">${t('settings.efi.notConfigured')}</span>`
-                }
-              </div>
-              <div style="grid-column:1/-1;margin-top:0.25rem">
-                <label class="form-label">${t('tenants.payments.allowToggleLabel')}</label>
-                <select class="form-control" id="tPaymentsAllowed">
-                  <option value="true" ${tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.allow')}</option>
-                  <option value="false" ${!tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.block')}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
+        ${paymentsSection}
         ` : ''}
       </div>
       ${!tenant ? `
