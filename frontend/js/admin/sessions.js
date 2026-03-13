@@ -3,8 +3,9 @@ import { showToast, createModal, openModal, closeModal, formatTime, emptyState, 
 import { t, getLocale } from '../i18n.js';
 
 export async function renderSessions(container) {
-  const today = new Date().toISOString().split('T')[0];
-  const nextWeek = new Date(Date.now() + 13 * 86400000).toISOString().split('T')[0];
+  const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const today = toDateStr(new Date());
+  const nextWeek = toDateStr(new Date(Date.now() + 13 * 86400000));
 
   container.innerHTML = `
     <div class="filters-bar">

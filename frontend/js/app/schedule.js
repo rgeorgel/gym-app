@@ -8,6 +8,10 @@ let sessions = [];
 let packages = [];
 const user = getUser();
 
+function toDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export async function renderSchedule(container) {
   container.innerHTML = `
     <div class="day-selector" id="daySelector"></div>
@@ -37,7 +41,7 @@ function renderDaySelector() {
   container.innerHTML = days.map((d, i) => {
     const isActive = d.toDateString() === currentDate.toDateString();
     return `
-      <button class="day-btn ${isActive ? 'active' : ''}" data-date="${d.toISOString().split('T')[0]}">
+      <button class="day-btn ${isActive ? 'active' : ''}" data-date="${toDateStr(d)}">
         <span class="day-btn-name">${dayNames[d.getDay()]}</span>
         <span class="day-btn-num">${d.getDate()}</span>
       </button>
@@ -58,7 +62,7 @@ async function loadSessions() {
   const list = document.getElementById('scheduleList');
   list.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
-  const dateStr = currentDate.toISOString().split('T')[0];
+  const dateStr = toDateStr(currentDate);
 
   try {
     sessions = await api.get(`/sessions?from=${dateStr}&to=${dateStr}`);
