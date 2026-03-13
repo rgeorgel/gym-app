@@ -3,16 +3,29 @@ import { showToast, createModal, openModal, closeModal, formatDate, statusBadge,
 import { t } from '../i18n.js';
 
 let allStudents = [];
+let sortField = 'name';
+let sortDir = 'asc';
+let activeQuickFilter = 'all';
 
 export async function renderStudents(container) {
   container.innerHTML = `
-    <div class="filters-bar">
+    <div class="filters-bar" style="flex-wrap:wrap;gap:0.5rem">
       <input type="text" id="studentSearch" class="search-input" placeholder="${t('students.search')}">
       <select id="studentStatus" class="form-control" style="width:auto">
         <option value="">${t('students.status.all')}</option>
         <option value="Active">${t('status.active')}</option>
         <option value="Inactive">${t('status.inactive')}</option>
         <option value="Suspended">${t('status.suspended')}</option>
+      </select>
+      <select id="studentQuickFilter" class="form-control" style="width:auto">
+        <option value="all">${t('students.filter.all')}</option>
+        <option value="noCredits">${t('students.filter.noCredits')}</option>
+        <option value="noBooking7">${t('students.filter.noBooking7')}</option>
+        <option value="noBooking15">${t('students.filter.noBooking15')}</option>
+        <option value="noBooking30">${t('students.filter.noBooking30')}</option>
+        <option value="noBooking60">${t('students.filter.noBooking60')}</option>
+        <option value="neverBooked">${t('students.filter.neverBooked')}</option>
+        <option value="suspended">${t('students.filter.suspended')}</option>
       </select>
       <button class="btn btn-primary" id="btnNewStudent">${t('students.new')}</button>
     </div>
@@ -21,63 +34,174 @@ export async function renderStudents(container) {
         <table id="studentsTable">
           <thead>
             <tr>
-              <th>${t('field.name')}</th><th>${t('field.email')}</th><th>${t('field.phone')}</th><th>${t('field.status')}</th><th>${t('students.col.registered')}</th><th></th>
+              <th class="sortable" data-sort="name">${t('field.name')}</th>
+              <th class="sortable" data-sort="email">${t('field.email')}</th>
+              <th>${t('field.phone')}</th>
+              <th class="sortable" data-sort="status">${t('field.status')}</th>
+              <th class="sortable" data-sort="credits">${t('students.col.credits')}</th>
+              <th class="sortable" data-sort="lastBooking">${t('students.col.lastBooking')}</th>
+              <th class="sortable" data-sort="createdAt">${t('students.col.registered')}</th>
+              <th></th>
             </tr>
           </thead>
-          <tbody id="studentsTbody"><tr><td colspan="6"><div class="loading-center"><span class="spinner"></span></div></td></tr></tbody>
+          <tbody id="studentsTbody"><tr><td colspan="8"><div class="loading-center"><span class="spinner"></span></div></td></tr></tbody>
         </table>
       </div>
     </div>
   `;
 
+  // Add sortable header styles
+  const style = document.getElementById('students-sort-style') || document.createElement('style');
+  style.id = 'students-sort-style';
+  style.textContent = `
+    #studentsTable th.sortable { cursor:pointer; user-select:none; white-space:nowrap }
+    #studentsTable th.sortable:hover { background:var(--gray-100) }
+    #studentsTable th.sort-active { color:var(--brand-primary) }
+  `;
+  document.head.appendChild(style);
+
   await loadStudents();
 
   document.getElementById('btnNewStudent').addEventListener('click', () => openStudentModal());
-  document.getElementById('studentSearch').addEventListener('input', filterStudents);
-  document.getElementById('studentStatus').addEventListener('change', filterStudents);
+  document.getElementById('studentSearch').addEventListener('input', applyFilters);
+  document.getElementById('studentStatus').addEventListener('change', applyFilters);
+  document.getElementById('studentQuickFilter').addEventListener('change', (e) => {
+    activeQuickFilter = e.target.value;
+    applyFilters();
+  });
+
+  document.getElementById('studentsTable').addEventListener('click', (e) => {
+    const th = e.target.closest('th[data-sort]');
+    if (!th) return;
+    const field = th.dataset.sort;
+    if (sortField === field) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortField = field;
+      sortDir = 'asc';
+    }
+    applyFilters();
+  });
 }
 
 async function loadStudents() {
   try {
     allStudents = await api.get('/students');
-    renderTable(allStudents);
+    applyFilters();
   } catch (e) {
     showToast(t('error.prefix') + e.message, 'error');
   }
 }
 
-function filterStudents() {
-  const q = document.getElementById('studentSearch').value.toLowerCase();
-  const status = document.getElementById('studentStatus').value;
-  const filtered = allStudents.filter(s =>
-    (!q || s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)) &&
-    (!status || s.status === status)
-  );
+function applyFilters() {
+  const q = document.getElementById('studentSearch')?.value.toLowerCase() ?? '';
+  const status = document.getElementById('studentStatus')?.value ?? '';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let filtered = allStudents.filter(s => {
+    if (q && !s.name.toLowerCase().includes(q) && !s.email.toLowerCase().includes(q)) return false;
+    if (status && s.status !== status) return false;
+
+    switch (activeQuickFilter) {
+      case 'noCredits':
+        return s.totalRemainingCredits === 0;
+      case 'noBooking7':
+        return daysSinceLastBooking(s) >= 7;
+      case 'noBooking15':
+        return daysSinceLastBooking(s) >= 15;
+      case 'noBooking30':
+        return daysSinceLastBooking(s) >= 30;
+      case 'noBooking60':
+        return daysSinceLastBooking(s) >= 60;
+      case 'neverBooked':
+        return !s.lastBookingDate;
+      case 'suspended':
+        return s.status === 'Suspended';
+    }
+    return true;
+  });
+
+  filtered = sortStudents(filtered);
   renderTable(filtered);
+  updateSortHeaders();
+}
+
+function daysSinceLastBooking(s) {
+  if (!s.lastBookingDate) return Infinity;
+  const last = new Date(s.lastBookingDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.floor((today - last) / 86400000);
+}
+
+function sortStudents(list) {
+  return [...list].sort((a, b) => {
+    let va, vb;
+    switch (sortField) {
+      case 'name':    va = a.name.toLowerCase(); vb = b.name.toLowerCase(); break;
+      case 'email':   va = a.email.toLowerCase(); vb = b.email.toLowerCase(); break;
+      case 'status':  va = a.status; vb = b.status; break;
+      case 'credits': va = a.totalRemainingCredits; vb = b.totalRemainingCredits; break;
+      case 'lastBooking':
+        va = a.lastBookingDate ? new Date(a.lastBookingDate).getTime() : 0;
+        vb = b.lastBookingDate ? new Date(b.lastBookingDate).getTime() : 0;
+        break;
+      case 'createdAt':
+        va = new Date(a.createdAt).getTime();
+        vb = new Date(b.createdAt).getTime();
+        break;
+      default: return 0;
+    }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function updateSortHeaders() {
+  document.querySelectorAll('#studentsTable th[data-sort]').forEach(th => {
+    th.classList.remove('sort-active');
+    th.textContent = th.textContent.replace(/ [↑↓]$/, '');
+    if (th.dataset.sort === sortField) {
+      th.classList.add('sort-active');
+      th.textContent += ' ' + (sortDir === 'asc' ? '↑' : '↓');
+    }
+  });
 }
 
 function renderTable(students) {
   const tbody = document.getElementById('studentsTbody');
   if (!tbody) return;
   if (!students.length) {
-    tbody.innerHTML = `<tr><td colspan="6">${emptyState('👤', t('students.none'))}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8">${emptyState('👤', t('students.none'))}</td></tr>`;
     return;
   }
-  tbody.innerHTML = students.map(s => `
-    <tr>
-      <td><div class="font-medium">${s.name}</div></td>
-      <td class="text-sm text-muted">${s.email}</td>
-      <td class="text-sm">${s.phone ?? '—'}</td>
-      <td>${statusBadge(s.status)}</td>
-      <td class="text-sm text-muted">${formatDate(s.createdAt)}</td>
-      <td>
-        <div class="flex gap-2">
-          <button class="btn btn-secondary btn-sm" onclick="window._editStudent('${s.id}')">${t('btn.edit')}</button>
-          <button class="btn btn-secondary btn-sm" onclick="window._viewPackages('${s.id}', '${s.name}')">${t('packages.label')}</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = students.map(s => {
+    const creditsHtml = s.totalRemainingCredits > 0
+      ? `<span class="badge badge-success">${s.totalRemainingCredits}</span>`
+      : `<span class="badge badge-gray">0</span>`;
+    const lastBookingHtml = s.lastBookingDate
+      ? formatDate(s.lastBookingDate)
+      : `<span class="text-muted">${t('students.lastBooking.never')}</span>`;
+    return `
+      <tr>
+        <td><div class="font-medium">${s.name}</div></td>
+        <td class="text-sm text-muted">${s.email}</td>
+        <td class="text-sm">${s.phone ?? '—'}</td>
+        <td>${statusBadge(s.status)}</td>
+        <td style="text-align:center">${creditsHtml}</td>
+        <td class="text-sm text-muted">${lastBookingHtml}</td>
+        <td class="text-sm text-muted">${formatDate(s.createdAt)}</td>
+        <td>
+          <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm" onclick="window._editStudent('${s.id}')">${t('btn.edit')}</button>
+            <button class="btn btn-secondary btn-sm" onclick="window._viewPackages('${s.id}', '${s.name}')">${t('packages.label')}</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 
   window._editStudent = (id) => openStudentModal(allStudents.find(s => s.id === id));
   window._viewPackages = (id, name) => openPackagesModal(id, name);
@@ -307,7 +431,6 @@ function openNewPackageModal(studentId, classTypes, templates, onSuccess) {
   });
   openModal('newPackageModal');
 
-  // Tab switching
   const tabTemplate = document.getElementById('tabTemplate');
   const tabCustom = document.getElementById('tabCustom');
   const sectionTemplate = document.getElementById('sectionTemplate');

@@ -28,7 +28,14 @@ public static class StudentEndpoints
 
             var students = await query
                 .OrderBy(u => u.Name)
-                .Select(u => new StudentResponse(u.Id, u.Name, u.Email, u.Phone, u.BirthDate, u.Status, u.PhotoUrl, u.CreatedAt))
+                .Select(u => new StudentResponse(
+                    u.Id, u.Name, u.Email, u.Phone, u.BirthDate, u.Status, u.PhotoUrl, u.CreatedAt,
+                    u.Packages.Where(p => p.IsActive).SelectMany(p => p.Items).Sum(i => i.TotalCredits - i.UsedCredits),
+                    u.Bookings
+                        .Where(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)
+                        .OrderByDescending(b => b.Session.Date)
+                        .Select(b => (DateOnly?)b.Session.Date)
+                        .FirstOrDefault()))
                 .ToListAsync();
 
             return Results.Ok(students);
@@ -37,10 +44,11 @@ public static class StudentEndpoints
         group.MapGet("/{id:guid}", async (Guid id, AppDbContext db, TenantContext tenant) =>
         {
             var user = await db.Users.AsNoTracking()
+                .Include(u => u.Packages).ThenInclude(p => p.Items)
+                .Include(u => u.Bookings).ThenInclude(b => b.Session)
                 .FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
 
-            return user is null ? Results.NotFound() :
-                Results.Ok(new StudentResponse(user.Id, user.Name, user.Email, user.Phone, user.BirthDate, user.Status, user.PhotoUrl, user.CreatedAt));
+            return user is null ? Results.NotFound() : Results.Ok(ToStudentResponse(user));
         });
 
         group.MapPost("/", async (CreateStudentRequest req, AppDbContext db, TenantContext tenant) =>
@@ -65,13 +73,15 @@ public static class StudentEndpoints
             await PackageHelper.AssignDefaultPackageIfConfiguredAsync(db, tenant.TenantId, user.Id);
             await db.SaveChangesAsync();
 
-            return Results.Created($"/api/students/{user.Id}",
-                new StudentResponse(user.Id, user.Name, user.Email, user.Phone, user.BirthDate, user.Status, user.PhotoUrl, user.CreatedAt));
+            return Results.Created($"/api/students/{user.Id}", ToStudentResponse(user));
         });
 
         group.MapPut("/{id:guid}", async (Guid id, UpdateStudentRequest req, AppDbContext db, TenantContext tenant) =>
         {
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
+            var user = await db.Users
+                .Include(u => u.Packages).ThenInclude(p => p.Items)
+                .Include(u => u.Bookings).ThenInclude(b => b.Session)
+                .FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
             if (user is null) return Results.NotFound();
 
             user.Name = req.Name;
@@ -81,7 +91,7 @@ public static class StudentEndpoints
             user.Status = req.Status;
             await db.SaveChangesAsync();
 
-            return Results.Ok(new StudentResponse(user.Id, user.Name, user.Email, user.Phone, user.BirthDate, user.Status, user.PhotoUrl, user.CreatedAt));
+            return Results.Ok(ToStudentResponse(user));
         });
 
         // Sub-routes accessible by admins OR by the student themselves
@@ -142,6 +152,20 @@ public static class StudentEndpoints
                 )).ToList()
             )));
         });
+    }
+
+    private static StudentResponse ToStudentResponse(User u)
+    {
+        var remaining = u.Packages
+            .Where(p => p.IsActive)
+            .SelectMany(p => p.Items)
+            .Sum(i => i.TotalCredits - i.UsedCredits);
+        var lastBooking = u.Bookings
+            .Where(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)
+            .OrderByDescending(b => b.Session.Date)
+            .Select(b => (DateOnly?)b.Session.Date)
+            .FirstOrDefault();
+        return new StudentResponse(u.Id, u.Name, u.Email, u.Phone, u.BirthDate, u.Status, u.PhotoUrl, u.CreatedAt, remaining, lastBooking);
     }
 
     private static string GenerateTempPassword()

@@ -27,5 +27,7 @@ public record StudentResponse(
     DateOnly? BirthDate,
     StudentStatus Status,
     string? PhotoUrl,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    int TotalRemainingCredits,
+    DateOnly? LastBookingDate
 );
