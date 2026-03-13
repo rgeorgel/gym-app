@@ -242,6 +242,7 @@ export default {
   'settings.language.field': 'Language',
   'settings.language.ptBR': 'Português (Brasil)',
   'settings.language.enUS': 'English (US)',
+  'settings.language.esES': 'Español',
   'settings.language.saved': 'Language changed. Reload the page to apply.',
 
   // Tenants (Super Admin)

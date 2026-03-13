@@ -126,7 +126,7 @@ public static class TenantEndpoints
 
         settingsGroup.MapPut("/language", async (SetLanguageRequest req, AppDbContext db, TenantContext tenantCtx) =>
         {
-            var allowed = new[] { "pt-BR", "en-US" };
+            var allowed = new[] { "pt-BR", "en-US", "es-ES" };
             if (!allowed.Contains(req.Language)) return Results.BadRequest("Unsupported language.");
 
             var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);

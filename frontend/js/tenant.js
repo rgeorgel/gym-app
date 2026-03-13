@@ -1,10 +1,12 @@
 import { setLocale, loadTranslations, t } from './i18n.js';
 import ptBR from './locales/pt-BR.js';
 import enUS from './locales/en-US.js';
+import esES from './locales/es-ES.js';
 
-// Pre-load both locale dictionaries
+// Pre-load all locale dictionaries
 loadTranslations('pt-BR', ptBR);
 loadTranslations('en-US', enUS);
+loadTranslations('es-ES', esES);
 
 // Loads tenant config and applies white label theme + locale
 export async function loadTenantTheme() {

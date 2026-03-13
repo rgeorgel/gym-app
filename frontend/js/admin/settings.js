@@ -58,6 +58,7 @@ export async function renderSettings(container) {
             <select class="form-control" id="selectLanguage">
               <option value="pt-BR" ${settings.language === 'pt-BR' ? 'selected' : ''}>${t('settings.language.ptBR')}</option>
               <option value="en-US" ${settings.language === 'en-US' ? 'selected' : ''}>${t('settings.language.enUS')}</option>
+              <option value="es-ES" ${settings.language === 'es-ES' ? 'selected' : ''}>${t('settings.language.esES')}</option>
             </select>
           </div>
 
