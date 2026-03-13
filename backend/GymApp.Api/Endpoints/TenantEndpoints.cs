@@ -45,7 +45,7 @@ public static class TenantEndpoints
             var tenants = await db.Tenants.AsNoTracking()
                 .OrderBy(t => t.Name)
                 .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor,
-                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin))
+                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin, t.PaymentsEnabled, t.EfiPayeeCode))
                 .ToListAsync();
             return Results.Ok(tenants);
         });
@@ -80,7 +80,7 @@ public static class TenantEndpoints
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
                 new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                     tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                    tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
+                    tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
         });
 
         // Super Admin: toggle payments allowed per tenant
@@ -93,7 +93,7 @@ public static class TenantEndpoints
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                 tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
         });
 
         // Admin: tenant settings
@@ -176,7 +176,7 @@ public static class TenantEndpoints
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                 tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin));
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
         });
     }
 

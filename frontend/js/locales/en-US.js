@@ -271,6 +271,11 @@ export default {
   'tenants.payments.allow': 'Allow',
   'tenants.payments.block': 'Block',
   'tenants.payments.saved': 'Payment status updated',
+  'tenants.payments.section': 'Online payments',
+  'tenants.payments.allowedBySuperAdmin': 'Allowed by platform',
+  'tenants.payments.enabledByTenant': 'Enabled by gym',
+  'tenants.payments.efiCode': 'Efí Bank code (payee_code)',
+  'tenants.payments.allowToggleLabel': 'Platform permission',
 
   // Login / Auth
   'login.password': 'Password',

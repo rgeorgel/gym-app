@@ -271,6 +271,11 @@ export default {
   'tenants.payments.allow': 'Permitir',
   'tenants.payments.block': 'Bloquear',
   'tenants.payments.saved': 'Status de pagamentos atualizado',
+  'tenants.payments.section': 'Pagamentos online',
+  'tenants.payments.allowedBySuperAdmin': 'Permitido pela plataforma',
+  'tenants.payments.enabledByTenant': 'Ativado pela academia',
+  'tenants.payments.efiCode': 'Código Efí Bank (payee_code)',
+  'tenants.payments.allowToggleLabel': 'Permissão da plataforma',
 
   // Login / Auth
   'login.password': 'Senha',

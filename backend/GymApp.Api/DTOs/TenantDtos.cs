@@ -34,7 +34,9 @@ public record TenantResponse(
     bool IsActive,
     string? CustomDomain,
     DateTime CreatedAt,
-    bool PaymentsAllowedBySuperAdmin
+    bool PaymentsAllowedBySuperAdmin,
+    bool PaymentsEnabled,
+    string? EfiPayeeCode
 );
 
 public record UpdateTenantRequest(

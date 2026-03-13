@@ -51,9 +51,7 @@ async function loadTenants() {
                   <td><span class="badge ${ten.isActive ? 'badge-success' : 'badge-gray'}">${ten.isActive ? t('tenants.status.active') : t('tenants.status.inactive')}</span></td>
                   <td>
                     <span class="badge ${ten.paymentsAllowedBySuperAdmin ? 'badge-success' : 'badge-gray'}">${ten.paymentsAllowedBySuperAdmin ? t('tenants.payments.allowed') : t('tenants.payments.blocked')}</span>
-                    <button class="btn btn-sm ${ten.paymentsAllowedBySuperAdmin ? 'btn-secondary' : 'btn-primary'}" style="margin-left:0.5rem" data-toggle-payments="${ten.id}" data-current="${ten.paymentsAllowedBySuperAdmin}">
-                      ${ten.paymentsAllowedBySuperAdmin ? t('tenants.payments.block') : t('tenants.payments.allow')}
-                    </button>
+                    ${ten.paymentsEnabled ? `<span class="badge badge-success" style="margin-left:0.3rem;font-size:0.65rem">${t('settings.payments.enabled')}</span>` : ''}
                   </td>
                   <td class="text-sm text-muted">${formatDate(ten.createdAt)}</td>
                   <td>
@@ -71,21 +69,6 @@ async function loadTenants() {
       btn.addEventListener('click', () => openTenantModal(tenants.find(ten => ten.id === btn.dataset.edit)));
     });
 
-    list.querySelectorAll('[data-toggle-payments]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.dataset.togglePayments;
-        const current = btn.dataset.current === 'true';
-        btn.disabled = true;
-        try {
-          await api.put(`/admin/tenants/${id}/payments-allowed`, { allowed: !current });
-          showToast(t('tenants.payments.saved'), 'success');
-          await loadTenants();
-        } catch (e) {
-          showToast(t('error.prefix') + e.message, 'error');
-          btn.disabled = false;
-        }
-      });
-    });
   } catch (e) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
@@ -138,6 +121,39 @@ function openTenantModal(tenant = null) {
             <option value="false" ${!tenant.isActive ? 'selected' : ''}>${t('tenants.status.inactive')}</option>
           </select>
         </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <div style="border-top:1px solid var(--gray-200);padding-top:1rem;margin-top:0.25rem">
+            <div class="text-sm font-medium" style="margin-bottom:0.75rem;color:var(--gray-600)">${t('tenants.payments.section')}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+              <div>
+                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.allowedBySuperAdmin')}</div>
+                <span class="badge ${tenant.paymentsAllowedBySuperAdmin ? 'badge-success' : 'badge-gray'}">
+                  ${tenant.paymentsAllowedBySuperAdmin ? t('tenants.payments.allowed') : t('tenants.payments.blocked')}
+                </span>
+              </div>
+              <div>
+                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.enabledByTenant')}</div>
+                <span class="badge ${tenant.paymentsEnabled ? 'badge-success' : 'badge-gray'}">
+                  ${tenant.paymentsEnabled ? t('settings.payments.enabled') : t('settings.payments.disabled')}
+                </span>
+              </div>
+              <div style="grid-column:1/-1">
+                <div class="text-sm text-muted" style="margin-bottom:0.25rem">${t('tenants.payments.efiCode')}</div>
+                ${tenant.efiPayeeCode
+                  ? `<span class="badge badge-success" style="font-size:0.75rem;font-family:monospace">${tenant.efiPayeeCode}</span>`
+                  : `<span class="text-sm text-muted">${t('settings.efi.notConfigured')}</span>`
+                }
+              </div>
+              <div style="grid-column:1/-1;margin-top:0.25rem">
+                <label class="form-label">${t('tenants.payments.allowToggleLabel')}</label>
+                <select class="form-control" id="tPaymentsAllowed">
+                  <option value="true" ${tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.allow')}</option>
+                  <option value="false" ${!tenant.paymentsAllowedBySuperAdmin ? 'selected' : ''}>${t('tenants.payments.block')}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
         ` : ''}
       </div>
       ${!tenant ? `
@@ -174,15 +190,21 @@ function openTenantModal(tenant = null) {
 
     try {
       if (tenant) {
-        const body = {
-          name,
-          logoUrl: null,
-          primaryColor: document.getElementById('tPrimary').value,
-          secondaryColor: document.getElementById('tSecondary').value,
-          customDomain: document.getElementById('tCustomDomain').value.trim() || null,
-          isActive: document.getElementById('tActive').value === 'true',
-        };
-        await api.put(`/admin/tenants/${tenant.id}`, body);
+        const newAllowed = document.getElementById('tPaymentsAllowed').value === 'true';
+        const tasks = [
+          api.put(`/admin/tenants/${tenant.id}`, {
+            name,
+            logoUrl: null,
+            primaryColor: document.getElementById('tPrimary').value,
+            secondaryColor: document.getElementById('tSecondary').value,
+            customDomain: document.getElementById('tCustomDomain').value.trim() || null,
+            isActive: document.getElementById('tActive').value === 'true',
+          }),
+        ];
+        if (newAllowed !== tenant.paymentsAllowedBySuperAdmin) {
+          tasks.push(api.put(`/admin/tenants/${tenant.id}/payments-allowed`, { allowed: newAllowed }));
+        }
+        await Promise.all(tasks);
         showToast(t('tenants.saved'), 'success');
       } else {
         const adminName = document.getElementById('tAdminName').value.trim();
