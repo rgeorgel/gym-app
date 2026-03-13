@@ -53,12 +53,6 @@
           <span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Configurações</span>
         </div>
 
-        <div id="superAdminNav" class="hidden">
-          <div class="nav-section-label" data-i18n="nav.superAdmin">Super Admin</div>
-          <div class="nav-item" data-page="tenants">
-            <span class="nav-icon">🏢</span> <span data-i18n="nav.tenants">Academias</span>
-          </div>
-        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -102,10 +96,9 @@
     import { renderReports } from '/js/admin/reports.js';
     import { renderPackageTemplates } from '/js/admin/package-templates.js';
     import { renderInstructors } from '/js/admin/instructors.js';
-    import { renderTenants } from '/js/admin/tenants.js';
     import { renderSettings } from '/js/admin/settings.js';
 
-    if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
+    if (!requireAuth(['Admin'])) throw new Error('unauthorized');
 
     await loadTenantTheme();
 
@@ -116,12 +109,8 @@
 
     const user = getUser();
     document.getElementById('userName').textContent = user?.name ?? '';
-    document.getElementById('userRole').textContent = user?.role === 'SuperAdmin' ? 'Super Admin' : 'Administrador';
+    document.getElementById('userRole').textContent = 'Administrador';
     document.getElementById('userAvatar').textContent = (user?.name ?? '?')[0].toUpperCase();
-
-    if (user?.role === 'SuperAdmin') {
-      document.getElementById('superAdminNav').classList.remove('hidden');
-    }
 
     const pages = {
       dashboard: { titleKey: 'nav.dashboard', render: renderDashboard },
@@ -132,7 +121,6 @@
       reports: { titleKey: 'nav.reports', render: renderReports },
       'package-templates': { titleKey: 'nav.packageTemplates', render: renderPackageTemplates },
       instructors: { titleKey: 'nav.instructors', render: renderInstructors },
-      tenants: { titleKey: 'nav.tenants', render: renderTenants },
       settings: { titleKey: 'nav.settings', render: renderSettings },
     };
 

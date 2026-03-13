@@ -148,7 +148,7 @@ function storeSession(data) {
 }
 
 function redirectByRole(role) {
-  if (role === 'SuperAdmin') { location.href = '/admin/index.html'; return; }
+  if (role === 'SuperAdmin') { location.href = '/superadmin/index.html'; return; }
   if (role === 'Admin') { location.href = '/admin/index.html'; return; }
   location.href = '/app/index.html';
 }
