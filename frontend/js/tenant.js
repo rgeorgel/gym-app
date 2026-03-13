@@ -8,6 +8,9 @@ loadTranslations('en-US', enUS);
 
 // Loads tenant config and applies white label theme + locale
 export async function loadTenantTheme() {
+  // Default locale so t() works even if tenant config is unavailable (e.g. super admin)
+  setLocale('pt-BR');
+
   try {
     const host = location.hostname;
     const parts = host.split('.');
