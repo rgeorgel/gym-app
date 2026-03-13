@@ -72,7 +72,10 @@ async function loadSessions() {
                     <td>
                       <div class="flex gap-2">
                         <button class="btn btn-secondary btn-sm" onclick="window._viewCheckin('${s.id}')">${t('sessions.checkin')}</button>
-                        ${s.status !== 'Cancelled' ? `<button class="btn btn-danger btn-sm" onclick="window._cancelSession('${s.id}')">${t('btn.cancel')}</button>` : ''}
+                        ${s.status !== 'Cancelled'
+                          ? `<button class="btn btn-danger btn-sm" onclick="window._cancelSession('${s.id}')">${t('btn.cancel')}</button>`
+                          : `<button class="btn btn-primary btn-sm" onclick="window._reactivateSession('${s.id}')">${t('sessions.reactivate')}</button>`
+                        }
                       </div>
                     </td>
                   </tr>
@@ -86,6 +89,7 @@ async function loadSessions() {
 
     window._viewCheckin = (id) => openCheckinModal(id);
     window._cancelSession = (id) => cancelSession(id);
+    window._reactivateSession = (id) => reactivateSession(id);
   } catch (e) {
     showToast('Erro: ' + e.message, 'error');
   }
@@ -158,6 +162,17 @@ async function cancelSession(sessionId) {
   try {
     await api.post(`/sessions/${sessionId}/cancel`, { reason: 'Cancelado pelo admin' });
     showToast(t('sessions.cancel.success'), 'success');
+    await loadSessions();
+  } catch (e) {
+    showToast('Erro: ' + e.message, 'error');
+  }
+}
+
+async function reactivateSession(sessionId) {
+  if (!await confirm(t('sessions.reactivate.confirm'))) return;
+  try {
+    await api.post(`/sessions/${sessionId}/reactivate`, {});
+    showToast(t('sessions.reactivate.success'), 'success');
     await loadSessions();
   } catch (e) {
     showToast('Erro: ' + e.message, 'error');

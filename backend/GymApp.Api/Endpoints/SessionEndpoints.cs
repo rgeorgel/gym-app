@@ -108,6 +108,33 @@ public static class SessionEndpoints
             return Results.Ok(bookings);
         });
 
+        group.MapPost("/{id:guid}/reactivate", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        {
+            var session = await db.Sessions
+                .Include(s => s.Schedule)
+                .Include(s => s.Bookings).ThenInclude(b => b.PackageItem)
+                .FirstOrDefaultAsync(s => s.Id == id && s.Schedule.TenantId == tenant.TenantId);
+
+            if (session is null) return Results.NotFound();
+            if (session.Status != SessionStatus.Cancelled) return Results.Conflict("Session is not cancelled.");
+
+            session.Status = SessionStatus.Scheduled;
+            session.CancellationReason = null;
+
+            // Restore bookings that were cancelled due to this session being cancelled
+            foreach (var booking in session.Bookings.Where(b =>
+                b.Status == BookingStatus.Cancelled && b.CancellationReason == "Aula cancelada"))
+            {
+                booking.Status = BookingStatus.Confirmed;
+                booking.CancellationReason = null;
+                booking.CancelledAt = null;
+                booking.PackageItem.UsedCredits += 1;
+            }
+
+            await db.SaveChangesAsync();
+            return Results.Ok();
+        }).RequireAuthorization("AdminOrAbove");
+
         group.MapPost("/{id:guid}/cancel", async (Guid id, CancelSessionRequest req, AppDbContext db, TenantContext tenant) =>
         {
             var session = await db.Sessions
