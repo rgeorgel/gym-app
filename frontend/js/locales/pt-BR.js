@@ -56,6 +56,17 @@ export default {
   'nav.instructors': 'Instrutores',
   'nav.packageTemplates': 'Modelos de Pacote',
   'nav.settings': 'Configurações',
+  'nav.admins': 'Administradores',
+  'admins.title.new': 'Novo Administrador',
+  'admins.title.edit': 'Editar Administrador',
+  'admins.new': '+ Novo Admin',
+  'admins.none': 'Nenhum administrador cadastrado',
+  'admins.saved': 'Administrador atualizado',
+  'admins.created': 'Administrador criado com sucesso',
+  'admins.resetPwd': 'Redefinir senha',
+  'admins.resetPwd.saved': 'Senha redefinida com sucesso',
+  'admins.col.createdAt': 'Cadastro',
+  'admins.selfDeactivate': 'Você não pode desativar sua própria conta',
   'nav.tenants': 'Academias',
 
   // Students

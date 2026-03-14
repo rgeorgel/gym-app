@@ -129,6 +129,7 @@ app.MapPackageTemplateEndpoints();
 app.MapInstructorEndpoints();
 app.MapDashboardEndpoints();
 app.MapPaymentEndpoints();
+app.MapAdminUserEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

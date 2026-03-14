@@ -56,6 +56,17 @@ export default {
   'nav.instructors': 'Instructors',
   'nav.packageTemplates': 'Package Templates',
   'nav.settings': 'Settings',
+  'nav.admins': 'Administrators',
+  'admins.title.new': 'New Administrator',
+  'admins.title.edit': 'Edit Administrator',
+  'admins.new': '+ New Admin',
+  'admins.none': 'No administrators registered',
+  'admins.saved': 'Administrator updated',
+  'admins.created': 'Administrator created successfully',
+  'admins.resetPwd': 'Reset password',
+  'admins.resetPwd.saved': 'Password reset successfully',
+  'admins.col.createdAt': 'Registered',
+  'admins.selfDeactivate': 'You cannot deactivate your own account',
   'nav.tenants': 'Gyms',
 
   // Students
