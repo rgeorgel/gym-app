@@ -53,7 +53,9 @@ public record TenantSettingsResponse(
     string Language,
     string? EfiPayeeCode,
     bool PaymentsEnabled,
-    bool PaymentsAllowedBySuperAdmin
+    bool PaymentsAllowedBySuperAdmin,
+    string PrimaryColor,
+    string SecondaryColor
 );
 
 public record SetDefaultTemplateRequest(
@@ -70,6 +72,11 @@ public record SetEfiPayeeCodeRequest(
 
 public record SetPaymentsEnabledRequest(
     bool Enabled
+);
+
+public record SetColorsRequest(
+    string PrimaryColor,
+    string SecondaryColor
 );
 
 public record SetPaymentsAllowedRequest(

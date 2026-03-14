@@ -391,6 +391,11 @@ export default {
   'settings.efi.placeholder': 'Paste your payee_code here',
   'settings.efi.saved': 'Payment configuration saved',
   'settings.efi.notConfigured': 'Not configured — payments disabled',
+  'settings.colors.title': 'App colors',
+  'settings.colors.desc': 'Customize the main colors of your app.',
+  'settings.colors.primary': 'Primary color',
+  'settings.colors.secondary': 'Secondary color',
+  'settings.colors.saved': 'Colors saved successfully',
 
   // App — My Packages
   'myPackages.none': "You don't have any active packages",

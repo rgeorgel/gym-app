@@ -161,6 +161,20 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        settingsGroup.MapPut("/colors", async (SetColorsRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            if (string.IsNullOrWhiteSpace(req.PrimaryColor) || string.IsNullOrWhiteSpace(req.SecondaryColor))
+                return Results.BadRequest("Colors are required.");
+
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.PrimaryColor = req.PrimaryColor.Trim();
+            tenant.SecondaryColor = req.SecondaryColor.Trim();
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             var tenant = await db.Tenants.FindAsync(id);
@@ -181,7 +195,7 @@ public static class TenantEndpoints
     }
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
-        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin);
+        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor);
 
     private static string? ExtractSlug(string host)
     {
