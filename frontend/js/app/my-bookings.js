@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { showToast, formatTime, statusBadge, emptyState, confirm } from '../ui.js';
 import { getUser } from '../auth.js';
 import { t, getMonthNames } from '../i18n.js';
+import { trackEvent } from '../analytics.js';
 
 export async function renderMyBookings(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -22,6 +23,7 @@ export async function renderMyBookings(container) {
       if (!await confirm(t('bookings.cancelConfirm'))) return;
       try {
         await api.delete(`/bookings/${id}`);
+        trackEvent('booking_cancelled', { origin: 'my_bookings' });
         showToast(t('bookings.cancel.success'), 'success');
         renderMyBookings(container);
       } catch (e) {

@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, emptyState } from '../ui.js';
 import { t } from '../i18n.js';
+import { trackEvent } from '../analytics.js';
 
 export async function renderPlans(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -12,6 +13,8 @@ export async function renderPlans(container) {
       container.innerHTML = emptyState('🛒', t('store.none'));
       return;
     }
+
+    trackEvent('store_view', { plans_count: plans.length });
 
     container.innerHTML = plans.map(p => {
       const items = p.items.map(i => `
@@ -59,6 +62,7 @@ export async function renderPlans(container) {
 }
 
 async function openPaymentModal(planId, planName) {
+  trackEvent('checkout_initiated', { plan_name: planName });
   createModal({
     id: 'paymentModal',
     title: t('store.payment.title'),
@@ -93,6 +97,7 @@ async function openPaymentModal(planId, planName) {
     document.getElementById('btnCopyPix').addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(payment.pixCopyPaste);
+        trackEvent('pix_code_copied', { plan_name: planName });
         showToast(t('store.payment.copied'), 'success');
       } catch {
         // fallback: show the code in an alert
@@ -108,6 +113,7 @@ async function openPaymentModal(planId, planName) {
 
         if (status.status === 'Paid') {
           stopPolling();
+          trackEvent('purchase', { plan_name: planName, currency: 'BRL' });
           if (statusEl) statusEl.innerHTML = `<span style="color:var(--color-success);font-weight:600">${t('store.payment.success')}</span>`;
           setTimeout(() => closeModal('paymentModal'), 3000);
         } else if (status.status === 'Expired' || status.status === 'Cancelled') {

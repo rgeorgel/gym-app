@@ -2,6 +2,7 @@ import { api } from './api.js';
 import { loadTenantTheme } from './tenant.js';
 import { showToast } from './ui.js';
 import { t } from './i18n.js';
+import { trackEvent } from './analytics.js';
 
 export function getUser() {
   const raw = localStorage.getItem('user');
@@ -78,6 +79,7 @@ export async function initLoginPage() {
       if (tenantSlug) body.tenantSlug = tenantSlug;
       const data = await api.post('/auth/login', body);
       storeSession(data);
+      trackEvent('login', { method: 'email', role: data.role });
       redirectByRole(data.role);
     } catch (err) {
       errorEl.textContent = t('login.error');
@@ -127,6 +129,7 @@ export async function initLoginPage() {
       const body = { name, email, password, phone, birthDate: birth || null };
       const data = await api.post('/auth/register', body);
       storeSession(data);
+      trackEvent('sign_up', { method: 'email' });
       redirectByRole(data.role);
     } catch (err) {
       errorEl.textContent = err.message === 'Conflict' || err.status === 409

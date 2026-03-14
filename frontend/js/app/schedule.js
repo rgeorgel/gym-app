@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js';
 import { getUser } from '../auth.js';
 import { t, getWeekdays } from '../i18n.js';
+import { trackEvent } from '../analytics.js';
 
 let currentDate = new Date();
 let sessions = [];
@@ -125,6 +126,7 @@ async function loadSessions() {
 async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   const session = sessions.find(s => s.id === sessionId);
   if (!session) return;
+  trackEvent('view_class', { class_type: session.classTypeName });
 
   // Get available package items for this class type
   const items = packages.flatMap(p => p.items.filter(i => i.classTypeId === session.classTypeId && i.remainingCredits > 0))
@@ -176,6 +178,7 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
     const pkgItemId = document.getElementById('pkgItemSelect').value;
     try {
       await api.post('/bookings', { sessionId, studentId: user.id, packageItemId: pkgItemId });
+      trackEvent('booking_created', { class_type: session.classTypeName });
       showToast(t('schedule.book.success'), 'success');
       closeModal('sessionModal');
       await loadPackages();
@@ -189,6 +192,7 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
     if (!await confirm(t('schedule.cancelBooking.confirm'))) return;
     try {
       await api.delete(`/bookings/${bookingId}`);
+      trackEvent('booking_cancelled', { class_type: session.classTypeName, origin: 'schedule' });
       showToast(t('schedule.cancelBooking.success'), 'success');
       closeModal('sessionModal');
       await loadPackages();

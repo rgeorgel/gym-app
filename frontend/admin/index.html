@@ -99,6 +99,7 @@
     import { renderPackageTemplates } from '/js/admin/package-templates.js';
     import { renderInstructors } from '/js/admin/instructors.js';
     import { renderSettings } from '/js/admin/settings.js';
+    import { trackPageView } from '/js/analytics.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
@@ -131,7 +132,9 @@
     async function navigateTo(page) {
       if (!pages[page]) return;
       currentPage = page;
-      document.getElementById('pageTitle').textContent = t(pages[page].titleKey);
+      const pageTitle = t(pages[page].titleKey);
+      document.getElementById('pageTitle').textContent = pageTitle;
+      trackPageView('Admin — ' + pageTitle);
       document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.page === page);
       });

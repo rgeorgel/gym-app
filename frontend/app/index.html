@@ -73,6 +73,7 @@
     import { renderMyBookings } from '/js/app/my-bookings.js';
     import { renderMyPackages } from '/js/app/my-packages.js';
     import { renderPlans } from '/js/app/plans.js';
+    import { trackPageView } from '/js/analytics.js';
 
     if (!requireAuth(['Student', 'Admin', 'SuperAdmin'])) throw new Error('unauthorized');
 
@@ -97,6 +98,9 @@
       document.querySelectorAll('.app-tab, .bottom-nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.tab === tab);
       });
+
+      const tabNames = { schedule: 'Agenda', bookings: 'Meus Agendamentos', packages: 'Meus Pacotes', store: 'Loja' };
+      trackPageView(tabNames[tab] ?? tab);
 
       const content = document.getElementById('appContent');
       content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
