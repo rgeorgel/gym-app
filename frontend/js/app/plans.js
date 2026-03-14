@@ -35,7 +35,6 @@ export async function renderPlans(container) {
               </div>
             </div>
             <div style="text-align:right">
-              <div class="text-xs text-muted">${t('store.total')}</div>
               <div style="font-size:1.25rem;font-weight:700;color:var(--brand-primary)">
                 R$ ${Number(p.totalPrice).toFixed(2)}
               </div>

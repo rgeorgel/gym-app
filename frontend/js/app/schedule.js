@@ -109,7 +109,7 @@ async function loadSessions() {
             ${isCancelled
               ? `<span class="badge badge-danger">${t('schedule.cancelled')}</span>`
               : isBooked
-                ? `<span class="badge badge-success">✓ ${t('schedule.booked').replace('✓ ', '').split('.')[0]}</span>`
+                ? `<span class="badge badge-success" style="white-space:normal;text-align:center;line-height:1.3">✓ ${t('schedule.booked').replace('✓ ', '').split('.')[0]}</span>`
                 : `<div class="slots-count">${t('schedule.slots')}</div>
                    <div class="slots-available ${s.slotsAvailable <= 3 ? 'low' : ''} ${isFull ? 'full' : ''}">${isFull ? '0' : s.slotsAvailable}</div>`}
           </div>

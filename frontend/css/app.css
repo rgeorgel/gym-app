@@ -118,6 +118,8 @@
 .session-slots {
   text-align: right;
   flex-shrink: 0;
+  max-width: 90px;
+  word-break: break-word;
 }
 .slots-count { font-size: var(--font-size-xs); color: var(--gray-500); }
 .slots-available { font-weight: 600; font-size: var(--font-size-sm); color: var(--color-success); }
@@ -166,7 +168,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem 0;
+  padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--gray-100);
 }
 .booking-item:last-child { border-bottom: none; }
