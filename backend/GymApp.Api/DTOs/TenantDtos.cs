@@ -55,7 +55,12 @@ public record TenantSettingsResponse(
     bool PaymentsEnabled,
     bool PaymentsAllowedBySuperAdmin,
     string PrimaryColor,
-    string SecondaryColor
+    string SecondaryColor,
+    string? LogoUrl
+);
+
+public record SetLogoUrlRequest(
+    string? LogoUrl
 );
 
 public record SetDefaultTemplateRequest(

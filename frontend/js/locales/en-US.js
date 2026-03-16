@@ -407,6 +407,11 @@ export default {
   'settings.colors.primary': 'Primary color',
   'settings.colors.secondary': 'Secondary color',
   'settings.colors.saved': 'Colors saved successfully',
+  'settings.logo.title': 'Academy logo',
+  'settings.logo.desc': 'URL of the logo image shown in the app and login page. Leave blank to use the default logo.',
+  'settings.logo.field': 'Logo URL',
+  'settings.logo.placeholder': 'https://example.com/logo.png',
+  'settings.logo.saved': 'Logo saved successfully',
 
   // App — My Packages
   'myPackages.none': "You don't have any active packages",

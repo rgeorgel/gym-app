@@ -115,6 +115,23 @@ export async function renderSettings(container) {
 
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">${t('settings.logo.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.logo.desc')}</p>
+          <div class="form-group">
+            <label class="form-label">${t('settings.logo.field')}</label>
+            <input class="form-control" id="inputLogoUrl" type="url"
+              placeholder="${t('settings.logo.placeholder')}"
+              value="${settings.logoUrl ?? ''}">
+          </div>
+          ${settings.logoUrl ? `<img src="${settings.logoUrl}" alt="Logo preview" style="margin-top:0.75rem;max-height:64px;max-width:200px;object-fit:contain;border-radius:var(--border-radius);border:1px solid var(--gray-200)" id="logoPreview">` : ''}
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" id="btnSaveLogo">${t('btn.save')}</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.efi.title')}</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.efi.desc')}</p>
           <div style="margin-bottom:0.75rem">${efiStatus}</div>
@@ -204,6 +221,37 @@ export async function renderSettings(container) {
       await api.put('/settings/efi-payee-code', { payeeCode: val || null });
       showToast(t('settings.efi.saved'), 'success');
       await renderSettings(container);
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('inputLogoUrl').addEventListener('input', (e) => {
+    const preview = document.getElementById('logoPreview');
+    const url = e.target.value.trim();
+    if (url && preview) {
+      preview.src = url;
+    } else if (url) {
+      const img = document.createElement('img');
+      img.id = 'logoPreview';
+      img.alt = 'Logo preview';
+      img.src = url;
+      img.style.cssText = 'margin-top:0.75rem;max-height:64px;max-width:200px;object-fit:contain;border-radius:var(--border-radius);border:1px solid var(--gray-200)';
+      e.target.closest('.card-body').insertBefore(img, document.getElementById('btnSaveLogo').parentElement);
+    } else if (preview) {
+      preview.remove();
+    }
+  });
+
+  document.getElementById('btnSaveLogo').addEventListener('click', async () => {
+    const url = document.getElementById('inputLogoUrl').value.trim();
+    const btn = document.getElementById('btnSaveLogo');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/logo', { logoUrl: url || null });
+      showToast(t('settings.logo.saved'), 'success');
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {

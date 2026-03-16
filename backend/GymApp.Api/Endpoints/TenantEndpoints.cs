@@ -161,6 +161,16 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        settingsGroup.MapPut("/logo", async (SetLogoUrlRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.LogoUrl = string.IsNullOrWhiteSpace(req.LogoUrl) ? null : req.LogoUrl.Trim();
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         settingsGroup.MapPut("/colors", async (SetColorsRequest req, AppDbContext db, TenantContext tenantCtx) =>
         {
             if (string.IsNullOrWhiteSpace(req.PrimaryColor) || string.IsNullOrWhiteSpace(req.SecondaryColor))
@@ -195,7 +205,7 @@ public static class TenantEndpoints
     }
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
-        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor);
+        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl);
 
     private static string? ExtractSlug(string host)
     {

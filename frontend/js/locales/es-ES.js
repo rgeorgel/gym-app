@@ -407,6 +407,11 @@ export default {
   'settings.colors.primary': 'Color primario',
   'settings.colors.secondary': 'Color secundario',
   'settings.colors.saved': 'Colores guardados correctamente',
+  'settings.logo.title': 'Logo de la academia',
+  'settings.logo.desc': 'URL de la imagen del logo mostrado en la app y la página de inicio de sesión. Déjalo en blanco para usar el logo predeterminado.',
+  'settings.logo.field': 'URL del logo',
+  'settings.logo.placeholder': 'https://ejemplo.com/logo.png',
+  'settings.logo.saved': 'Logo guardado correctamente',
 
   // App — My Packages
   'myPackages.none': 'No tienes paquetes activos',
