@@ -31,7 +31,9 @@ public static class SeedData
                 Slug = "boxe-elite",
                 PrimaryColor = "#1a1a2e",
                 SecondaryColor = "#e94560",
-                Plan = TenantPlan.Basic
+                Plan = TenantPlan.Basic,
+                SubscriptionStatus = GymApp.Domain.Enums.SubscriptionStatus.Active,
+                SubscriptionCurrentPeriodEnd = DateTime.UtcNow.AddYears(10) // never expires in dev
             };
             db.Tenants.Add(tenant);
             await db.SaveChangesAsync();

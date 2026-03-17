@@ -30,7 +30,7 @@ public class TenantMiddleware(RequestDelegate next)
         }
 
         if (tenant is not null)
-            tenantContext.Resolve(tenant.Id, tenant.Slug);
+            tenantContext.Resolve(tenant.Id, tenant.Slug, tenant.HasStudentAccess);
 
         await next(context);
     }

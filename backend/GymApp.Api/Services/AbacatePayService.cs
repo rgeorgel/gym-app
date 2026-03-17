@@ -1,0 +1,140 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace GymApp.Api.Services;
+
+public record AbacatePayCustomer(
+    [property: JsonPropertyName("_id")] string Id,
+    string Name,
+    string Email
+);
+
+public record AbacatePayBilling(
+    [property: JsonPropertyName("_id")] string Id,
+    string Url,
+    string Status,
+    [property: JsonPropertyName("customer")] string? CustomerId
+);
+
+public record AbacatePayWebhookEvent(
+    string Event,
+    AbacatePayWebhookData? Data
+);
+
+public record AbacatePayWebhookData(
+    AbacatePayWebhookBilling? Billing
+);
+
+public record AbacatePayWebhookBilling(
+    [property: JsonPropertyName("_id")] string Id,
+    [property: JsonPropertyName("customer")] string? CustomerId,
+    string Status,
+    [property: JsonPropertyName("nextBilling")] DateTime? NextBilling
+);
+
+public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService> logger)
+{
+    private static readonly JsonSerializerOptions JsonOpts = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true
+    };
+
+    private HttpClient CreateClient()
+    {
+        var apiKey = config["AbacatePay:ApiKey"]
+            ?? throw new InvalidOperationException("AbacatePay:ApiKey not configured.");
+
+        var client = new HttpClient { BaseAddress = new Uri("https://api.abacatepay.com/v1/") };
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        return client;
+    }
+
+    public async Task<AbacatePayCustomer?> CreateCustomerAsync(
+        string name, string email, string? phone, string? taxId)
+    {
+        using var client = CreateClient();
+
+        var body = new
+        {
+            name,
+            email,
+            cellphone = phone,
+            taxId
+        };
+
+        var response = await client.PostAsync("customer/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            logger.LogError("AbacatePay CreateCustomer failed: {Status} {Body}", response.StatusCode, err);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayCustomer>(data.GetRawText(), JsonOpts);
+    }
+
+    public async Task<AbacatePayBilling?> CreateBillingAsync(
+        string customerId, string tenantSlug, string adminEmail, string baseUrl)
+    {
+        using var client = CreateClient();
+        var subscriptionPrice = config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
+        var returnUrl = $"{baseUrl.TrimEnd('/')}/admin/index.html#billing";
+
+        var body = new
+        {
+            frequency = "MONTHLY",
+            methods = new[] { "PIX" },
+            products = new[]
+            {
+                new
+                {
+                    externalId = $"subscription-{tenantSlug}",
+                    name = "Assinatura Agendofy",
+                    description = "Mensalidade do sistema de agendamento para academias",
+                    quantity = 1,
+                    price = subscriptionPrice
+                }
+            },
+            customer = new { _id = customerId },
+            returnUrl,
+            completionUrl = returnUrl
+        };
+
+        var response = await client.PostAsync("billing/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            logger.LogError("AbacatePay CreateBilling failed: {Status} {Body}", response.StatusCode, err);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayBilling>(data.GetRawText(), JsonOpts);
+    }
+
+    public async Task<bool> CancelBillingAsync(string billingId)
+    {
+        using var client = CreateClient();
+
+        var response = await client.DeleteAsync($"billing/{billingId}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            logger.LogError("AbacatePay CancelBilling failed: {Status} {Body}", response.StatusCode, err);
+            return false;
+        }
+
+        return true;
+    }
+}

@@ -5,4 +5,5 @@ public interface ITenantContext
     Guid TenantId { get; }
     string Slug { get; }
     bool IsResolved { get; }
+    bool HasStudentAccess { get; }
 }

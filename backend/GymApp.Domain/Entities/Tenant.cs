@@ -24,6 +24,31 @@ public class Tenant
 
     public bool PaymentsActive => PaymentsEnabled && PaymentsAllowedBySuperAdmin;
 
+    // ── Subscription / billing ──────────────────────────────────────────────
+    public int TrialDays { get; set; } = 14;
+    public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Trial;
+    public DateTime? SubscriptionCurrentPeriodEnd { get; set; }
+    public string? AbacatePayCustomerId { get; set; }
+    public string? AbacatePayBillingId { get; set; }
+
+    /// <summary>True while in trial, while paid and active, or during the
+    /// remaining paid period after a cancellation.</summary>
+    public bool HasStudentAccess => IsActive && SubscriptionStatus switch
+    {
+        SubscriptionStatus.Trial    => DateTime.UtcNow < CreatedAt.AddDays(TrialDays),
+        SubscriptionStatus.Active   => true,
+        SubscriptionStatus.Canceled => SubscriptionCurrentPeriodEnd.HasValue
+                                       && DateTime.UtcNow < SubscriptionCurrentPeriodEnd.Value,
+        _                           => false   // PastDue, Suspended
+    };
+
+    public bool IsInTrial => SubscriptionStatus == SubscriptionStatus.Trial
+                             && DateTime.UtcNow < CreatedAt.AddDays(TrialDays);
+
+    public int TrialDaysRemaining => IsInTrial
+        ? Math.Max(0, (int)(CreatedAt.AddDays(TrialDays) - DateTime.UtcNow).TotalDays)
+        : 0;
+
     public PackageTemplate? DefaultPackageTemplate { get; set; }
     public ICollection<User> Users { get; set; } = [];
     public ICollection<ClassType> ClassTypes { get; set; } = [];

@@ -98,6 +98,9 @@ builder.Services.AddSingleton(new EfiOptions
 });
 builder.Services.AddSingleton<EfiService>();
 
+// AbacatePay subscription billing
+builder.Services.AddSingleton<AbacatePayService>();
+
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
@@ -107,6 +110,7 @@ app.UseCors();
 app.UseMiddleware<TenantMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<SubscriptionMiddleware>();
 
 // Apply migrations and seed on startup
 using (var scope = app.Services.CreateScope())
@@ -130,6 +134,8 @@ app.MapInstructorEndpoints();
 app.MapDashboardEndpoints();
 app.MapPaymentEndpoints();
 app.MapAdminUserEndpoints();
+app.MapBillingEndpoints();
+app.MapAbacatePayWebhook();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

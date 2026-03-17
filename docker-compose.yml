@@ -45,6 +45,8 @@ services:
       Resend__ApiKey: "${RESEND_API_KEY:-}"
       Resend__FromEmail: "${RESEND_FROM_EMAIL:-noreply@seudominio.com}"
       Resend__FromName: "${RESEND_FROM_NAME:-Gym App}"
+      AbacatePay__ApiKey: "${ABACATEPAY_API_KEY:-}"
+      AbacatePay__SubscriptionPriceCents: "${ABACATEPAY_PRICE_CENTS:-4900}"
       Efi__ClientId: "${EFI_CLIENT_ID:-}"
       Efi__ClientSecret: "${EFI_CLIENT_SECRET:-}"
       Efi__CertificateBase64: "${EFI_CERTIFICATE_BASE64:-}"

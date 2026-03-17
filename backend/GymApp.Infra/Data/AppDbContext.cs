@@ -34,6 +34,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.SecondaryColor).HasMaxLength(20);
             e.Property(x => x.Language).HasMaxLength(10);
             e.Property(x => x.EfiPayeeCode).HasMaxLength(100);
+            e.Property(x => x.AbacatePayCustomerId).HasMaxLength(100);
+            e.Property(x => x.AbacatePayBillingId).HasMaxLength(100);
+            e.Ignore(x => x.HasStudentAccess);
+            e.Ignore(x => x.IsInTrial);
+            e.Ignore(x => x.TrialDaysRemaining);
             e.HasOne(x => x.DefaultPackageTemplate)
                 .WithMany()
                 .HasForeignKey(x => x.DefaultPackageTemplateId)
