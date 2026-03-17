@@ -39,8 +39,9 @@ public class SendGridEmailService(IConfiguration config) : IEmailService
         };
         msg.AddTo(new EmailAddress(toEmail, toName));
 
-        var respnse = await client.SendEmailAsync(msg);
-
-        return;
+        await client.SendEmailAsync(msg);
     }
+
+    public Task SendWelcomeAsync(string toEmail, string toName, string academyName, string panelUrl)
+        => Task.CompletedTask; // SendGrid not in use — no-op
 }

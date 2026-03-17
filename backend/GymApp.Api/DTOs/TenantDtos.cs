@@ -87,3 +87,17 @@ public record SetColorsRequest(
 public record SetPaymentsAllowedRequest(
     bool Allowed
 );
+
+public record SelfSignupRequest(
+    string AdminName,
+    string AcademyName,
+    string Email,
+    string Password,
+    string? Phone = null
+);
+
+public record SelfSignupResponse(
+    Guid TenantId,
+    string Slug,
+    string AdminEmail
+);

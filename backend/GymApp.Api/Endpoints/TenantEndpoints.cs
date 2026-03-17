@@ -4,6 +4,9 @@ using GymApp.Domain.Interfaces;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GymApp.Api.Endpoints;
 
@@ -35,6 +38,57 @@ public static class TenantEndpoints
 
             return Results.Ok(new TenantConfigResponse(
                 tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language));
+        }).AllowAnonymous();
+
+        // Public: self-signup from landing page
+        app.MapPost("/api/public/signup", async (SelfSignupRequest req, AppDbContext db, IEmailService email, IConfiguration config) =>
+        {
+            if (string.IsNullOrWhiteSpace(req.AdminName) ||
+                string.IsNullOrWhiteSpace(req.AcademyName) ||
+                string.IsNullOrWhiteSpace(req.Email) ||
+                string.IsNullOrWhiteSpace(req.Password))
+                return Results.BadRequest("All fields are required.");
+
+            var emailLower = req.Email.ToLowerInvariant().Trim();
+            if (await db.Users.AnyAsync(u => u.Email == emailLower))
+                return Results.Conflict("E-mail já cadastrado.");
+
+            var baseSlug = GenerateSlug(req.AcademyName);
+            var slug = baseSlug;
+            var suffix = 2;
+            while (await db.Tenants.AnyAsync(t => t.Slug == slug))
+                slug = $"{baseSlug}-{suffix++}";
+
+            var tenant = new Tenant
+            {
+                Name = req.AcademyName.Trim(),
+                Slug = slug,
+                PrimaryColor = "#1a1a2e",
+                SecondaryColor = "#e94560",
+                Plan = GymApp.Domain.Enums.TenantPlan.Basic
+            };
+            db.Tenants.Add(tenant);
+
+            var admin = new User
+            {
+                TenantId = tenant.Id,
+                Name = req.AdminName.Trim(),
+                Email = emailLower,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
+                Phone = req.Phone,
+                Role = GymApp.Domain.Enums.UserRole.Admin
+            };
+            db.Users.Add(admin);
+
+            await db.SaveChangesAsync();
+
+            var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
+            var uri = new Uri(baseUrl);
+            var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}/admin/index.html";
+            _ = email.SendWelcomeAsync(admin.Email, admin.Name, tenant.Name, panelUrl);
+
+            return Results.Created($"/api/admin/tenants/{tenant.Id}",
+                new SelfSignupResponse(tenant.Id, tenant.Slug, admin.Email));
         }).AllowAnonymous();
 
         // Super Admin: list all tenants
@@ -206,6 +260,23 @@ public static class TenantEndpoints
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
         new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl);
+
+    private static string GenerateSlug(string name)
+    {
+        var normalized = name.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder();
+        foreach (var c in normalized)
+        {
+            var category = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+            if (category != System.Globalization.UnicodeCategory.NonSpacingMark)
+                sb.Append(c);
+        }
+        var clean = sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
+        clean = Regex.Replace(clean, @"[^a-z0-9\s-]", "");
+        clean = Regex.Replace(clean, @"\s+", "-");
+        clean = Regex.Replace(clean, @"-{2,}", "-").Trim('-');
+        return string.IsNullOrEmpty(clean) ? "academia" : clean;
+    }
 
     private static string? ExtractSlug(string host)
     {
