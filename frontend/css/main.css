@@ -330,3 +330,12 @@ tbody tr:hover { background: var(--gray-50); }
 .mb-4 { margin-bottom: 1rem; }
 .p-4 { padding: 1rem; }
 .rounded { border-radius: var(--border-radius); }
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.settings-row:last-child { border-bottom: none; }

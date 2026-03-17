@@ -57,6 +57,7 @@ export default {
   'nav.packageTemplates': 'Plantillas de paquetes',
   'nav.settings': 'Configuración',
   'nav.admins': 'Administradores',
+  'nav.billing': 'Suscripción',
   'admins.title.new': 'Nuevo Administrador',
   'admins.title.edit': 'Editar Administrador',
   'admins.new': '+ Nuevo Admin',

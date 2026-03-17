@@ -58,6 +58,9 @@
         <div class="nav-item" data-page="settings">
           <span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Configurações</span>
         </div>
+        <div class="nav-item" data-page="billing">
+          <span class="nav-icon">💳</span> <span>Assinatura</span>
+        </div>
 
       </nav>
 
@@ -103,6 +106,7 @@
     import { renderInstructors } from '/js/admin/instructors.js';
     import { renderSettings } from '/js/admin/settings.js';
     import { renderAdmins } from '/js/admin/admins.js';
+    import { renderBilling } from '/js/admin/billing.js';
     import { trackPageView } from '/js/analytics.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
@@ -130,6 +134,7 @@
       instructors: { titleKey: 'nav.instructors', render: renderInstructors },
       admins: { titleKey: 'nav.admins', render: renderAdmins },
       settings: { titleKey: 'nav.settings', render: renderSettings },
+      billing: { titleKey: 'nav.billing', render: renderBilling },
     };
 
     let currentPage = 'dashboard';

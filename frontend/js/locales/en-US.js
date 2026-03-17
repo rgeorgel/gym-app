@@ -57,6 +57,7 @@ export default {
   'nav.packageTemplates': 'Package Templates',
   'nav.settings': 'Settings',
   'nav.admins': 'Administrators',
+  'nav.billing': 'Subscription',
   'admins.title.new': 'New Administrator',
   'admins.title.edit': 'Edit Administrator',
   'admins.new': '+ New Admin',
