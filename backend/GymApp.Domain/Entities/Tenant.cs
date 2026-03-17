@@ -30,6 +30,8 @@ public class Tenant
     public DateTime? SubscriptionCurrentPeriodEnd { get; set; }
     public string? AbacatePayCustomerId { get; set; }
     public string? AbacatePayBillingId { get; set; }
+    public string? AbacatePayBillingUrl { get; set; }
+    public DateTime? LastReminderSentAt { get; set; }
 
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>

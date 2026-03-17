@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatDate, confirm } from '../ui.js';
+import { showToast, formatDate, confirm } from '../ui.js';
 
 export async function renderBilling(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -13,29 +13,6 @@ export async function renderBilling(container) {
   }
 
   container.innerHTML = buildPage(status);
-
-  // Modal must be created via createModal() — it appends to document.body
-  createModal({
-    id: 'modalSetupBilling',
-    title: 'Configurar pagamento',
-    body: `
-      <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
-      <div class="form-group">
-        <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
-        <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Telefone (WhatsApp)</label>
-        <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
-      </div>
-      <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
-    `,
-    footer: `
-      <button class="btn btn-secondary" onclick="closeModal('modalSetupBilling')">Cancelar</button>
-      <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
-    `,
-  });
-
   attachEvents(container);
 }
 
@@ -139,19 +116,55 @@ function buildPage(s) {
       </div>` : ''}
 
     </div>
+
+    <!-- Setup payment modal (inline — avoids DOM element stringification issues with createModal) -->
+    <div id="modalSetupBilling" class="modal-overlay hidden">
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 class="modal-title">Configurar pagamento</h2>
+          <button class="modal-close" id="btnCloseSetupModal" aria-label="Fechar">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
+          <div class="form-group">
+            <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
+            <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone (WhatsApp)</label>
+            <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
+          </div>
+          <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btnCancelSetupModal">Cancelar</button>
+          <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
+        </div>
+      </div>
+    </div>
   `;
+}
+
+function showModal(container) {
+  container.querySelector('#modalSetupBilling').classList.remove('hidden');
+}
+
+function hideModal(container) {
+  container.querySelector('#modalSetupBilling').classList.add('hidden');
 }
 
 function attachEvents(container) {
   container.querySelector('#btnSetupBilling')?.addEventListener('click', () => {
-    openModal('modalSetupBilling');
+    showModal(container);
   });
 
-  // btnConfirmSetup lives inside the modal which is appended to document.body
-  document.getElementById('btnConfirmSetup')?.addEventListener('click', async () => {
-    const taxId = document.getElementById('inputTaxId').value.trim();
-    const phone = document.getElementById('inputPhone').value.trim();
-    const errEl = document.getElementById('setupError');
+  container.querySelector('#btnCloseSetupModal')?.addEventListener('click', () => hideModal(container));
+  container.querySelector('#btnCancelSetupModal')?.addEventListener('click', () => hideModal(container));
+
+  container.querySelector('#btnConfirmSetup')?.addEventListener('click', async () => {
+    const taxId = container.querySelector('#inputTaxId').value.trim();
+    const phone = container.querySelector('#inputPhone').value.trim();
+    const errEl = container.querySelector('#setupError');
 
     if (!taxId) {
       errEl.textContent = 'Informe o CPF ou CNPJ.';
@@ -160,13 +173,13 @@ function attachEvents(container) {
     }
     errEl.style.display = 'none';
 
-    const btn = document.getElementById('btnConfirmSetup');
+    const btn = container.querySelector('#btnConfirmSetup');
     btn.disabled = true;
     btn.textContent = 'Aguarde...';
 
     try {
       const res = await api.post('/billing/setup', { taxId, phone: phone || null });
-      closeModal('modalSetupBilling');
+      hideModal(container);
       if (res.url) {
         showToast('Redirecionando para o pagamento...', 'success');
         window.open(res.url, '_blank');

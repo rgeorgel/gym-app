@@ -6,16 +6,16 @@ using System.Text.Json.Serialization;
 namespace GymApp.Api.Services;
 
 public record AbacatePayCustomer(
-    [property: JsonPropertyName("_id")] string Id,
+    string Id,
     string Name,
     string Email
 );
 
 public record AbacatePayBilling(
-    [property: JsonPropertyName("_id")] string Id,
+    string Id,
     string Url,
     string Status,
-    [property: JsonPropertyName("customer")] string? CustomerId
+    string? CustomerId
 );
 
 public record AbacatePayWebhookEvent(
@@ -28,10 +28,10 @@ public record AbacatePayWebhookData(
 );
 
 public record AbacatePayWebhookBilling(
-    [property: JsonPropertyName("_id")] string Id,
-    [property: JsonPropertyName("customer")] string? CustomerId,
+    string Id,
+    string? CustomerId,
     string Status,
-    [property: JsonPropertyName("nextBilling")] DateTime? NextBilling
+    DateTime? NextBilling
 );
 
 public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService> logger)
@@ -68,14 +68,15 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         var response = await client.PostAsync("customer/create",
             new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
 
+        var responseBody = await response.Content.ReadAsStringAsync();
+
         if (!response.IsSuccessStatusCode)
         {
-            var err = await response.Content.ReadAsStringAsync();
-            logger.LogError("AbacatePay CreateCustomer failed: {Status} {Body}", response.StatusCode, err);
+            logger.LogError("AbacatePay CreateCustomer failed: {Status} {Body}", response.StatusCode, responseBody);
             return null;
         }
 
-        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        using var doc = JsonDocument.Parse(responseBody);
         var data = doc.RootElement.GetProperty("data");
         return JsonSerializer.Deserialize<AbacatePayCustomer>(data.GetRawText(), JsonOpts);
     }
@@ -89,20 +90,19 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
 
         var body = new
         {
-            frequency = "MONTHLY",
+            frequency = "MULTIPLE_PAYMENTS",
             methods = new[] { "PIX" },
             products = new[]
             {
                 new
                 {
-                    externalId = $"subscription-{tenantSlug}",
                     name = "Assinatura Agendofy",
                     description = "Mensalidade do sistema de agendamento para academias",
                     quantity = 1,
                     price = subscriptionPrice
                 }
             },
-            customer = new { _id = customerId },
+            customerId,
             returnUrl,
             completionUrl = returnUrl
         };

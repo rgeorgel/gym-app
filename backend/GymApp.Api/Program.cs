@@ -100,6 +100,7 @@ builder.Services.AddSingleton<EfiService>();
 
 // AbacatePay subscription billing
 builder.Services.AddSingleton<AbacatePayService>();
+builder.Services.AddHostedService<SubscriptionReminderService>();
 
 builder.Services.AddProblemDetails();
 

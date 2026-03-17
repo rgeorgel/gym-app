@@ -44,4 +44,7 @@ public class SendGridEmailService(IConfiguration config) : IEmailService
 
     public Task SendWelcomeAsync(string toEmail, string toName, string academyName, string panelUrl)
         => Task.CompletedTask; // SendGrid not in use — no-op
+
+    public Task SendSubscriptionReminderAsync(string toEmail, string toName, string academyName, int daysRemaining, string paymentUrl)
+        => Task.CompletedTask; // SendGrid not in use — no-op
 }

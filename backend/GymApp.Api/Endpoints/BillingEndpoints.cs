@@ -78,6 +78,7 @@ public static class BillingEndpoints
                 return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
 
             tenant.AbacatePayBillingId = billing.Id;
+            tenant.AbacatePayBillingUrl = billing.Url;
             await db.SaveChangesAsync();
 
             return Results.Ok(new { url = billing.Url });
@@ -139,8 +140,21 @@ public static class BillingEndpoints
         app.MapPost("/api/webhooks/abacatepay", async (
             HttpContext ctx,
             AppDbContext db,
-            ILogger<AbacatePayService> logger) =>
+            ILogger<AbacatePayService> logger,
+            IConfiguration config) =>
         {
+            // Validate webhook secret from query string
+            var expectedSecret = config["AbacatePay:WebhookSecret"];
+            if (!string.IsNullOrEmpty(expectedSecret))
+            {
+                var receivedSecret = ctx.Request.Query["webhookSecret"].ToString();
+                if (receivedSecret != expectedSecret)
+                {
+                    logger.LogWarning("AbacatePay webhook: invalid secret");
+                    return Results.Unauthorized();
+                }
+            }
+
             using var reader = new StreamReader(ctx.Request.Body);
             var payload = await reader.ReadToEndAsync();
 

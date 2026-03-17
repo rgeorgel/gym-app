@@ -130,6 +130,90 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
         await resend.EmailSendAsync(msg);
     }
 
+    public async Task SendSubscriptionReminderAsync(string toEmail, string toName, string academyName, int daysRemaining, string paymentUrl)
+    {
+        var urgencyColor = daysRemaining == 1 ? "#EF4444" : daysRemaining <= 3 ? "#F59E0B" : "#3563E9";
+        var urgencyLabel = daysRemaining == 1
+            ? "⚠️ Último dia!"
+            : $"{daysRemaining} dias restantes";
+
+        var msg = new EmailMessage
+        {
+            From = $"{FromName} <{FromEmail}>",
+            Subject = $"[Agendofy] Sua assinatura vence em {daysRemaining} dia(s) — {academyName}",
+            HtmlBody = $"""
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+                <body style="margin:0;padding:0;background:#F4F6FB;font-family:'Helvetica Neue',Arial,sans-serif">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F6FB;padding:40px 16px">
+                    <tr><td align="center">
+                      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07)">
+
+                        <tr>
+                          <td style="background:#0D1525;padding:32px 40px;text-align:center">
+                            <p style="margin:0;font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px">
+                              agendo<span style="color:#3563E9">fy</span>
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding:40px 40px 32px">
+                            <div style="display:inline-block;background:{urgencyColor}1A;border:1px solid {urgencyColor}40;border-radius:8px;padding:8px 16px;margin-bottom:24px">
+                              <span style="font-size:13px;font-weight:700;color:{urgencyColor}">{urgencyLabel}</span>
+                            </div>
+
+                            <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#060A14;letter-spacing:-0.5px">
+                              Renove sua assinatura
+                            </h1>
+                            <p style="margin:0 0 24px;font-size:15px;color:#64748B;line-height:1.6">
+                              Olá, <strong style="color:#060A14">{toName}</strong>! A assinatura da academia
+                              <strong style="color:#060A14">{academyName}</strong> vence em
+                              <strong style="color:{urgencyColor}">{daysRemaining} dia(s)</strong>.
+                              Após o vencimento, seus alunos perderão acesso ao sistema de agendamentos.
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px">
+                              <tr>
+                                <td align="center">
+                                  <a href="{paymentUrl}"
+                                     style="display:inline-block;background:{urgencyColor};color:#ffffff;font-size:15px;font-weight:600;
+                                            padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:-0.2px">
+                                    Pagar agora via PIX →
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
+                            <p style="margin:0 0 0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6">
+                              Ou copie o link abaixo:<br>
+                              <a href="{paymentUrl}" style="color:#3563E9;text-decoration:none;font-weight:500;word-break:break-all">
+                                {paymentUrl}
+                              </a>
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="background:#F8FAFF;border-top:1px solid #E8ECF4;padding:24px 40px;text-align:center">
+                            <p style="margin:0;font-size:12px;color:#94A3B8;line-height:1.6">
+                              Qualquer dúvida, responda este e-mail.<br>
+                              <a href="https://agendofy.com" style="color:#3563E9;text-decoration:none">agendofy.com</a>
+                            </p>
+                          </td>
+                        </tr>
+
+                      </table>
+                    </td></tr>
+                  </table>
+                </body>
+                </html>
+                """
+        };
+        msg.To.Add(toEmail);
+        await resend.EmailSendAsync(msg);
+    }
+
     private static string Step(string num, string title, string desc) => $"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
           <tr>
