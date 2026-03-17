@@ -13,7 +13,30 @@ export async function renderBilling(container) {
   }
 
   container.innerHTML = buildPage(status);
-  attachEvents(container, status);
+
+  // Modal must be created via createModal() — it appends to document.body
+  createModal({
+    id: 'modalSetupBilling',
+    title: 'Configurar pagamento',
+    body: `
+      <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
+      <div class="form-group">
+        <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
+        <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone (WhatsApp)</label>
+        <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
+      </div>
+      <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
+    `,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal('modalSetupBilling')">Cancelar</button>
+      <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
+    `,
+  });
+
+  attachEvents(container);
 }
 
 function statusBadge(s) {
@@ -116,36 +139,16 @@ function buildPage(s) {
       </div>` : ''}
 
     </div>
-
-    ${createModal({
-      id: 'modalSetupBilling',
-      title: 'Configurar pagamento',
-      body: `
-        <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
-        <div class="form-group">
-          <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
-          <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Telefone (WhatsApp)</label>
-          <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
-        </div>
-        <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
-      `,
-      footer: `
-        <button class="btn btn-secondary" onclick="closeModal('modalSetupBilling')">Cancelar</button>
-        <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
-      `,
-    })}
   `;
 }
 
-function attachEvents(container, status) {
+function attachEvents(container) {
   container.querySelector('#btnSetupBilling')?.addEventListener('click', () => {
     openModal('modalSetupBilling');
   });
 
-  container.querySelector('#btnConfirmSetup')?.addEventListener('click', async () => {
+  // btnConfirmSetup lives inside the modal which is appended to document.body
+  document.getElementById('btnConfirmSetup')?.addEventListener('click', async () => {
     const taxId = document.getElementById('inputTaxId').value.trim();
     const phone = document.getElementById('inputPhone').value.trim();
     const errEl = document.getElementById('setupError');
