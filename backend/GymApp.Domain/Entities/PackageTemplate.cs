@@ -7,6 +7,7 @@ public class PackageTemplate
     public string Name { get; set; } = string.Empty;
     public int? DurationDays { get; set; } // null = no expiry
     public bool IsVisibleInStore { get; set; } = true;
+    public string? AbacatePayProductId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Tenant Tenant { get; set; } = null!;

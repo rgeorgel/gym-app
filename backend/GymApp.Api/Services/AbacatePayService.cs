@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace GymApp.Api.Services;
 
+public record AbacatePayProduct(string Id, string ExternalId, string Name);
+
 public record AbacatePayCustomer(
     string Id,
     string Name,
@@ -58,9 +60,31 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         string apiKey, string name, string email) =>
         CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
 
+    public async Task<AbacatePayProduct?> CreateProductAsync(
+        string apiKey, string externalId, string name, int priceCents)
+    {
+        using var client = CreateClient(apiKey);
+
+        var body = new { externalId, name, description = name, price = priceCents, currency = "BRL" };
+
+        var response = await client.PostAsync("products/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError("AbacatePay CreateProduct failed: {Status} {Body}", response.StatusCode, responseBody);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(responseBody);
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayProduct>(data.GetRawText(), JsonOpts);
+    }
+
     public async Task<AbacatePayBilling?> CreateStudentBillingAsync(
-        string apiKey, string customerId, string templateId, string productName,
-        int priceCents, string returnUrl)
+        string apiKey, string customerId, string productId, string returnUrl)
     {
         using var client = CreateClient(apiKey);
 
@@ -68,17 +92,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         {
             frequency = "ONE_TIME",
             methods = new[] { "PIX" },
-            products = new[]
-            {
-                new
-                {
-                    externalId = $"pkg-{templateId}",
-                    name = productName,
-                    description = productName,
-                    quantity = 1,
-                    price = priceCents
-                }
-            },
+            products = new[] { new { id = productId, quantity = 1 } },
             customerId,
             returnUrl,
             completionUrl = returnUrl
