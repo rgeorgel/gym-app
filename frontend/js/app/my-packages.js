@@ -15,7 +15,7 @@ export async function renderMyPackages(container) {
       return;
     }
 
-    container.innerHTML = packages.map(p => {
+    const renderCard = (p) => {
       const totalCredits = p.items.reduce((s, i) => s + i.totalCredits, 0);
       const usedCredits = p.items.reduce((s, i) => s + i.usedCredits, 0);
       const pct = totalCredits > 0 ? (usedCredits / totalCredits) * 100 : 0;
@@ -57,7 +57,24 @@ export async function renderMyPackages(container) {
           </div>
         </div>
       `;
-    }).join('');
+    };
+
+    const isInactive = (p) => {
+      const isExpired = p.expiresAt && new Date(p.expiresAt) < new Date();
+      const noCredits = p.items.every(i => i.remainingCredits === 0);
+      return isExpired || noCredits;
+    };
+
+    const active = packages.filter(p => !isInactive(p));
+    const history = packages.filter(p => isInactive(p));
+
+    let html = active.map(renderCard).join('');
+    if (history.length) {
+      html += `<div style="margin:1.5rem 0 0.75rem;font-weight:600;font-size:var(--font-size-sm);color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em">${t('myPackages.history')}</div>`;
+      html += `<div style="opacity:0.6">${history.map(renderCard).join('')}</div>`;
+    }
+
+    container.innerHTML = html;
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }

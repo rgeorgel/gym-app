@@ -439,4 +439,5 @@ export default {
   'myPackages.expiringSoon': '⚠️ Por vencer',
   'myPackages.expires': '📅 Vence',
   'myPackages.usedOf': '{used} de {total} usados',
+  'myPackages.history': 'Historial',
 };

@@ -439,4 +439,5 @@ export default {
   'myPackages.expiringSoon': '⚠️ Expiring soon',
   'myPackages.expires': '📅 Expires',
   'myPackages.usedOf': '{used} of {total} used',
+  'myPackages.history': 'History',
 };
