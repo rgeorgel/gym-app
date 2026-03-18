@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agendofy — Agendamento inteligente para academias e estúdios</title>
@@ -2311,6 +2319,7 @@ async function submitForm() {
     });
 
     if (res.status === 201) {
+      gtag('event', 'sign_up', { method: 'landing_page' });
       document.getElementById('form-content').style.display = 'none';
       document.getElementById('form-success').style.display = 'flex';
       return;
@@ -2359,6 +2368,24 @@ document.getElementById('whatsapp').addEventListener('input', function(e) {
 // ── Reset field error on input ──
 document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
   el.addEventListener('input', () => { el.style.borderColor = ''; hideFormError(); });
+});
+
+// ── Analytics events ──
+// generate_lead: any CTA that scrolls to the signup section
+document.querySelectorAll('a[href="#cadastro"]').forEach(el => {
+  el.addEventListener('click', () => {
+    gtag('event', 'generate_lead', { event_category: el.textContent.trim() });
+  });
+});
+
+// form_start: first time the user interacts with the signup form
+let formStarted = false;
+document.querySelectorAll('#form-content input, #form-content select').forEach(el => {
+  el.addEventListener('focus', () => {
+    if (formStarted) return;
+    formStarted = true;
+    gtag('event', 'form_start', { form_name: 'signup' });
+  }, { once: false });
 });
 
 // ── Active nav link ──
