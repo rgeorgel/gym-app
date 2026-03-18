@@ -89,6 +89,53 @@ public static class BillingEndpoints
             return Results.Ok(new { url = billing.Url });
         });
 
+        // POST /api/billing/pay — get (or create) a payment link, works for any subscription status
+        group.MapPost("/pay", async (
+            AppDbContext db,
+            TenantContext tenantCtx,
+            ClaimsPrincipal principal,
+            AbacatePayService abacatePay,
+            IConfiguration config) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            var adminName  = principal.FindFirstValue(ClaimTypes.Name)  ?? tenant.Name;
+            var adminEmail = principal.FindFirstValue(ClaimTypes.Email)
+                             ?? principal.FindFirstValue("email")
+                             ?? string.Empty;
+
+            // Reuse pending link if one already exists (admin opened it but hasn't paid yet)
+            if (!string.IsNullOrEmpty(tenant.AbacatePayBillingUrl))
+                return Results.Ok(new { url = tenant.AbacatePayBillingUrl });
+
+            // Ensure customer exists
+            if (string.IsNullOrEmpty(tenant.AbacatePayCustomerId))
+            {
+                var customer = await abacatePay.CreateCustomerAsync(adminName, adminEmail, null, null);
+                if (customer is null)
+                    return Results.Problem("Erro ao criar cliente no AbacatePay. Tente novamente.");
+                tenant.AbacatePayCustomerId = customer.Id;
+                await db.SaveChangesAsync();
+            }
+
+            var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
+            var uri = new Uri(baseUrl);
+            var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
+
+            var billing = await abacatePay.CreateBillingAsync(
+                tenant.AbacatePayCustomerId, tenant.Slug, adminEmail, panelUrl);
+
+            if (billing is null)
+                return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
+
+            tenant.AbacatePayBillingId  = billing.Id;
+            tenant.AbacatePayBillingUrl = billing.Url;
+            await db.SaveChangesAsync();
+
+            return Results.Ok(new { url = billing.Url });
+        });
+
         // POST /api/billing/cancel — cancel the subscription
         group.MapPost("/cancel", async (
             AppDbContext db,
@@ -229,14 +276,16 @@ public static class BillingEndpoints
             {
                 case "billing.paid":
                     tenant.SubscriptionStatus = SubscriptionStatus.Active;
-                    // Extend period by 1 month from now (or from last period end if in future)
+                    // Add 30 days from the current period end (or from now if already expired)
                     var from = tenant.SubscriptionCurrentPeriodEnd.HasValue
                         && tenant.SubscriptionCurrentPeriodEnd.Value > DateTime.UtcNow
                             ? tenant.SubscriptionCurrentPeriodEnd.Value
                             : DateTime.UtcNow;
-                    tenant.SubscriptionCurrentPeriodEnd = from.AddMonths(1);
+                    tenant.SubscriptionCurrentPeriodEnd = from.AddDays(30);
                     if (!string.IsNullOrEmpty(billingId))
                         tenant.AbacatePayBillingId = billingId;
+                    // Clear the billing URL so the next /billing/pay generates a fresh link
+                    tenant.AbacatePayBillingUrl = null;
                     logger.LogInformation("Subscription activated for tenant {Slug}, period ends {End}",
                         tenant.Slug, tenant.SubscriptionCurrentPeriodEnd);
                     break;

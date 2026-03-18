@@ -34,6 +34,7 @@ function buildPage(s) {
   const isPastDue   = s.subscriptionStatus === 'PastDue';
   const isCanceled  = s.subscriptionStatus === 'Canceled';
   const canSetup    = !isActive;
+  const canRenew    = isActive;
   const canCancel   = isActive;
 
   let infoHtml = '';
@@ -101,6 +102,17 @@ function buildPage(s) {
             Após clicar em continuar, você será redirecionado para efetuar o primeiro pagamento.
           </p>
           <button class="btn btn-primary" id="btnSetupBilling">Configurar pagamento →</button>
+        </div>
+      </div>` : ''}
+
+      ${canRenew ? `
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">Renovar assinatura</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">
+            Adiciona mais 30 dias ao vencimento atual. O pagamento é feito via PIX (AbacatePay).
+          </p>
+          <button class="btn btn-primary" id="btnPayNow">Pagar agora →</button>
         </div>
       </div>` : ''}
 
@@ -189,6 +201,24 @@ function attachEvents(container) {
       errEl.style.display = 'block';
       btn.disabled = false;
       btn.textContent = 'Continuar para pagamento';
+    }
+  });
+
+  container.querySelector('#btnPayNow')?.addEventListener('click', async () => {
+    const btn = container.querySelector('#btnPayNow');
+    btn.disabled = true;
+    btn.textContent = 'Aguarde...';
+    try {
+      const res = await api.post('/billing/pay', {});
+      if (res.url) {
+        showToast('Redirecionando para o pagamento...', 'success');
+        window.open(res.url, '_blank');
+      }
+    } catch (e) {
+      showToast('Erro: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Pagar agora →';
     }
   });
 
