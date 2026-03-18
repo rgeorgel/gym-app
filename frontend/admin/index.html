@@ -139,9 +139,10 @@
 
     let currentPage = 'dashboard';
 
-    async function navigateTo(page) {
+    async function navigateTo(page, updateHash = true) {
       if (!pages[page]) return;
       currentPage = page;
+      if (updateHash) location.hash = page;
       const pageTitle = t(pages[page].titleKey);
       document.getElementById('pageTitle').textContent = pageTitle;
       trackPageView('Admin — ' + pageTitle);
@@ -164,7 +165,13 @@
     document.getElementById('btnLogout').addEventListener('click', () => logout());
     document.getElementById('btnRefresh').addEventListener('click', () => navigateTo(currentPage));
 
-    await navigateTo('dashboard');
+    window.addEventListener('hashchange', () => {
+      const page = location.hash.slice(1);
+      if (pages[page] && page !== currentPage) navigateTo(page, false);
+    });
+
+    const initialPage = location.hash.slice(1);
+    await navigateTo(pages[initialPage] ? initialPage : 'dashboard');
   </script>
 </body>
 </html>
