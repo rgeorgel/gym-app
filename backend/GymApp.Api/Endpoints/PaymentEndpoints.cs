@@ -65,8 +65,7 @@ public static class PaymentEndpoints
 
             var studentId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            // Use tracked entity so we can update AbacatePayProductId if needed
-            var template = await db.PackageTemplates
+            var template = await db.PackageTemplates.AsNoTracking()
                 .Include(t => t.Items)
                 .FirstOrDefaultAsync(t => t.Id == req.PackageTemplateId && t.TenantId == tenantCtx.TenantId);
 
@@ -90,25 +89,14 @@ public static class PaymentEndpoints
                 await db.SaveChangesAsync();
             }
 
-            // Ensure the package template has an AbacatePay product (created once, reused after)
-            if (string.IsNullOrEmpty(template.AbacatePayProductId))
-            {
-                var priceCents = (int)Math.Round(amount * 100);
-                var product = await abacatePay.CreateProductAsync(
-                    apiKey, $"pkg-{template.Id:N}", template.Name, priceCents);
-                if (product is null)
-                    return Results.Problem("Failed to create product in payment gateway.", statusCode: 502);
-                template.AbacatePayProductId = product.Id;
-                await db.SaveChangesAsync();
-            }
-
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
             var uri = new Uri(baseUrl);
             var returnUrl = $"{uri.Scheme}://{tenantRecord.Slug}.{uri.Host}/app/index.html#my-packages";
 
+            var priceCents = (int)Math.Round(amount * 100);
             var billing = await abacatePay.CreateStudentBillingAsync(
                 apiKey, studentUser.AbacatePayCustomerId,
-                template.AbacatePayProductId, returnUrl);
+                template.Name, priceCents, returnUrl);
 
             if (billing is null)
                 return Results.Problem("Failed to create payment.", statusCode: 502);

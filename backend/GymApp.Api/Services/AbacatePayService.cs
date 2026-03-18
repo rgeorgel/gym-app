@@ -5,8 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace GymApp.Api.Services;
 
-public record AbacatePayProduct(string Id, string ExternalId, string Name);
-
 public record AbacatePayCustomer(
     string Id,
     string Name,
@@ -60,39 +58,21 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         string apiKey, string name, string email) =>
         CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
 
-    public async Task<AbacatePayProduct?> CreateProductAsync(
-        string apiKey, string externalId, string name, int priceCents)
-    {
-        using var client = CreateClient(apiKey, "v2");
-
-        var body = new { externalId, name, description = name, price = priceCents, currency = "BRL" };
-
-        var response = await client.PostAsync("products/create",
-            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
-
-        var responseBody = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            logger.LogError("AbacatePay CreateProduct failed: {Status} {Body}", response.StatusCode, responseBody);
-            return null;
-        }
-
-        using var doc = JsonDocument.Parse(responseBody);
-        var data = doc.RootElement.GetProperty("data");
-        return JsonSerializer.Deserialize<AbacatePayProduct>(data.GetRawText(), JsonOpts);
-    }
-
     public async Task<AbacatePayBilling?> CreateStudentBillingAsync(
-        string apiKey, string customerId, string productId, string returnUrl)
+        string apiKey, string customerId, string productName, int priceCents, string returnUrl)
     {
         using var client = CreateClient(apiKey);
 
+        // No externalId on product — avoids "Failed to create some products" conflict
+        // when the same template is purchased more than once
         var body = new
         {
             frequency = "ONE_TIME",
             methods = new[] { "PIX" },
-            products = new[] { new { id = productId, quantity = 1 } },
+            products = new[]
+            {
+                new { name = productName, description = productName, quantity = 1, price = priceCents }
+            },
             customerId,
             returnUrl,
             completionUrl = returnUrl
