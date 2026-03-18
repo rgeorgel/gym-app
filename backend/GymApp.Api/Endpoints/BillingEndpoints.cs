@@ -77,7 +77,7 @@ public static class BillingEndpoints
             var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
 
             var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, adminEmail, panelUrl);
+                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl);
 
             if (billing is null)
                 return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
@@ -124,7 +124,7 @@ public static class BillingEndpoints
             var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
 
             var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, adminEmail, panelUrl);
+                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl);
 
             if (billing is null)
                 return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");

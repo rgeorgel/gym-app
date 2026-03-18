@@ -59,10 +59,11 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
 
     public async Task<AbacatePayBilling?> CreateStudentBillingAsync(
-        string apiKey, string customerId, string productName, int priceCents, string returnUrl)
+        string apiKey, string customerId, string productName, string studentName, int priceCents, string returnUrl)
     {
         using var client = CreateClient(apiKey);
 
+        var displayName = $"{productName} — {studentName}";
         var body = new
         {
             frequency = "ONE_TIME",
@@ -72,8 +73,8 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
                 new
                 {
                     externalId = $"pay-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
-                    name = productName,
-                    description = productName,
+                    name = displayName,
+                    description = displayName,
                     quantity = 1,
                     price = priceCents
                 }
@@ -135,7 +136,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
     }
 
     public async Task<AbacatePayBilling?> CreateBillingAsync(
-        string customerId, string tenantSlug, string adminEmail, string baseUrl)
+        string customerId, string tenantSlug, string tenantName, string adminEmail, string baseUrl)
     {
         using var client = CreateClient();
         var subscriptionPrice = config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
@@ -150,8 +151,8 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
                 new
                 {
                     externalId = $"sub-{tenantSlug}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
-                    name = "Assinatura Agendofy",
-                    description = "Mensalidade do sistema de agendamento para academias",
+                    name = $"Assinatura Agendofy — {tenantName}",
+                    description = $"Mensalidade do sistema de agendamento para academias — {tenantName}",
                     quantity = 1,
                     price = subscriptionPrice
                 }

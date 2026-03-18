@@ -96,7 +96,7 @@ public static class PaymentEndpoints
             var priceCents = (int)Math.Round(amount * 100);
             var billing = await abacatePay.CreateStudentBillingAsync(
                 apiKey, studentUser.AbacatePayCustomerId,
-                template.Name, priceCents, returnUrl);
+                template.Name, studentUser.Name, priceCents, returnUrl);
 
             if (billing is null)
                 return Results.Problem("Failed to create payment.", statusCode: 502);
