@@ -63,15 +63,20 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
     {
         using var client = CreateClient(apiKey);
 
-        // No externalId on product — avoids "Failed to create some products" conflict
-        // when the same template is purchased more than once
         var body = new
         {
             frequency = "ONE_TIME",
             methods = new[] { "PIX" },
             products = new[]
             {
-                new { name = productName, description = productName, quantity = 1, price = priceCents }
+                new
+                {
+                    externalId = $"pay-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
+                    name = productName,
+                    description = productName,
+                    quantity = 1,
+                    price = priceCents
+                }
             },
             customerId,
             returnUrl,
