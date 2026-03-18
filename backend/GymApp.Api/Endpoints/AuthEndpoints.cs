@@ -40,7 +40,7 @@ public static class AuthEndpoints
             if (user is null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
                 return Results.Unauthorized();
 
-            if (user.Status == GymApp.Domain.Enums.StudentStatus.Suspended)
+            if (user.Status != GymApp.Domain.Enums.StudentStatus.Active)
                 return Results.Forbid();
 
             var (access, refresh) = GenerateTokens(user, config);
@@ -96,6 +96,9 @@ public static class AuthEndpoints
                 u.RefreshTokenExpiry > DateTime.UtcNow);
 
             if (user is null) return Results.Unauthorized();
+
+            if (user.Status != GymApp.Domain.Enums.StudentStatus.Active)
+                return Results.Unauthorized();
 
             var (access, refresh) = GenerateTokens(user, config);
             user.RefreshToken = refresh;
