@@ -33,6 +33,10 @@
           <span class="nav-icon">💰</span>
           <span>Faturamento</span>
         </div>
+        <div class="nav-item" data-page="super-admins">
+          <span class="nav-icon">🔑</span>
+          <span>Super Admins</span>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -68,6 +72,7 @@
     import { t } from '/js/i18n.js';
     import { renderTenants } from '/js/admin/tenants.js';
     import { renderRevenue } from '/js/superadmin/revenue.js';
+    import { renderSuperAdmins } from '/js/superadmin/super-admins.js';
 
     if (!requireAuth(['SuperAdmin'])) throw new Error('unauthorized');
 
@@ -84,6 +89,7 @@
     const pages = {
       tenants: { titleKey: 'nav.tenants', render: renderTenants },
       revenue: { titleKey: 'nav.revenue', render: renderRevenue },
+      'super-admins': { titleKey: 'nav.superAdmins', render: renderSuperAdmins },
     };
 
     let currentPage = 'tenants';

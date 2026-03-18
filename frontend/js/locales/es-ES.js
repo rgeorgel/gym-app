@@ -59,6 +59,7 @@ export default {
   'nav.admins': 'Administradores',
   'nav.billing': 'Suscripción',
   'nav.revenue': 'Facturación',
+  'nav.superAdmins': 'Super Admins',
   'admins.title.new': 'Nuevo Administrador',
   'admins.title.edit': 'Editar Administrador',
   'admins.new': '+ Nuevo Admin',
