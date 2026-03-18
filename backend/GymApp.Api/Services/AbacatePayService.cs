@@ -96,7 +96,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             {
                 new
                 {
-                    externalId = $"sub-{tenantSlug}-{DateTimeOffset.UtcNow:yyyyMM}",
+                    externalId = $"sub-{tenantSlug}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
                     name = "Assinatura Agendofy",
                     description = "Mensalidade do sistema de agendamento para academias",
                     quantity = 1,
