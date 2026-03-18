@@ -10,9 +10,8 @@ public class Payment
     public Guid PackageTemplateId { get; set; }
     public decimal Amount { get; set; }
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
-    public string? EfiTxId { get; set; }
-    public string? PixCopyPaste { get; set; }
-    public string? PixQrCodeBase64 { get; set; }
+    public string? AbacatePayBillingId { get; set; }
+    public string? AbacatePayBillingUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddHours(1);
     public DateTime? PaidAt { get; set; }

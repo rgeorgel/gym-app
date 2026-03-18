@@ -71,40 +71,29 @@ async function openPaymentModal(planId, planName) {
   openModal('paymentModal');
 
   let pollInterval = null;
-
   const stopPolling = () => { if (pollInterval) clearInterval(pollInterval); };
 
   try {
     const payment = await api.post('/payments/checkout', { packageTemplateId: planId });
     const body = document.querySelector('#paymentModal .modal-body');
 
+    // Open the AbacatePay payment page in a new tab
+    window.open(payment.billingUrl, '_blank');
+
     body.innerHTML = `
-      <div style="text-align:center">
-        <p class="text-sm text-muted" style="margin-bottom:1rem">${t('store.payment.scan')}</p>
-        <img src="${payment.qrCodeBase64}" alt="QR Code PIX"
-          style="width:220px;height:220px;border:2px solid var(--gray-200);border-radius:8px;display:block;margin:0 auto 1rem">
-        <button class="btn btn-secondary" id="btnCopyPix" style="width:100%;margin-bottom:1rem">
-          ${t('store.payment.copy')}
-        </button>
-        <div id="paymentStatus" style="font-size:var(--font-size-sm);color:var(--gray-500)">
+      <div style="text-align:center;padding:0.5rem 0">
+        <p style="margin-bottom:1rem">${t('store.payment.redirected')}</p>
+        <a href="${payment.billingUrl}" target="_blank" class="btn btn-primary" style="margin-bottom:1.25rem">
+          ${t('store.payment.openLink')}
+        </a>
+        <div id="paymentStatus" style="font-size:var(--font-size-sm);color:var(--gray-500);margin-top:0.5rem">
           <span class="spinner" style="width:14px;height:14px;margin-right:0.4rem"></span>
           ${t('store.payment.waiting')}
         </div>
       </div>
     `;
 
-    document.getElementById('btnCopyPix').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(payment.pixCopyPaste);
-        trackEvent('pix_code_copied', { plan_name: planName });
-        showToast(t('store.payment.copied'), 'success');
-      } catch {
-        // fallback: show the code in an alert
-        prompt('Copie o código PIX:', payment.pixCopyPaste);
-      }
-    });
-
-    // Poll for confirmation every 4 seconds
+    // Poll for confirmation every 5 seconds
     pollInterval = setInterval(async () => {
       try {
         const status = await api.get(`/payments/${payment.paymentId}/status`);
@@ -120,9 +109,8 @@ async function openPaymentModal(planId, planName) {
           if (statusEl) statusEl.innerHTML = `<span style="color:var(--color-danger)">${t('store.payment.expired')}</span>`;
         }
       } catch { /* ignore poll errors */ }
-    }, 4000);
+    }, 5000);
 
-    // Stop polling when modal closes
     document.querySelector('#paymentModal .modal-overlay')?.addEventListener('click', stopPolling);
     document.querySelector('#paymentModal .modal-close')?.addEventListener('click', stopPolling);
 

@@ -56,7 +56,8 @@ public record TenantSettingsResponse(
     bool PaymentsAllowedBySuperAdmin,
     string PrimaryColor,
     string SecondaryColor,
-    string? LogoUrl
+    string? LogoUrl,
+    bool HasAbacatePayStudentApiKey
 );
 
 public record SetLogoUrlRequest(
@@ -73,6 +74,10 @@ public record SetLanguageRequest(
 
 public record SetEfiPayeeCodeRequest(
     string? PayeeCode
+);
+
+public record SetAbacatePayStudentApiKeyRequest(
+    string? ApiKey
 );
 
 public record SetPaymentsEnabledRequest(

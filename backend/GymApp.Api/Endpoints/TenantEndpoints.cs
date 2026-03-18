@@ -241,6 +241,16 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        settingsGroup.MapPut("/abacatepay-student-api-key", async (SetAbacatePayStudentApiKeyRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.AbacatePayStudentApiKey = string.IsNullOrWhiteSpace(req.ApiKey) ? null : req.ApiKey.Trim();
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             var tenant = await db.Tenants.FindAsync(id);
@@ -261,7 +271,8 @@ public static class TenantEndpoints
     }
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
-        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl);
+        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl,
+            HasAbacatePayStudentApiKey: !string.IsNullOrEmpty(t.AbacatePayStudentApiKey));
 
     private static string GenerateSlug(string name)
     {

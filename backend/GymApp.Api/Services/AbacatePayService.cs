@@ -42,9 +42,9 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         PropertyNameCaseInsensitive = true
     };
 
-    private HttpClient CreateClient()
+    private HttpClient CreateClient(string? apiKey = null)
     {
-        var apiKey = config["AbacatePay:ApiKey"]
+        apiKey ??= config["AbacatePay:ApiKey"]
             ?? throw new InvalidOperationException("AbacatePay:ApiKey not configured.");
 
         var client = new HttpClient { BaseAddress = new Uri("https://api.abacatepay.com/v1/") };
@@ -52,11 +52,65 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         return client;
     }
 
+    // ── Tenant student-payment methods (use tenant's own API key) ─────────────
+
+    public Task<AbacatePayCustomer?> CreateStudentCustomerAsync(
+        string apiKey, string name, string email) =>
+        CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
+
+    public async Task<AbacatePayBilling?> CreateStudentBillingAsync(
+        string apiKey, string customerId, string templateId, string productName,
+        int priceCents, string returnUrl)
+    {
+        using var client = CreateClient(apiKey);
+
+        var body = new
+        {
+            frequency = "ONE_TIME",
+            methods = new[] { "PIX" },
+            products = new[]
+            {
+                new
+                {
+                    externalId = $"pkg-{templateId}",
+                    name = productName,
+                    description = productName,
+                    quantity = 1,
+                    price = priceCents
+                }
+            },
+            customerId,
+            returnUrl,
+            completionUrl = returnUrl
+        };
+
+        var response = await client.PostAsync("billing/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            logger.LogError("AbacatePay CreateStudentBilling failed: {Status} {Body}", response.StatusCode, err);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayBilling>(data.GetRawText(), JsonOpts);
+    }
+
+    // ── Platform (subscription) methods ────────────────────────────────────────
+
     public async Task<AbacatePayCustomer?> CreateCustomerAsync(
         string name, string email, string? phone, string? taxId)
     {
         using var client = CreateClient();
+        return await CreateCustomerCoreAsync(client, name, email, phone, taxId);
+    }
 
+    private async Task<AbacatePayCustomer?> CreateCustomerCoreAsync(
+        HttpClient client, string name, string email, string? phone, string? taxId)
+    {
         var body = new
         {
             name,

@@ -16,6 +16,7 @@ public class User
     public DateOnly? BirthDate { get; set; }
     public string? HealthNotes { get; set; }
     public bool ReceivesSubscriptionReminders { get; set; } = false;
+    public string? AbacatePayCustomerId { get; set; } // Customer in the tenant's own AbacatePay account
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
     public string? PasswordResetToken { get; set; }

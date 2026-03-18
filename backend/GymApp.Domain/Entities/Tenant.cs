@@ -33,6 +33,9 @@ public class Tenant
     public string? AbacatePayBillingUrl { get; set; }
     public DateTime? LastReminderSentAt { get; set; }
 
+    // AbacatePay key for student payments (tenant's own account)
+    public string? AbacatePayStudentApiKey { get; set; }
+
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>
     public bool HasStudentAccess => IsActive && SubscriptionStatus switch

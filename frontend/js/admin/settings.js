@@ -132,16 +132,21 @@ export async function renderSettings(container) {
 
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
-          <h3 style="margin:0 0 0.25rem">${t('settings.efi.title')}</h3>
-          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.efi.desc')}</p>
-          <div style="margin-bottom:0.75rem">${efiStatus}</div>
-          <div class="form-group">
-            <label class="form-label">${t('settings.efi.field')}</label>
-            <input class="form-control" id="inputEfiPayeeCode" placeholder="${t('settings.efi.placeholder')}"
-              value="${settings.efiPayeeCode ?? ''}">
+          <h3 style="margin:0 0 0.25rem">${t('settings.abacatepay.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1rem">${t('settings.abacatepay.desc')}</p>
+          <div style="margin-bottom:0.75rem">
+            ${settings.hasAbacatePayStudentApiKey
+              ? `<span class="badge badge-success">${t('settings.abacatepay.configured')}</span>`
+              : `<span class="text-muted text-sm">${t('settings.abacatepay.notConfigured')}</span>`}
           </div>
+          <div class="form-group">
+            <label class="form-label">${t('settings.abacatepay.field')}</label>
+            <input class="form-control" id="inputAbacatePayKey" type="password"
+              placeholder="${t('settings.abacatepay.placeholder')}">
+          </div>
+          <p class="text-sm text-muted" style="margin-top:0.25rem">${t('settings.abacatepay.hint')}</p>
           <div style="margin-top:1rem">
-            <button class="btn btn-primary" id="btnSaveEfi">${t('btn.save')}</button>
+            <button class="btn btn-primary" id="btnSaveAbacatePay">${t('btn.save')}</button>
           </div>
         </div>
       </div>
@@ -213,13 +218,14 @@ export async function renderSettings(container) {
     }
   });
 
-  document.getElementById('btnSaveEfi').addEventListener('click', async () => {
-    const val = document.getElementById('inputEfiPayeeCode').value.trim();
-    const btn = document.getElementById('btnSaveEfi');
+  document.getElementById('btnSaveAbacatePay').addEventListener('click', async () => {
+    const val = document.getElementById('inputAbacatePayKey').value.trim();
+    if (!val) { showToast(t('error.prefix') + t('settings.abacatepay.required'), 'error'); return; }
+    const btn = document.getElementById('btnSaveAbacatePay');
     btn.disabled = true;
     try {
-      await api.put('/settings/efi-payee-code', { payeeCode: val || null });
-      showToast(t('settings.efi.saved'), 'success');
+      await api.put('/settings/abacatepay-student-api-key', { apiKey: val });
+      showToast(t('settings.abacatepay.saved'), 'success');
       await renderSettings(container);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');

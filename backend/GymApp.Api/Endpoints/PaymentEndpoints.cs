@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Text.Json;
 using GymApp.Api.DTOs;
 using GymApp.Api.Helpers;
 using GymApp.Api.Services;
@@ -6,7 +8,6 @@ using GymApp.Domain.Enums;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace GymApp.Api.Endpoints;
 
@@ -45,68 +46,76 @@ public static class PaymentEndpoints
             return Results.Ok(response);
         }).RequireAuthorization("AnyUser");
 
-        // Student: initiate purchase — generates PIX charge
+        // Student: initiate purchase — creates AbacatePay billing
         app.MapPost("/api/payments/checkout", async (
             CheckoutRequest req,
             AppDbContext db,
-            TenantContext tenant,
-            EfiService efi,
+            TenantContext tenantCtx,
+            AbacatePayService abacatePay,
+            IConfiguration config,
             ClaimsPrincipal user) =>
         {
-            if (!efi.IsConfigured)
-                return Results.Problem("Payment gateway not configured for this gym.", statusCode: 503);
-
-            var tenantRecord = await db.Tenants.AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Id == tenant.TenantId);
+            var tenantRecord = await db.Tenants.FindAsync(tenantCtx.TenantId);
 
             if (tenantRecord is null || !tenantRecord.PaymentsActive)
                 return Results.Problem("Payments are not enabled for this gym.", statusCode: 403);
+
+            if (string.IsNullOrEmpty(tenantRecord.AbacatePayStudentApiKey))
+                return Results.Problem("Payment gateway not configured for this gym.", statusCode: 503);
 
             var studentId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var template = await db.PackageTemplates.AsNoTracking()
                 .Include(t => t.Items)
-                .FirstOrDefaultAsync(t => t.Id == req.PackageTemplateId && t.TenantId == tenant.TenantId);
+                .FirstOrDefaultAsync(t => t.Id == req.PackageTemplateId && t.TenantId == tenantCtx.TenantId);
 
             if (template is null) return Results.NotFound("Plan not found.");
 
             var amount = template.Items.Sum(i => i.TotalCredits * i.PricePerCredit);
             if (amount <= 0) return Results.BadRequest("Plan has no price configured.");
 
-            var studentName = await db.Users.AsNoTracking()
-                .Where(u => u.Id == studentId)
-                .Select(u => u.Name)
-                .FirstOrDefaultAsync() ?? "Aluno";
+            var studentUser = await db.Users.FindAsync(studentId);
+            if (studentUser is null) return Results.NotFound("Student not found.");
 
-            var tenantPayeeCode = tenantRecord.EfiPayeeCode;
+            var apiKey = tenantRecord.AbacatePayStudentApiKey;
 
-            EfiChargeResult charge;
-            try
+            // Ensure the student has an AbacatePay customer in this tenant's account
+            if (string.IsNullOrEmpty(studentUser.AbacatePayCustomerId))
             {
-                charge = await efi.CreatePixChargeAsync(studentName, amount, template.Name, tenantPayeeCode);
+                var customer = await abacatePay.CreateStudentCustomerAsync(apiKey, studentUser.Name, studentUser.Email);
+                if (customer is null)
+                    return Results.Problem("Failed to create customer in payment gateway.", statusCode: 502);
+                studentUser.AbacatePayCustomerId = customer.Id;
+                await db.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                return Results.Problem($"Failed to create payment: {ex.Message}", statusCode: 502);
-            }
+
+            var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
+            var uri = new Uri(baseUrl);
+            var returnUrl = $"{uri.Scheme}://{tenantRecord.Slug}.{uri.Host}/app/index.html#my-packages";
+
+            var priceCents = (int)Math.Round(amount * 100);
+            var billing = await abacatePay.CreateStudentBillingAsync(
+                apiKey, studentUser.AbacatePayCustomerId,
+                template.Id.ToString(), template.Name, priceCents, returnUrl);
+
+            if (billing is null)
+                return Results.Problem("Failed to create payment.", statusCode: 502);
 
             var payment = new Payment
             {
-                TenantId = tenant.TenantId,
+                TenantId = tenantCtx.TenantId,
                 StudentId = studentId,
                 PackageTemplateId = template.Id,
                 Amount = amount,
-                EfiTxId = charge.TxId,
-                PixCopyPaste = charge.PixCopyPaste,
-                PixQrCodeBase64 = charge.QrCodeBase64,
-                ExpiresAt = DateTime.UtcNow.AddHours(1)
+                AbacatePayBillingId = billing.Id,
+                AbacatePayBillingUrl = billing.Url,
+                ExpiresAt = DateTime.UtcNow.AddHours(24)
             };
 
             db.Payments.Add(payment);
             await db.SaveChangesAsync();
 
-            return Results.Ok(new CheckoutResponse(
-                payment.Id, amount, charge.PixCopyPaste, charge.QrCodeBase64, payment.ExpiresAt));
+            return Results.Ok(new CheckoutResponse(payment.Id, amount, billing.Url, payment.ExpiresAt));
         }).RequireAuthorization("AnyUser");
 
         // Student: poll payment status
@@ -139,33 +148,60 @@ public static class PaymentEndpoints
                 payment.Id, payment.Status, payment.PaidAt, payment.AssignedPackageId));
         }).RequireAuthorization("AnyUser");
 
-        // Efí webhook — called by Efí Bank when PIX payment is confirmed
-        app.MapPost("/api/payments/webhook/efi", async (
-            EfiWebhookPayload payload,
-            AppDbContext db) =>
+        // AbacatePay webhook — called when a student payment is confirmed
+        app.MapPost("/api/payments/webhook/abacatepay", async (
+            HttpContext ctx,
+            AppDbContext db,
+            ILogger<AbacatePayService> logger,
+            IConfiguration config) =>
         {
-            if (payload.Pix is null || payload.Pix.Length == 0)
-                return Results.Ok();
-
-            foreach (var pix in payload.Pix)
+            var expectedSecret = config["AbacatePay:WebhookSecret"];
+            if (!string.IsNullOrEmpty(expectedSecret))
             {
-                var payment = await db.Payments
-                    .FirstOrDefaultAsync(p => p.EfiTxId == pix.Txid && p.Status == PaymentStatus.Pending);
-
-                if (payment is null) continue;
-
-                payment.Status = PaymentStatus.Paid;
-                payment.PaidAt = DateTime.UtcNow;
-
-                var package = await PackageHelper.AssignFromTemplateAsync(
-                    db, payment.TenantId, payment.StudentId, payment.PackageTemplateId);
-
-                if (package is not null)
-                    payment.AssignedPackageId = package.Id;
-
-                await db.SaveChangesAsync();
+                var receivedSecret = ctx.Request.Query["webhookSecret"].ToString();
+                if (receivedSecret != expectedSecret)
+                {
+                    logger.LogWarning("AbacatePay student webhook: invalid secret");
+                    return Results.Unauthorized();
+                }
             }
 
+            using var reader = new StreamReader(ctx.Request.Body);
+            var payload = await reader.ReadToEndAsync();
+
+            AbacatePayWebhookEvent? webhook;
+            try
+            {
+                webhook = JsonSerializer.Deserialize<AbacatePayWebhookEvent>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch
+            {
+                return Results.BadRequest();
+            }
+
+            if (webhook?.Event != "billing.paid") return Results.Ok();
+
+            var billingId = webhook.Data?.Billing?.Id;
+            if (string.IsNullOrEmpty(billingId)) return Results.Ok();
+
+            var payment = await db.Payments
+                .FirstOrDefaultAsync(p => p.AbacatePayBillingId == billingId && p.Status == PaymentStatus.Pending);
+
+            if (payment is null) return Results.Ok();
+
+            payment.Status = PaymentStatus.Paid;
+            payment.PaidAt = DateTime.UtcNow;
+
+            var package = await PackageHelper.AssignFromTemplateAsync(
+                db, payment.TenantId, payment.StudentId, payment.PackageTemplateId);
+
+            if (package is not null)
+                payment.AssignedPackageId = package.Id;
+
+            await db.SaveChangesAsync();
+
+            logger.LogInformation("Student payment confirmed: paymentId={P}, tenant={T}", payment.Id, payment.TenantId);
             return Results.Ok();
         }).AllowAnonymous();
 

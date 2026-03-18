@@ -7,8 +7,7 @@ public record CheckoutRequest(Guid PackageTemplateId);
 public record CheckoutResponse(
     Guid PaymentId,
     decimal Amount,
-    string PixCopyPaste,
-    string QrCodeBase64,
+    string BillingUrl,
     DateTime ExpiresAt
 );
 
@@ -18,9 +17,6 @@ public record PaymentStatusResponse(
     DateTime? PaidAt,
     Guid? AssignedPackageId
 );
-
-public record EfiWebhookPayload(EfiPixEntry[]? Pix);
-public record EfiPixEntry(string Txid, string Valor, string Horario);
 
 public record StorePlanResponse(
     Guid Id,
