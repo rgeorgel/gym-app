@@ -29,10 +29,10 @@ function statusBadge(s) {
 }
 
 function buildPage(s) {
-  const isActive    = s.subscriptionStatus === 'Active';
-  const isTrial     = s.subscriptionStatus === 'Trial';
-  const isPastDue   = s.subscriptionStatus === 'PastDue';
-  const isCanceled  = s.subscriptionStatus === 'Canceled';
+  const isActive    = s.status === 'Active';
+  const isTrial     = s.status === 'Trial';
+  const isPastDue   = s.status === 'PastDue';
+  const isCanceled  = s.status === 'Canceled';
   const canSetup    = !isActive;
   const canRenew    = isActive;
   const canCancel   = isActive;
@@ -79,7 +79,7 @@ function buildPage(s) {
           <div style="display:flex;flex-direction:column;gap:0.75rem">
             <div class="settings-row">
               <span class="text-muted">Status</span>
-              ${statusBadge(s.subscriptionStatus)}
+              ${statusBadge(s.status)}
             </div>
             <div class="settings-row">
               <span class="text-muted">Acesso dos alunos</span>
