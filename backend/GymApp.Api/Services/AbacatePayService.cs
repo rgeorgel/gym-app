@@ -44,12 +44,12 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         PropertyNameCaseInsensitive = true
     };
 
-    private HttpClient CreateClient(string? apiKey = null)
+    private HttpClient CreateClient(string? apiKey = null, string version = "v1")
     {
         apiKey ??= config["AbacatePay:ApiKey"]
             ?? throw new InvalidOperationException("AbacatePay:ApiKey not configured.");
 
-        var client = new HttpClient { BaseAddress = new Uri("https://api.abacatepay.com/v1/") };
+        var client = new HttpClient { BaseAddress = new Uri($"https://api.abacatepay.com/{version}/") };
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         return client;
     }
@@ -63,7 +63,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
     public async Task<AbacatePayProduct?> CreateProductAsync(
         string apiKey, string externalId, string name, int priceCents)
     {
-        using var client = CreateClient(apiKey);
+        using var client = CreateClient(apiKey, "v2");
 
         var body = new { externalId, name, description = name, price = priceCents, currency = "BRL" };
 
