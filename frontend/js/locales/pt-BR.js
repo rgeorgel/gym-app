@@ -69,6 +69,8 @@ export default {
   'admins.resetPwd.saved': 'Senha redefinida com sucesso',
   'admins.col.createdAt': 'Cadastro',
   'admins.selfDeactivate': 'Você não pode desativar sua própria conta',
+  'admins.receivesReminders': 'Receber lembretes de assinatura por e-mail',
+  'admins.receivesReminders.hint': 'Quando ativado, este administrador receberá avisos quando a assinatura estiver próxima do vencimento.',
   'nav.tenants': 'Academias',
 
   // Students

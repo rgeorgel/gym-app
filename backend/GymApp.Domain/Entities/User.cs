@@ -15,6 +15,7 @@ public class User
     public StudentStatus Status { get; set; } = StudentStatus.Active;
     public DateOnly? BirthDate { get; set; }
     public string? HealthNotes { get; set; }
+    public bool ReceivesSubscriptionReminders { get; set; } = false;
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
     public string? PasswordResetToken { get; set; }

@@ -76,7 +76,8 @@ public static class TenantEndpoints
                 Email = emailLower,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
                 Phone = req.Phone,
-                Role = GymApp.Domain.Enums.UserRole.Admin
+                Role = GymApp.Domain.Enums.UserRole.Admin,
+                ReceivesSubscriptionReminders = true
             };
             db.Users.Add(admin);
 
@@ -126,7 +127,8 @@ public static class TenantEndpoints
                 Name = req.AdminName,
                 Email = req.AdminEmail.ToLowerInvariant(),
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.AdminPassword),
-                Role = GymApp.Domain.Enums.UserRole.Admin
+                Role = GymApp.Domain.Enums.UserRole.Admin,
+                ReceivesSubscriptionReminders = true
             };
             db.Users.Add(admin);
 

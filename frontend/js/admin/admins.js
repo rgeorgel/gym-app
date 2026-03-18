@@ -101,6 +101,13 @@ function openAdminModal(admin = null) {
             <option value="Suspended" ${admin.status === 'Suspended' ? 'selected' : ''}>${t('status.suspended')}</option>
           </select>
           ${isSelf ? `<p class="text-sm text-muted" style="margin-top:0.25rem">${t('admins.selfDeactivate')}</p>` : ''}
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+            <input type="checkbox" id="aReceivesReminders" ${admin.receivesSubscriptionReminders ? 'checked' : ''}>
+            <span>${t('admins.receivesReminders')}</span>
+          </label>
+          <p class="text-sm text-muted" style="margin-top:0.25rem">${t('admins.receivesReminders.hint')}</p>
         </div>` : ''}
       </form>
     `,
@@ -121,7 +128,8 @@ function openAdminModal(admin = null) {
     try {
       if (admin) {
         const status = isSelf ? admin.status : document.getElementById('aStatus').value;
-        await api.put(`/admins/${admin.id}`, { name, status });
+        const receivesSubscriptionReminders = document.getElementById('aReceivesReminders')?.checked ?? admin.receivesSubscriptionReminders;
+        await api.put(`/admins/${admin.id}`, { name, status, receivesSubscriptionReminders });
         showToast(t('admins.saved'), 'success');
       } else {
         const email = document.getElementById('aEmail').value.trim();

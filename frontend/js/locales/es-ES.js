@@ -69,6 +69,8 @@ export default {
   'admins.resetPwd.saved': 'Contraseña restablecida correctamente',
   'admins.col.createdAt': 'Registro',
   'admins.selfDeactivate': 'No puedes desactivar tu propia cuenta',
+  'admins.receivesReminders': 'Recibir recordatorios de suscripción por correo',
+  'admins.receivesReminders.hint': 'Cuando está activado, este administrador recibirá avisos cuando la suscripción esté próxima a vencer.',
   'nav.tenants': 'Gimnasios',
 
   // Students

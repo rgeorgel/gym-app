@@ -7,7 +7,8 @@ public record AdminUserResponse(
     string Name,
     string Email,
     StudentStatus Status,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    bool ReceivesSubscriptionReminders
 );
 
 public record CreateAdminUserRequest(
@@ -18,7 +19,8 @@ public record CreateAdminUserRequest(
 
 public record UpdateAdminUserRequest(
     string Name,
-    StudentStatus Status
+    StudentStatus Status,
+    bool ReceivesSubscriptionReminders
 );
 
 public record ResetAdminPasswordRequest(

@@ -82,8 +82,7 @@ public class SubscriptionReminderService(
     {
         var admins = await db.Users
             .AsNoTracking()
-            .Where(u => u.TenantId == tenant.Id
-                     && (u.Role == Domain.Enums.UserRole.Admin || u.Role == Domain.Enums.UserRole.SuperAdmin))
+            .Where(u => u.TenantId == tenant.Id && u.ReceivesSubscriptionReminders)
             .Select(u => new { u.Email, u.Name })
             .ToListAsync(ct);
 

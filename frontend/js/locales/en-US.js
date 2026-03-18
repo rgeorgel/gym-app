@@ -69,6 +69,8 @@ export default {
   'admins.resetPwd.saved': 'Password reset successfully',
   'admins.col.createdAt': 'Registered',
   'admins.selfDeactivate': 'You cannot deactivate your own account',
+  'admins.receivesReminders': 'Receive subscription reminder emails',
+  'admins.receivesReminders.hint': 'When enabled, this administrator will receive notices when the subscription is nearing expiry.',
   'nav.tenants': 'Gyms',
 
   // Students

@@ -45,7 +45,8 @@ public static class SeedData
                 Name = "Admin Boxe Elite",
                 Email = "admin@boxe-elite.com",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
-                Role = UserRole.Admin
+                Role = UserRole.Admin,
+                ReceivesSubscriptionReminders = true
             };
             db.Users.Add(admin);
 

@@ -19,7 +19,7 @@ public static class AdminUserEndpoints
             var admins = await db.Users.AsNoTracking()
                 .Where(u => u.TenantId == tenant.TenantId && u.Role == UserRole.Admin)
                 .OrderBy(u => u.Name)
-                .Select(u => new AdminUserResponse(u.Id, u.Name, u.Email, u.Status, u.CreatedAt))
+                .Select(u => new AdminUserResponse(u.Id, u.Name, u.Email, u.Status, u.CreatedAt, u.ReceivesSubscriptionReminders))
                 .ToListAsync();
             return Results.Ok(admins);
         });
@@ -45,7 +45,7 @@ public static class AdminUserEndpoints
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/admins/{user.Id}",
-                new AdminUserResponse(user.Id, user.Name, user.Email, user.Status, user.CreatedAt));
+                new AdminUserResponse(user.Id, user.Name, user.Email, user.Status, user.CreatedAt, user.ReceivesSubscriptionReminders));
         });
 
         group.MapPut("/{id:guid}", async (Guid id, UpdateAdminUserRequest req, AppDbContext db, TenantContext tenant, ClaimsPrincipal principal) =>
@@ -62,9 +62,10 @@ public static class AdminUserEndpoints
 
             user.Name = req.Name;
             user.Status = req.Status;
+            user.ReceivesSubscriptionReminders = req.ReceivesSubscriptionReminders;
             await db.SaveChangesAsync();
 
-            return Results.Ok(new AdminUserResponse(user.Id, user.Name, user.Email, user.Status, user.CreatedAt));
+            return Results.Ok(new AdminUserResponse(user.Id, user.Name, user.Email, user.Status, user.CreatedAt, user.ReceivesSubscriptionReminders));
         });
 
         group.MapPost("/{id:guid}/reset-password", async (Guid id, ResetAdminPasswordRequest req, AppDbContext db, TenantContext tenant) =>
