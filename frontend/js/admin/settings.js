@@ -28,7 +28,7 @@ export async function renderSettings(container) {
     : `<span class="text-muted text-sm">${t('settings.efi.notConfigured')}</span>`;
 
   container.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:1.25rem;max-width:600px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:1.25rem;align-items:start">
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.defaultPkg.title')}</h3>
@@ -130,7 +130,7 @@ export async function renderSettings(container) {
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" style="grid-column:1/-1">
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.abacatepay.title')}</h3>
           <p class="text-muted text-sm" style="margin:0 0 1rem">${t('settings.abacatepay.desc')}</p>
