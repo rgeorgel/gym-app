@@ -110,8 +110,38 @@ public static class BillingEndpoints
             });
         });
 
-        // ── Super admin: adjust trial days for a specific tenant ────────────
+        // ── Super admin: revenue overview ────────────────────────────────────
         var adminGroup = app.MapGroup("/api/admin/tenants").RequireAuthorization("SuperAdmin");
+
+        app.MapGet("/api/admin/billing/overview", async (AppDbContext db, IConfiguration config) =>
+        {
+            var tenants = await db.Tenants.AsNoTracking()
+                .OrderByDescending(t => t.SubscriptionStatus == SubscriptionStatus.Active)
+                .ThenBy(t => t.Name)
+                .ToListAsync();
+
+            var priceCents = config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
+            var active   = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Active);
+            var trial    = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Trial);
+            var pastDue  = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.PastDue);
+            var canceled = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Canceled);
+
+            var rows = tenants.Select(t => new TenantBillingRow(
+                t.Id, t.Name, t.Slug,
+                t.SubscriptionStatus,
+                t.IsInTrial,
+                t.TrialDaysRemaining,
+                t.SubscriptionCurrentPeriodEnd,
+                t.CreatedAt
+            )).ToList();
+
+            return Results.Ok(new RevenueOverviewResponse(
+                tenants.Count, active, trial, pastDue, canceled,
+                priceCents,
+                active * priceCents,
+                rows
+            ));
+        }).RequireAuthorization("SuperAdmin");
 
         adminGroup.MapPut("/{id:guid}/trial-days", async (
             Guid id, SetTrialDaysRequest req, AppDbContext db) =>

@@ -58,6 +58,7 @@ export default {
   'nav.settings': 'Configurações',
   'nav.admins': 'Administradores',
   'nav.billing': 'Assinatura',
+  'nav.revenue': 'Faturamento',
   'admins.title.new': 'Novo Administrador',
   'admins.title.edit': 'Editar Administrador',
   'admins.new': '+ Novo Admin',

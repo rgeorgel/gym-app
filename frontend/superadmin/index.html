@@ -29,6 +29,10 @@
           <span class="nav-icon">🏢</span>
           <span data-i18n="nav.tenants">Academias</span>
         </div>
+        <div class="nav-item" data-page="revenue">
+          <span class="nav-icon">💰</span>
+          <span>Faturamento</span>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -63,6 +67,7 @@
     import { loadTenantTheme } from '/js/tenant.js';
     import { t } from '/js/i18n.js';
     import { renderTenants } from '/js/admin/tenants.js';
+    import { renderRevenue } from '/js/superadmin/revenue.js';
 
     if (!requireAuth(['SuperAdmin'])) throw new Error('unauthorized');
 
@@ -78,6 +83,7 @@
 
     const pages = {
       tenants: { titleKey: 'nav.tenants', render: renderTenants },
+      revenue: { titleKey: 'nav.revenue', render: renderRevenue },
     };
 
     let currentPage = 'tenants';

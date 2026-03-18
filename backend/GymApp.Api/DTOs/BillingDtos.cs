@@ -18,3 +18,25 @@ public record SubscriptionStatusResponse(
 );
 
 public record SetTrialDaysRequest(int Days);
+
+public record RevenueOverviewResponse(
+    int TotalTenants,
+    int ActiveTenants,
+    int TrialTenants,
+    int PastDueTenants,
+    int CanceledTenants,
+    int SubscriptionPriceCents,
+    int EstimatedMrrCents,
+    IReadOnlyList<TenantBillingRow> Tenants
+);
+
+public record TenantBillingRow(
+    Guid Id,
+    string Name,
+    string Slug,
+    SubscriptionStatus Status,
+    bool IsInTrial,
+    int TrialDaysRemaining,
+    DateTime? CurrentPeriodEnd,
+    DateTime CreatedAt
+);
