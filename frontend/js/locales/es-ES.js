@@ -407,7 +407,12 @@ export default {
   'settings.abacatepay.saved': 'Clave AbacatePay guardada correctamente',
   'settings.abacatepay.configured': 'Configurado',
   'settings.abacatepay.notConfigured': 'No configurado — pagos de alumnos desactivados',
-  'settings.abacatepay.required': 'Ingresa la API key.',
+  'settings.abacatepay.required': 'Ingresa el valor.',
+  'settings.abacatepay.alreadySet': '••••••••  (ya configurado)',
+  'settings.abacatepay.webhookSecret.field': 'Webhook Secret (AbacatePay)',
+  'settings.abacatepay.webhookSecret.placeholder': 'Pega aquí el webhook secret',
+  'settings.abacatepay.webhookSecret.hint': 'Registra el webhook en AbacatePay apuntando a: /api/payments/webhook/abacatepay?webhookSecret=TU_SECRET',
+  'settings.abacatepay.webhookSecret.saved': 'Webhook secret guardado correctamente',
 
   // Settings — Efí Bank
   'settings.efi.title': 'Pagos — Efí Bank',

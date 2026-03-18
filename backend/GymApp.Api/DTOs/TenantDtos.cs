@@ -57,7 +57,8 @@ public record TenantSettingsResponse(
     string PrimaryColor,
     string SecondaryColor,
     string? LogoUrl,
-    bool HasAbacatePayStudentApiKey
+    bool HasAbacatePayStudentApiKey,
+    bool HasAbacatePayStudentWebhookSecret
 );
 
 public record SetLogoUrlRequest(
@@ -78,6 +79,10 @@ public record SetEfiPayeeCodeRequest(
 
 public record SetAbacatePayStudentApiKeyRequest(
     string? ApiKey
+);
+
+public record SetAbacatePayStudentWebhookSecretRequest(
+    string? Secret
 );
 
 public record SetPaymentsEnabledRequest(

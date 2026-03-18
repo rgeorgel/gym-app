@@ -134,19 +134,24 @@ export async function renderSettings(container) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.abacatepay.title')}</h3>
           <p class="text-muted text-sm" style="margin:0 0 1rem">${t('settings.abacatepay.desc')}</p>
-          <div style="margin-bottom:0.75rem">
-            ${settings.hasAbacatePayStudentApiKey
-              ? `<span class="badge badge-success">${t('settings.abacatepay.configured')}</span>`
-              : `<span class="text-muted text-sm">${t('settings.abacatepay.notConfigured')}</span>`}
-          </div>
+
           <div class="form-group">
             <label class="form-label">${t('settings.abacatepay.field')}</label>
-            <input class="form-control" id="inputAbacatePayKey" type="password"
-              placeholder="${t('settings.abacatepay.placeholder')}">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <input class="form-control" id="inputAbacatePayKey" type="password"
+                placeholder="${settings.hasAbacatePayStudentApiKey ? t('settings.abacatepay.alreadySet') : t('settings.abacatepay.placeholder')}">
+              <button class="btn btn-primary btn-sm" id="btnSaveAbacatePay">${t('btn.save')}</button>
+            </div>
           </div>
-          <p class="text-sm text-muted" style="margin-top:0.25rem">${t('settings.abacatepay.hint')}</p>
-          <div style="margin-top:1rem">
-            <button class="btn btn-primary" id="btnSaveAbacatePay">${t('btn.save')}</button>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label class="form-label">${t('settings.abacatepay.webhookSecret.field')}</label>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <input class="form-control" id="inputAbacatePayWebhookSecret" type="password"
+                placeholder="${settings.hasAbacatePayStudentWebhookSecret ? t('settings.abacatepay.alreadySet') : t('settings.abacatepay.webhookSecret.placeholder')}">
+              <button class="btn btn-primary btn-sm" id="btnSaveAbacatePayWebhook">${t('btn.save')}</button>
+            </div>
+            <p class="text-sm text-muted" style="margin-top:0.25rem">${t('settings.abacatepay.webhookSecret.hint')}</p>
           </div>
         </div>
       </div>
@@ -226,6 +231,22 @@ export async function renderSettings(container) {
     try {
       await api.put('/settings/abacatepay-student-api-key', { apiKey: val });
       showToast(t('settings.abacatepay.saved'), 'success');
+      await renderSettings(container);
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnSaveAbacatePayWebhook').addEventListener('click', async () => {
+    const val = document.getElementById('inputAbacatePayWebhookSecret').value.trim();
+    if (!val) { showToast(t('error.prefix') + t('settings.abacatepay.required'), 'error'); return; }
+    const btn = document.getElementById('btnSaveAbacatePayWebhook');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/abacatepay-student-webhook-secret', { secret: val });
+      showToast(t('settings.abacatepay.webhookSecret.saved'), 'success');
       await renderSettings(container);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');

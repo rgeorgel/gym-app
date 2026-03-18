@@ -152,16 +152,20 @@ public static class PaymentEndpoints
         app.MapPost("/api/payments/webhook/abacatepay", async (
             HttpContext ctx,
             AppDbContext db,
-            ILogger<AbacatePayService> logger,
-            IConfiguration config) =>
+            TenantContext tenantCtx,
+            ILogger<AbacatePayService> logger) =>
         {
-            var expectedSecret = config["AbacatePay:WebhookSecret"];
-            if (!string.IsNullOrEmpty(expectedSecret))
+            var tenant = await db.Tenants.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
+
+            if (tenant is null) return Results.NotFound();
+
+            if (!string.IsNullOrEmpty(tenant.AbacatePayStudentWebhookSecret))
             {
                 var receivedSecret = ctx.Request.Query["webhookSecret"].ToString();
-                if (receivedSecret != expectedSecret)
+                if (receivedSecret != tenant.AbacatePayStudentWebhookSecret)
                 {
-                    logger.LogWarning("AbacatePay student webhook: invalid secret");
+                    logger.LogWarning("AbacatePay student webhook: invalid secret for tenant {Slug}", tenant.Slug);
                     return Results.Unauthorized();
                 }
             }

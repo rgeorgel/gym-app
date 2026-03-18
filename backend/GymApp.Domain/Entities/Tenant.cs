@@ -35,6 +35,7 @@ public class Tenant
 
     // AbacatePay key for student payments (tenant's own account)
     public string? AbacatePayStudentApiKey { get; set; }
+    public string? AbacatePayStudentWebhookSecret { get; set; }
 
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>
