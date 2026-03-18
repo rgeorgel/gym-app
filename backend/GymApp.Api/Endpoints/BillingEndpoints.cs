@@ -55,6 +55,10 @@ public static class BillingEndpoints
                              ?? principal.FindFirstValue("email")
                              ?? string.Empty;
 
+            // Reuse existing billing link if one already exists (e.g. user went to payment page but didn't pay)
+            if (!string.IsNullOrEmpty(tenant.AbacatePayBillingUrl))
+                return Results.Ok(new { url = tenant.AbacatePayBillingUrl });
+
             // Reuse existing AbacatePay customer or create a new one
             if (string.IsNullOrEmpty(tenant.AbacatePayCustomerId))
             {
@@ -65,6 +69,7 @@ public static class BillingEndpoints
                     return Results.Problem("Erro ao criar cliente no AbacatePay. Tente novamente.");
 
                 tenant.AbacatePayCustomerId = customer.Id;
+                await db.SaveChangesAsync();
             }
 
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
