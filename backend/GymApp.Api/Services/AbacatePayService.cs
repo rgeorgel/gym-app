@@ -115,17 +115,12 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         {
             name,
             email,
-            cellphone = phone,
-            taxId
-        };
-
-        var nullIgnoreOpts = new JsonSerializerOptions(JsonOpts)
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            cellphone = phone ?? string.Empty,
+            taxId = taxId ?? string.Empty
         };
 
         var response = await client.PostAsync("customer/create",
-            new StringContent(JsonSerializer.Serialize(body, nullIgnoreOpts), Encoding.UTF8, "application/json"));
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
 
         var responseBody = await response.Content.ReadAsStringAsync();
 
