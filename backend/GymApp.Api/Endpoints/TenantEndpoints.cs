@@ -88,7 +88,7 @@ public static class TenantEndpoints
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
             var uri = new Uri(baseUrl);
             var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}/admin/index.html";
-            _ = email.SendWelcomeAsync(admin.Email, admin.Name, tenant.Name, panelUrl);
+            _ = email.SendWelcomeAsync(admin.Email, admin.Name, tenant.Name, panelUrl, isSalon: tenant.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon);
 
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
                 new SelfSignupResponse(tenant.Id, tenant.Slug, admin.Email));

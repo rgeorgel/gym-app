@@ -9,12 +9,36 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
     private string FromEmail => config["Resend:FromEmail"] ?? throw new InvalidOperationException("Resend:FromEmail not configured.");
     private string FromName => config["Resend:FromName"] ?? "Agendofy";
 
-    public async Task SendWelcomeAsync(string toEmail, string toName, string academyName, string panelUrl)
+    public async Task SendWelcomeAsync(string toEmail, string toName, string businessName, string panelUrl, bool isSalon = false)
     {
+        var accentColor = isSalon ? "#D946EF" : "#3563E9";
+        var subject = isSalon
+            ? $"Seu salão está pronto no Agendofy 🎉"
+            : $"Sua academia está pronta no Agendofy 🎉";
+        var intro = isSalon
+            ? $"Seu salão <strong style=\"color:#060A14\">{businessName}</strong> foi criado com sucesso. Acesse o painel e configure tudo em minutos."
+            : $"Sua academia <strong style=\"color:#060A14\">{businessName}</strong> foi criada com sucesso. Acesse o painel de administração e configure tudo em minutos.";
+
+        var steps = isSalon
+            ? $"""
+                {Step("1", "Cadastrar seus serviços", "Crie os serviços que seu salão oferece: corte, coloração, manicure, progressiva, etc. Informe o tempo de duração de cada um.", accentColor)}
+                {Step("2", "Configurar sua disponibilidade", "Defina os dias e horários em que você atende. O sistema vai montar os slots automaticamente."  , accentColor)}
+                {Step("3", "Cadastrar suas clientes", "Adicione suas clientes ao sistema. Elas poderão agendar diretamente pelo link do seu salão.", accentColor)}
+                {Step("4", "Compartilhar o link de agendamento", "Envie o link personalizado do seu salão para suas clientes. Elas escolhem o serviço e o horário disponível.", accentColor)}
+                {Step("5", "Agendar pelo painel", "Para clientes que ligam ou mandam mensagem, você também pode criar o agendamento direto do painel.", accentColor)}
+              """
+            : $"""
+                {Step("1", "Criar modalidades", "Cadastre os tipos de aula da sua academia: Boxe em Grupo, Individual, Sparring, etc.", accentColor)}
+                {Step("2", "Montar a grade de horários", "Defina os dias e horários de cada modalidade e a capacidade máxima de alunos.", accentColor)}
+                {Step("3", "Criar planos e pacotes", "Configure os pacotes de crédito que seus alunos poderão comprar (ex: 8 aulas em grupo + 4 individuais).", accentColor)}
+                {Step("4", "Cadastrar seus alunos", "Adicione os alunos e atribua os planos a cada um. Eles receberão acesso para se agendar.", accentColor)}
+                {Step("5", "Compartilhar o link", "Envie o link do app para seus alunos. Eles se agendarão sozinhos nas aulas disponíveis.", accentColor)}
+              """;
+
         var msg = new EmailMessage
         {
             From = $"{FromName} <{FromEmail}>",
-            Subject = $"Sua academia está pronta no Agendofy 🎉",
+            Subject = subject,
             HtmlBody = $"""
                 <!DOCTYPE html>
                 <html lang="pt-BR">
@@ -28,7 +52,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                         <tr>
                           <td style="background:#0D1525;padding:32px 40px;text-align:center">
                             <p style="margin:0;font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px">
-                              agendo<span style="color:#3563E9">fy</span>
+                              agendo<span style="color:{accentColor}">fy</span>
                             </p>
                           </td>
                         </tr>
@@ -40,8 +64,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                               Bem-vindo, {toName}! 🎉
                             </h1>
                             <p style="margin:0 0 24px;font-size:15px;color:#64748B;line-height:1.6">
-                              Sua academia <strong style="color:#060A14">{academyName}</strong> foi criada com sucesso.
-                              Acesse o painel de administração e configure tudo em minutos.
+                              {intro}
                             </p>
 
                             <!-- CTA -->
@@ -49,7 +72,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                               <tr>
                                 <td align="center">
                                   <a href="{panelUrl}"
-                                     style="display:inline-block;background:#3563E9;color:#ffffff;font-size:15px;font-weight:600;
+                                     style="display:inline-block;background:{accentColor};color:#ffffff;font-size:15px;font-weight:600;
                                             padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:-0.2px">
                                     Acessar meu painel →
                                   </a>
@@ -58,7 +81,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                             </table>
                             <p style="margin:0 0 32px;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6">
                               Ou copie o endereço abaixo no navegador:<br>
-                              <a href="{panelUrl}" style="color:#3563E9;text-decoration:none;font-weight:500;word-break:break-all">
+                              <a href="{panelUrl}" style="color:{accentColor};text-decoration:none;font-weight:500;word-break:break-all">
                                 {panelUrl}
                               </a>
                             </p>
@@ -71,11 +94,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                               Por onde começar
                             </p>
 
-                            {Step("1", "Criar modalidades", "Cadastre os tipos de aula da sua academia: Boxe em Grupo, Individual, Sparring, etc.")}
-                            {Step("2", "Montar a grade de horários", "Defina os dias e horários de cada modalidade e a capacidade máxima de alunos.")}
-                            {Step("3", "Criar planos e pacotes", "Configure os pacotes de crédito que seus alunos poderão comprar (ex: 8 aulas em grupo + 4 individuais).")}
-                            {Step("4", "Cadastrar seus alunos", "Adicione os alunos e atribua os planos a cada um. Eles receberão acesso para se agendar.")}
-                            {Step("5", "Compartilhar o link", "Envie o link do app para seus alunos. Eles se agendarão sozinhos nas aulas disponíveis.")}
+                            {steps}
                           </td>
                         </tr>
 
@@ -84,7 +103,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                           <td style="background:#F8FAFF;border-top:1px solid #E8ECF4;padding:24px 40px;text-align:center">
                             <p style="margin:0;font-size:12px;color:#94A3B8;line-height:1.6">
                               Qualquer dúvida, responda este e-mail — estamos aqui para ajudar.<br>
-                              <a href="https://agendofy.com" style="color:#3563E9;text-decoration:none">agendofy.com</a>
+                              <a href="https://agendofy.com" style="color:{accentColor};text-decoration:none">agendofy.com</a>
                             </p>
                           </td>
                         </tr>
@@ -391,12 +410,12 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
         await resend.EmailSendAsync(msg);
     }
 
-    private static string Step(string num, string title, string desc) => $"""
+    private static string Step(string num, string title, string desc, string color = "#3563E9") => $"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
           <tr>
             <td width="36" valign="top">
-              <div style="width:28px;height:28px;border-radius:8px;background:#EEF3FF;
-                          text-align:center;line-height:28px;font-size:12px;font-weight:800;color:#3563E9">
+              <div style="width:28px;height:28px;border-radius:8px;background:{color}1A;
+                          text-align:center;line-height:28px;font-size:12px;font-weight:800;color:{color}">
                 {num}
               </div>
             </td>

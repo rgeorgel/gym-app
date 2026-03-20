@@ -42,7 +42,7 @@ public class SendGridEmailService(IConfiguration config) : IEmailService
         await client.SendEmailAsync(msg);
     }
 
-    public Task SendWelcomeAsync(string toEmail, string toName, string academyName, string panelUrl)
+    public Task SendWelcomeAsync(string toEmail, string toName, string businessName, string panelUrl, bool isSalon = false)
         => Task.CompletedTask; // SendGrid not in use — no-op
 
     public Task SendSubscriptionReminderAsync(string toEmail, string toName, string academyName, int daysRemaining, string paymentUrl)
