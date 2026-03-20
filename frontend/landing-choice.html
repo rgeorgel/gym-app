@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vxxeenq2oz");
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendofy — Para qual negócio você precisa?</title>
+<meta name="description" content="Agendamento inteligente para academias e salões de beleza. Escolha o plano certo para o seu negócio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gym: #3563E9;
+  --gym-dark: #2348C4;
+  --gym-light: #EEF3FF;
+  --gym-glow: rgba(53, 99, 233, 0.25);
+  --salon: #D946EF;
+  --salon-dark: #A21CAF;
+  --salon-light: #FDF4FF;
+  --salon-glow: rgba(217, 70, 239, 0.25);
+  --dark: #060A14;
+  --dark2: #0D1525;
+  --mid: #64748B;
+  --muted: #94A3B8;
+  --light: #F8FAFF;
+  --white: #ffffff;
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--dark);
+  background: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 24px;
+  height: 68px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 800;
+  background: linear-gradient(135deg, var(--gym) 0%, var(--salon) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+/* ─── HERO ─── */
+.hero {
+  padding: 140px 24px 60px;
+  text-align: center;
+}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: var(--light);
+  border: 1px solid rgba(0,0,0,0.07);
+  padding: 5px 16px; border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  color: var(--dark);
+  margin-bottom: 18px;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--gym) 0%, var(--salon) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 18px; font-weight: 300;
+  color: var(--mid);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ─── CHOICE CARDS ─── */
+.choice-section {
+  padding: 20px 24px 80px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .choice-grid { grid-template-columns: 1fr; }
+}
+
+.choice-card {
+  border-radius: var(--radius-xl);
+  border: 2px solid transparent;
+  background: var(--white);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.choice-card:hover {
+  transform: translateY(-6px);
+}
+
+.choice-card.gym:hover {
+  border-color: var(--gym);
+  box-shadow: 0 16px 48px var(--gym-glow);
+}
+
+.choice-card.salon:hover {
+  border-color: var(--salon);
+  box-shadow: 0 16px 48px var(--salon-glow);
+}
+
+/* Card header */
+.card-header {
+  padding: 36px 36px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header.gym {
+  background: linear-gradient(135deg, #1a2e6b 0%, #2348C4 50%, #3563E9 100%);
+}
+
+.card-header.salon {
+  background: linear-gradient(135deg, #5b1a6e 0%, #A21CAF 50%, #D946EF 100%);
+}
+
+.card-header-bg {
+  position: absolute; inset: 0;
+  opacity: 0.08;
+  font-size: 120px;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 20px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.card-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.12);
+  padding: 4px 12px; border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 800;
+  color: var(--white);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+
+.card-header p {
+  font-size: 14px; font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+}
+
+/* Card body */
+.card-body {
+  padding: 28px 36px 32px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex: 1;
+}
+
+.card-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--dark);
+  line-height: 1.45;
+}
+
+.feature-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.gym .feature-icon { background: var(--gym-light); color: var(--gym); }
+.salon .feature-icon { background: var(--salon-light); color: var(--salon-dark); }
+
+.card-price {
+  display: flex; align-items: baseline; gap: 4px;
+  margin-bottom: 18px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.price-currency {
+  font-size: 16px; font-weight: 600;
+}
+
+.price-amount {
+  font-family: var(--font-display);
+  font-size: 40px; font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+
+.price-period {
+  font-size: 13px; color: var(--mid);
+}
+
+.gym .price-currency,
+.gym .price-amount { color: var(--gym); }
+
+.salon .price-currency,
+.salon .price-amount { color: var(--salon-dark); }
+
+.card-cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+
+.card-cta:hover { opacity: 0.9; transform: scale(1.02); }
+
+.gym .card-cta {
+  background: linear-gradient(135deg, var(--gym-dark), var(--gym));
+  color: var(--white);
+  box-shadow: 0 4px 16px var(--gym-glow);
+}
+
+.salon .card-cta {
+  background: linear-gradient(135deg, var(--salon-dark), var(--salon));
+  color: var(--white);
+  box-shadow: 0 4px 16px var(--salon-glow);
+}
+
+/* ─── DIVIDER ─── */
+.or-divider {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: relative;
+  margin: 4px 0;
+}
+
+@media (max-width: 700px) {
+  .or-divider { display: block; }
+}
+
+/* ─── TRUST STRIP ─── */
+.trust {
+  padding: 20px 24px 56px;
+  text-align: center;
+}
+
+.trust p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.trust strong { color: var(--mid); font-weight: 600; }
+
+/* ─── REVEAL ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">Agendofy</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">✦ Escolha o seu plano</div>
+  <h1>Para qual tipo de<br><span>negócio você precisa?</span></h1>
+  <p>Cada negócio tem suas particularidades. Escolha a opção que melhor descreve o seu e veja como o Agendofy se encaixa.</p>
+</section>
+
+<section class="choice-section">
+  <div class="choice-grid">
+
+    <!-- GYM CARD -->
+    <a href="landing.html" class="choice-card gym reveal reveal-d1"
+       onclick="gtag('event','choice_click',{choice:'gym'})">
+      <div class="card-header gym">
+        <div class="card-header-bg">🏋️</div>
+        <div class="card-badge">🏋️ Academia &amp; Estúdio</div>
+        <h2>Academias,<br>Estúdios &amp; Boxes</h2>
+        <p>Grade de aulas, controle de créditos e alunos gerenciando suas próprias reservas.</p>
+      </div>
+      <div class="card-body">
+        <ul class="card-features">
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Grade de aulas semanal</strong> com horários fixos por modalidade</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Pacotes de créditos</strong> — aulas avulsas, mensais ou trimestrais</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Auto-reserva pelo aluno</strong> via app sem ligação ou mensagem</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Check-in digital</strong> com controle de presença em tempo real</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Limite de vagas por turma</strong> com fila de espera automática</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Painel do professor</strong> com lista de presença e histórico</span>
+          </li>
+        </ul>
+        <div class="card-price">
+          <span class="price-currency">R$</span>
+          <span class="price-amount">49</span>
+          <span class="price-period">/mês · sem taxa de setup</span>
+        </div>
+        <span class="card-cta">
+          Ver plano para academia →
+        </span>
+      </div>
+    </a>
+
+    <div class="or-divider">ou</div>
+
+    <!-- SALON CARD -->
+    <a href="landing-salao.html" class="choice-card salon reveal reveal-d2"
+       onclick="gtag('event','choice_click',{choice:'salon'})">
+      <div class="card-header salon">
+        <div class="card-header-bg">💅</div>
+        <div class="card-badge">💅 Salão &amp; Estúdio de Beleza</div>
+        <h2>Salões, Barbearias<br>&amp; Estúdios de Beleza</h2>
+        <p>Agenda por horário disponível, catálogo de serviços e clientes agendando direto pelo link.</p>
+      </div>
+      <div class="card-body">
+        <ul class="card-features">
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Agenda por disponibilidade</strong> — sem grade fixa, cada serviço tem sua duração</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Catálogo de serviços</strong> com preço, duração e profissional responsável</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Link de agendamento</strong> personalizado para compartilhar com clientes</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Agendamento pelo atendente</strong> para clientes que ligam ou mandam mensagem</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>Check-in digital</strong> com controle de atendimentos do dia</span>
+          </li>
+          <li>
+            <span class="feature-icon">✓</span>
+            <span><strong>White label completo</strong> — cores e logo do seu salão em todo o sistema</span>
+          </li>
+        </ul>
+        <div class="card-price">
+          <span class="price-currency">R$</span>
+          <span class="price-amount">19</span>
+          <span class="price-period">/mês · sem taxa de setup</span>
+        </div>
+        <span class="card-cta">
+          Ver plano para salão →
+        </span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<div class="trust">
+  <p>Não tem fidelidade. <strong>Cancele quando quiser.</strong> Suporte por WhatsApp incluso nos dois planos.</p>
+</div>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

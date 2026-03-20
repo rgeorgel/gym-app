@@ -129,6 +129,8 @@ app.MapClassTypeEndpoints();
 app.MapScheduleEndpoints();
 app.MapSessionEndpoints();
 app.MapBookingEndpoints();
+app.MapAppointmentEndpoints();
+app.MapAvailabilityEndpoints();
 app.MapPackageEndpoints();
 app.MapPackageTemplateEndpoints();
 app.MapInstructorEndpoints();

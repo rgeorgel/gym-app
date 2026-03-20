@@ -35,7 +35,7 @@
         <div class="nav-section-label" data-i18n="nav.superAdmin">Super Admin</div>
         <div class="nav-item active" data-page="tenants">
           <span class="nav-icon">🏢</span>
-          <span data-i18n="nav.tenants">Academias</span>
+          <span>Clientes</span>
         </div>
         <div class="nav-item" data-page="revenue">
           <span class="nav-icon">💰</span>
@@ -95,7 +95,7 @@
     document.getElementById('userAvatar').textContent = (user?.name ?? '?')[0].toUpperCase();
 
     const pages = {
-      tenants: { titleKey: 'nav.tenants', render: renderTenants },
+      tenants: { title: 'Clientes', render: renderTenants },
       revenue: { titleKey: 'nav.revenue', render: renderRevenue },
       'super-admins': { titleKey: 'nav.superAdmins', render: renderSuperAdmins },
     };
@@ -105,7 +105,7 @@
     async function navigateTo(page) {
       if (!pages[page]) return;
       currentPage = page;
-      document.getElementById('pageTitle').textContent = t(pages[page].titleKey);
+      document.getElementById('pageTitle').textContent = pages[page].title ?? t(pages[page].titleKey);
       document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.page === page);
       });

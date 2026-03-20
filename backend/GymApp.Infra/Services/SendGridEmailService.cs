@@ -47,4 +47,10 @@ public class SendGridEmailService(IConfiguration config) : IEmailService
 
     public Task SendSubscriptionReminderAsync(string toEmail, string toName, string academyName, int daysRemaining, string paymentUrl)
         => Task.CompletedTask; // SendGrid not in use — no-op
+
+    public Task SendBookingConfirmationAsync(string toEmail, string toName, string serviceName, string academyName, DateTime sessionDateTime)
+        => Task.CompletedTask; // SendGrid not in use — no-op
+
+    public Task SendNewBookingNotificationAsync(string toEmail, string adminName, string clientName, string? clientPhone, string serviceName, DateTime sessionDateTime)
+        => Task.CompletedTask; // SendGrid not in use — no-op
 }

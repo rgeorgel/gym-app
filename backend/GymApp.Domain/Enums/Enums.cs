@@ -9,3 +9,4 @@ public enum TenantPlan { Basic, Pro, Enterprise }
 public enum StudentStatus { Active, Inactive, Suspended }
 public enum PaymentStatus { Pending, Paid, Expired, Cancelled }
 public enum SubscriptionStatus { Trial, Active, PastDue, Canceled, Suspended }
+public enum TenantType { Gym, BeautySalon }

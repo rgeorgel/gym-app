@@ -39,65 +39,70 @@
       </div>
     </nav>
 
-    <!-- Desktop tabs -->
-    <div class="app-tabs">
-      <div class="app-tab active" data-tab="schedule" data-i18n="app.schedule"></div>
-      <div class="app-tab" data-tab="bookings" data-i18n="app.bookings"></div>
-      <div class="app-tab" data-tab="packages" data-i18n="app.packages"></div>
-      <div class="app-tab" data-tab="store" data-i18n="store.tab"></div>
-    </div>
+    <!-- Desktop tabs - populated dynamically by JS based on tenant type -->
+    <div class="app-tabs" id="appTabsBar"></div>
 
     <!-- Content -->
     <main class="app-content" id="appContent">
       <div class="loading-center"><span class="spinner"></span></div>
     </main>
 
-    <!-- Bottom nav (mobile) -->
-    <nav class="bottom-nav">
-      <div class="bottom-nav-item active" data-tab="schedule">
-        <span class="bottom-nav-icon">📅</span>
-        <span data-i18n="app.schedule.short"></span>
-      </div>
-      <div class="bottom-nav-item" data-tab="bookings">
-        <span class="bottom-nav-icon">🎫</span>
-        <span data-i18n="app.bookings.short"></span>
-      </div>
-      <div class="bottom-nav-item" data-tab="packages">
-        <span class="bottom-nav-icon">📦</span>
-        <span data-i18n="app.packages.short"></span>
-      </div>
-      <div class="bottom-nav-item" data-tab="store">
-        <span class="bottom-nav-icon">🛒</span>
-        <span data-i18n="store.tab.short"></span>
-      </div>
-    </nav>
+    <!-- Bottom nav (mobile) - populated dynamically by JS based on tenant type -->
+    <nav class="bottom-nav" id="bottomNavBar"></nav>
   </div>
 
   <script type="module">
     import { requireAuth, getUser } from '/js/auth.js';
     import { logout } from '/js/api.js';
     import { loadTenantTheme } from '/js/tenant.js';
+    import { t } from '/js/i18n.js';
     import { renderSchedule } from '/js/app/schedule.js';
     import { renderMyBookings } from '/js/app/my-bookings.js';
     import { renderMyPackages } from '/js/app/my-packages.js';
     import { renderPlans } from '/js/app/plans.js';
+    import { renderServices } from '/js/app/services.js';
+    import { renderSalonBooking } from '/js/app/salon-booking.js';
     import { trackPageView } from '/js/analytics.js';
 
     if (!requireAuth(['Student', 'Admin', 'SuperAdmin'])) throw new Error('unauthorized');
 
-    await loadTenantTheme();
+    const config = await loadTenantTheme();
+    const isBeautySalon = (config?.tenantType ?? 'Gym') === 'BeautySalon';
 
     const user = getUser();
     document.getElementById('navUserName').textContent = user?.name ?? '';
 
-    const tabs = {
-      schedule: renderSchedule,
-      bookings: renderMyBookings,
-      packages: renderMyPackages,
-      store: renderPlans,
-    };
+    // Build tab configuration based on business type
+    const tabsConfig = isBeautySalon
+      ? [
+          { id: 'services', label: t('app.services'), icon: '💅', short: t('app.services.short'), render: renderSalonBooking },
+          { id: 'bookings', label: t('app.bookings'), icon: '🎫', short: t('app.bookings.short'), render: renderMyBookings },
+        ]
+      : [
+          { id: 'schedule', label: t('app.schedule'), icon: '📅', short: t('app.schedule.short'), render: renderSchedule },
+          { id: 'bookings', label: t('app.bookings'), icon: '🎫', short: t('app.bookings.short'), render: renderMyBookings },
+          { id: 'packages', label: t('app.packages'), icon: '📦', short: t('app.packages.short'), render: renderMyPackages },
+          { id: 'store', label: t('store.tab'), icon: '🛒', short: t('store.tab.short'), render: renderPlans },
+        ];
 
-    let currentTab = 'schedule';
+    const tabs = Object.fromEntries(tabsConfig.map(tc => [tc.id, tc.render]));
+    const defaultTab = tabsConfig[0].id;
+
+    // Inject tab bar
+    document.getElementById('appTabsBar').innerHTML = tabsConfig
+      .map((tc, i) => `<div class="app-tab ${i === 0 ? 'active' : ''}" data-tab="${tc.id}">${tc.label}</div>`)
+      .join('');
+
+    // Inject bottom nav
+    document.getElementById('bottomNavBar').innerHTML = tabsConfig
+      .map((tc, i) => `
+        <div class="bottom-nav-item ${i === 0 ? 'active' : ''}" data-tab="${tc.id}">
+          <span class="bottom-nav-icon">${tc.icon}</span>
+          <span>${tc.short}</span>
+        </div>
+      `).join('');
+
+    let currentTab = defaultTab;
 
     async function switchTab(tab) {
       if (!tabs[tab]) return;
@@ -107,8 +112,7 @@
         el.classList.toggle('active', el.dataset.tab === tab);
       });
 
-      const tabNames = { schedule: 'Agenda', bookings: 'Meus Agendamentos', packages: 'Meus Pacotes', store: 'Loja' };
-      trackPageView(tabNames[tab] ?? tab);
+      trackPageView(tab);
 
       const content = document.getElementById('appContent');
       content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -119,9 +123,11 @@
       el.addEventListener('click', () => switchTab(el.dataset.tab));
     });
 
+    window.addEventListener('switch-tab', e => switchTab(e.detail.tab));
+
     document.getElementById('btnAppLogout').addEventListener('click', () => logout());
 
-    await switchTab('schedule');
+    await switchTab(defaultTab);
   </script>
 </body>
 </html>

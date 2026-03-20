@@ -136,10 +136,11 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
     }
 
     public async Task<AbacatePayBilling?> CreateBillingAsync(
-        string customerId, string tenantSlug, string tenantName, string adminEmail, string baseUrl)
+        string customerId, string tenantSlug, string tenantName, string adminEmail, string baseUrl,
+        int? priceCents = null)
     {
         using var client = CreateClient();
-        var subscriptionPrice = config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
+        var subscriptionPrice = priceCents ?? config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
         var returnUrl = $"{baseUrl.TrimEnd('/')}/admin/index.html#billing";
 
         var body = new

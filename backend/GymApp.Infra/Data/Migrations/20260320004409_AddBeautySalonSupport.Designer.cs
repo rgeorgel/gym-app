@@ -3,6 +3,7 @@ using System;
 using GymApp.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymApp.Infra.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260320004409_AddBeautySalonSupport")]
+    partial class AddBeautySalonSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,9 +82,6 @@ namespace GymApp.Infra.Data.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<int?>("DurationMinutes")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -323,42 +323,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("GymApp.Domain.Entities.ProfessionalAvailability", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<Guid?>("InstructorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Weekday")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InstructorId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ProfessionalAvailability");
-                });
-
             modelBuilder.Entity("GymApp.Domain.Entities.Schedule", b =>
                 {
                     b.Property<Guid>("Id")
@@ -412,42 +376,25 @@ namespace GymApp.Infra.Data.Migrations
                     b.Property<string>("CancellationReason")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ClassTypeId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("ScheduleId")
+                    b.Property<Guid>("ScheduleId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("SlotsAvailable")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time without time zone");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassTypeId");
-
                     b.HasIndex("ScheduleId", "Date")
-                        .IsUnique()
-                        .HasFilter("\"ScheduleId\" IS NOT NULL");
-
-                    b.HasIndex("TenantId", "Date");
+                        .IsUnique();
 
                     b.ToTable("Sessions");
                 });
@@ -537,9 +484,6 @@ namespace GymApp.Infra.Data.Migrations
 
                     b.Property<DateTime?>("SubscriptionCurrentPeriodEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("SubscriptionPriceCents")
-                        .HasColumnType("integer");
 
                     b.Property<int>("SubscriptionStatus")
                         .HasColumnType("integer");
@@ -816,24 +760,6 @@ namespace GymApp.Infra.Data.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("GymApp.Domain.Entities.ProfessionalAvailability", b =>
-                {
-                    b.HasOne("GymApp.Domain.Entities.Instructor", "Instructor")
-                        .WithMany()
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("GymApp.Domain.Entities.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Tenant");
-                });
-
             modelBuilder.Entity("GymApp.Domain.Entities.Schedule", b =>
                 {
                     b.HasOne("GymApp.Domain.Entities.ClassType", "ClassType")
@@ -862,27 +788,13 @@ namespace GymApp.Infra.Data.Migrations
 
             modelBuilder.Entity("GymApp.Domain.Entities.Session", b =>
                 {
-                    b.HasOne("GymApp.Domain.Entities.ClassType", "ClassType")
-                        .WithMany()
-                        .HasForeignKey("ClassTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("GymApp.Domain.Entities.Schedule", "Schedule")
                         .WithMany("Sessions")
                         .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GymApp.Domain.Entities.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClassType");
-
                     b.Navigation("Schedule");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("GymApp.Domain.Entities.Tenant", b =>

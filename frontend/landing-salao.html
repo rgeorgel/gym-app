@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vxxeenq2oz");
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendofy — Agendamento online para salões de beleza e estúdios</title>
+<meta name="description" content="Agenda inteligente, catálogo de serviços e agendamento pelo cliente. Tudo com a cara do seu salão. Apenas R$19/mês.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #D946EF;
+  --brand-dark: #A21CAF;
+  --brand-light: #FDF4FF;
+  --brand-glow: rgba(217, 70, 239, 0.35);
+  --accent: #8B5CF6;
+  --accent-light: #F5F3FF;
+  --green: #10B981;
+  --green-light: #D1FAE5;
+  --dark: #0D0714;
+  --dark2: #160B21;
+  --dark3: #1E1030;
+  --mid: #64748B;
+  --muted: #94A3B8;
+  --light: #FDF4FF;
+  --border: rgba(0,0,0,0.07);
+  --border-dark: rgba(255,255,255,0.08);
+  --white: #ffffff;
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow: 0 8px 32px rgba(217,70,239,0.12);
+  --shadow-lg: 0 16px 56px rgba(217,70,239,0.18);
+  --shadow-dark: 0 24px 64px rgba(0,0,0,0.5);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--dark);
+  background: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: var(--brand-light);
+  padding: 5px 14px; border-radius: 999px;
+  margin-bottom: 16px;
+}
+.tag.white { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.1); }
+
+h2.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -1px; color: var(--dark);
+}
+h2.section-title.white { color: var(--white); }
+
+p.section-sub {
+  font-size: 17px; font-weight: 300;
+  color: var(--mid); line-height: 1.75;
+  margin-top: 14px; max-width: 540px;
+}
+p.section-sub.white { color: rgba(255,255,255,0.55); }
+
+/* ─── SCROLL ANIMATIONS ─── */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 24px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+nav.scrolled { background: rgba(255,255,255,0.94); backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--border); }
+.nav-inner { max-width: 1140px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--white); text-decoration: none; letter-spacing: -0.5px; transition: color 0.3s; }
+nav.scrolled .nav-logo { color: var(--dark); }
+.nav-logo span { color: var(--brand); }
+.nav-links { display: flex; align-items: center; gap: 8px; list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); text-decoration: none; padding: 6px 14px; border-radius: 8px; transition: all 0.2s; }
+.nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+nav.scrolled .nav-links a { color: var(--mid); }
+nav.scrolled .nav-links a:hover { color: var(--dark); background: var(--light); }
+.btn-nav { background: var(--brand) !important; color: var(--white) !important; padding: 9px 20px !important; border-radius: 10px !important; font-weight: 600 !important; box-shadow: 0 4px 14px var(--brand-glow); transition: all 0.2s !important; }
+.btn-nav:hover { background: var(--brand-dark) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--brand-glow) !important; }
+.nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; color: white; transition: color 0.3s; }
+nav.scrolled .nav-hamburger { color: var(--dark); }
+.nav-mobile { display: none; position: fixed; top: 68px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 24px 24px; flex-direction: column; gap: 4px; z-index: 199; box-shadow: var(--shadow); }
+.nav-mobile.open { display: flex; }
+.nav-mobile a { font-size: 15px; font-weight: 500; color: var(--mid); text-decoration: none; padding: 10px 14px; border-radius: 8px; transition: all 0.2s; }
+.nav-mobile a:hover { color: var(--dark); background: var(--light); }
+.btn-nav-mobile { background: var(--brand) !important; color: white !important; text-align: center; margin-top: 8px; border-radius: 10px; font-weight: 600 !important; }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh; background: var(--dark);
+  display: flex; align-items: center;
+  padding: 120px 24px 80px;
+  position: relative; overflow: hidden;
+}
+.hero-bg-glow { position: absolute; pointer-events: none; }
+.hero-bg-glow-1 { top: -15%; right: -5%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(217,70,239,0.22) 0%, transparent 65%); }
+.hero-bg-glow-2 { bottom: -20%; left: -5%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 65%); }
+.hero-bg-glow-3 { top: 30%; left: 30%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(236,72,153,0.07) 0%, transparent 65%); }
+.hero-bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; mask-image: radial-gradient(ellipse at center top, black 30%, transparent 75%); }
+.hero-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; width: 100%; }
+.hero-content { display: flex; flex-direction: column; }
+.hero-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(217,70,239,0.15); border: 1px solid rgba(217,70,239,0.3); color: #E879F9; padding: 7px 18px; border-radius: 999px; font-size: 13px; font-weight: 500; width: fit-content; margin-bottom: 28px; }
+.hero-badge-pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); animation: pulse 2.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(217,70,239,0.6); } 50% { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 0 5px rgba(217,70,239,0); } }
+.hero h1 { font-family: var(--font-display); font-size: clamp(38px, 5vw, 64px); font-weight: 900; line-height: 1.06; letter-spacing: -2px; color: var(--white); }
+.hero h1 .highlight { background: linear-gradient(135deg, #F0ABFC 0%, #D946EF 50%, #A78BFA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.8; margin-top: 20px; max-width: 460px; }
+.hero-actions { display: flex; align-items: center; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+.btn-hero-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--brand); color: white; padding: 15px 28px; border-radius: var(--radius); font-family: var(--font-body); font-size: 15px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; box-shadow: 0 8px 24px var(--brand-glow); transition: all 0.22s; }
+.btn-hero-primary:hover { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 12px 36px var(--brand-glow); }
+.btn-hero-secondary { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); padding: 15px 24px; border-radius: var(--radius); font-family: var(--font-body); font-size: 15px; font-weight: 400; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); transition: all 0.22s; }
+.btn-hero-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white; }
+.hero-note { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; }
+.hero-note svg { stroke: rgba(255,255,255,0.4); }
+.hero-stats { display: flex; gap: 0; margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); }
+.hero-stat { flex: 1; padding-right: 24px; border-right: 1px solid rgba(255,255,255,0.07); }
+.hero-stat:last-child { border-right: none; padding-right: 0; padding-left: 24px; }
+.hero-stat:not(:first-child):not(:last-child) { padding-left: 24px; }
+.hero-stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: white; letter-spacing: -1px; display: block; line-height: 1; }
+.hero-stat-label { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 5px; display: block; }
+
+/* phone mockup */
+.hero-mockup { display: flex; align-items: center; justify-content: center; position: relative; }
+.hero-mockup-glow { position: absolute; width: 360px; height: 360px; background: radial-gradient(circle, rgba(217,70,239,0.3) 0%, transparent 65%); pointer-events: none; z-index: 0; }
+.phone-frame { position: relative; z-index: 1; background: #1C1128; border-radius: 44px; padding: 14px; width: 280px; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.1); }
+.phone-notch { width: 80px; height: 26px; background: #0D0714; border-radius: 0 0 16px 16px; margin: 0 auto 10px; }
+.phone-screen { background: #F9FAFB; border-radius: 30px; overflow: hidden; min-height: 440px; }
+
+/* salon phone mockup content */
+.sp-header { background: linear-gradient(135deg, #581c87, #7e22ce); padding: 14px 16px 18px; }
+.sp-salon-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: white; }
+.sp-user { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.sp-services-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.55); margin-top: 12px; margin-bottom: 8px; }
+.sp-body { padding: 12px; }
+.sp-service-card { background: white; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.sp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sp-svc-info { flex: 1; }
+.sp-svc-name { font-size: 11px; font-weight: 600; color: #111; }
+.sp-svc-meta { font-size: 9.5px; color: #888; margin-top: 1px; }
+.sp-svc-price { font-size: 11px; font-weight: 700; color: #7e22ce; }
+.sp-btn { background: #D946EF; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.sp-slots-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin: 10px 0 6px; }
+.sp-slots { display: flex; gap: 6px; flex-wrap: wrap; }
+.sp-slot { background: #f3e8ff; color: #7e22ce; border-radius: 6px; padding: 5px 10px; font-size: 10.5px; font-weight: 600; }
+.sp-slot.active { background: #D946EF; color: white; }
+
+/* floating badges */
+.badge-float { position: absolute; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04); z-index: 2; white-space: nowrap; }
+.badge-float-1 { top: 8%; right: -5%; animation: floatA 4s ease-in-out infinite; }
+.badge-float-2 { bottom: 12%; left: -8%; animation: floatB 4s ease-in-out infinite 1s; }
+@keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes floatB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+.badge-float-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.badge-float-icon.green { background: #D1FAE5; }
+.badge-float-icon.purple { background: #EDE9FE; }
+.badge-float-title { font-size: 12px; font-weight: 600; color: #111; }
+.badge-float-sub { font-size: 10.5px; color: #888; margin-top: 1px; }
+
+/* ─── STRIP ─── */
+.strip { background: var(--dark2); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 20px 24px; display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
+.strip-item { display: flex; align-items: center; gap: 10px; }
+.strip-icon { font-size: 18px; }
+.strip-text { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.5); }
+.strip-text strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+/* ─── FEATURES ─── */
+.features { padding: 100px 0; }
+.features-header { text-align: center; margin-bottom: 56px; }
+.features-header .section-sub { margin: 0 auto; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; transition: all 0.25s; }
+.feat-card:hover { border-color: var(--brand); box-shadow: var(--shadow); transform: translateY(-3px); }
+.feat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.feat-icon svg { width: 20px; height: 20px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.feat-icon.pink   { background: #FCE7F3; } .feat-icon.pink svg   { stroke: #DB2777; }
+.feat-icon.purple { background: #EDE9FE; } .feat-icon.purple svg { stroke: #7C3AED; }
+.feat-icon.green  { background: #D1FAE5; } .feat-icon.green svg  { stroke: #059669; }
+.feat-icon.orange { background: #FEF3C7; } .feat-icon.orange svg { stroke: #D97706; }
+.feat-icon.teal   { background: #CCFBF1; } .feat-icon.teal svg   { stroke: #0D9488; }
+.feat-icon.rose   { background: #FFE4E6; } .feat-icon.rose svg   { stroke: #E11D48; }
+.feat-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.feat-card p { font-size: 14px; color: var(--mid); line-height: 1.65; }
+
+/* ─── HOW IT WORKS ─── */
+.how { background: linear-gradient(145deg, #1a0a2e 0%, #0D0714 50%, #160B21 100%); padding: 100px 0; }
+.how-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.steps { display: flex; flex-direction: column; gap: 32px; margin-top: 40px; }
+.step { display: flex; gap: 20px; align-items: flex-start; }
+.step-num { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--brand); background: rgba(217,70,239,0.12); border: 1px solid rgba(217,70,239,0.25); border-radius: 8px; padding: 4px 10px; flex-shrink: 0; margin-top: 2px; }
+.step h4 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
+.step p { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.65; }
+
+/* dashboard mock */
+.dashboard-mock { background: #1E1030; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-dark); border: 1px solid rgba(255,255,255,0.06); }
+.dash-header { background: #160B21; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.dash-dots { display: flex; gap: 6px; }
+.dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dash-dot.r { background: #FF5F57; } .dash-dot.y { background: #FEBC2E; } .dash-dot.g { background: #28C840; }
+.dash-header-left { display: flex; align-items: center; gap: 10px; }
+.dash-title { font-size: 12px; color: rgba(255,255,255,0.4); font-family: monospace; }
+.dash-date { font-size: 11px; color: rgba(255,255,255,0.25); }
+.dash-body { padding: 18px; }
+.dash-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.dash-metric { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; }
+.dash-metric-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+.dash-metric-value { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: white; line-height: 1; }
+.dash-metric-sub { font-size: 9px; color: var(--green); margin-top: 3px; }
+.dash-today { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.dash-today-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.35); margin-bottom: 8px; }
+.dash-class-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.dash-class-row:last-child { border: none; }
+.dash-class-time { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.6); width: 36px; flex-shrink: 0; }
+.dash-class-name { font-size: 11px; color: rgba(255,255,255,0.75); flex: 1; }
+.dash-class-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.dash-class-badge.ok { background: rgba(16,185,129,0.15); color: #34D399; }
+.dash-class-badge.done { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
+.dash-chart { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px; }
+.dash-chart-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+.dash-bars { display: flex; align-items: flex-end; gap: 6px; height: 48px; }
+.dash-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.dash-bar { width: 100%; background: rgba(217,70,239,0.35); border-radius: 3px 3px 0 0; }
+.dash-bar.active { background: var(--brand); }
+.dash-bar-lbl { font-size: 8px; color: rgba(255,255,255,0.3); }
+
+/* ─── PRICING ─── */
+.pricing { padding: 100px 0; background: var(--light); }
+.pricing-header { text-align: center; margin-bottom: 56px; }
+.pricing-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.pricing-compare { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 36px; }
+.pricing-compare h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--dark); }
+.compare-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #F3F4F6; }
+.compare-row:last-child { border: none; }
+.compare-no, .compare-yes { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.compare-no { background: #FEE2E2; } .compare-no svg { width: 12px; height: 12px; stroke: #EF4444; stroke-width: 2.5; }
+.compare-yes { background: #D1FAE5; } .compare-yes svg { width: 12px; height: 12px; stroke: #059669; stroke-width: 2.5; }
+.compare-before { font-size: 14px; color: #9CA3AF; text-decoration: line-through; }
+.compare-after { font-size: 14px; color: var(--dark); font-weight: 500; }
+.pricing-card { background: linear-gradient(145deg, #1a0a2e, #2d1054); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); }
+.pricing-card-inner { padding: 40px; }
+.pricing-pill { display: inline-block; background: rgba(217,70,239,0.2); color: #E879F9; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; margin-bottom: 16px; }
+.pricing-card h3 { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: white; }
+.pricing-desc { font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 6px; }
+.price-row { display: flex; align-items: flex-end; gap: 4px; margin: 24px 0 6px; }
+.price-cur { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; padding-bottom: 6px; }
+.price-amt { font-family: var(--font-display); font-size: 72px; font-weight: 900; color: white; line-height: 1; letter-spacing: -3px; }
+.price-mo { font-size: 16px; color: rgba(255,255,255,0.45); padding-bottom: 10px; }
+.price-note { font-size: 13px; color: rgba(255,255,255,0.35); }
+.price-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 24px 0; }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.price-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.75); }
+.price-check { width: 20px; height: 20px; border-radius: 50%; background: rgba(16,185,129,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.price-check svg { width: 11px; height: 11px; stroke: #34D399; stroke-width: 2.5; fill: none; }
+.btn-pricing { display: block; text-align: center; background: var(--brand); color: white; padding: 14px; border-radius: var(--radius); font-size: 15px; font-weight: 600; text-decoration: none; margin-top: 28px; box-shadow: 0 8px 24px var(--brand-glow); transition: all 0.2s; }
+.btn-pricing:hover { background: var(--brand-dark); transform: translateY(-2px); }
+.price-guarantee { margin-top: 14px; font-size: 12px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 6px; justify-content: center; }
+
+/* ─── FAQ ─── */
+.faq { padding: 100px 0; }
+.faq-header { text-align: center; margin-bottom: 56px; }
+.faq-wrapper { max-width: 720px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 0; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-question { width: 100%; background: none; border: none; cursor: pointer; padding: 20px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 16px; font-weight: 500; color: var(--dark); text-align: left; font-family: var(--font-body); transition: color 0.2s; }
+.faq-question:hover { color: var(--brand); }
+.faq-toggle { width: 24px; height: 24px; border-radius: 50%; background: var(--brand-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; }
+.faq-toggle svg { width: 14px; height: 14px; stroke: var(--brand); stroke-width: 2.5; fill: none; transition: transform 0.3s; }
+.faq-item.open .faq-toggle { background: var(--brand); }
+.faq-item.open .faq-toggle svg { stroke: white; transform: rotate(45deg); }
+.faq-answer { display: none; padding: 0 0 20px; }
+.faq-item.open .faq-answer { display: block; }
+.faq-answer p { font-size: 15px; color: var(--mid); line-height: 1.75; }
+
+/* ─── SIGNUP ─── */
+.signup { background: linear-gradient(145deg, #1a0a2e 0%, #0D0714 60%, #160B21 100%); padding: 100px 0; }
+.signup-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.signup-left h2 { font-family: var(--font-display); font-size: clamp(30px, 4vw, 46px); font-weight: 800; line-height: 1.1; letter-spacing: -1px; color: white; }
+.signup-left h2 em { font-style: normal; color: #E879F9; }
+.signup-left p { font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.5); margin-top: 14px; line-height: 1.7; }
+.signup-perks { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.signup-perk { display: flex; align-items: center; gap: 14px; font-size: 15px; color: rgba(255,255,255,0.65); }
+.perk-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(217,70,239,0.12); border: 1px solid rgba(217,70,239,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.perk-icon svg { width: 16px; height: 16px; stroke: var(--brand); stroke-width: 2; fill: none; }
+.form-card { background: white; border-radius: var(--radius-xl); padding: 36px; box-shadow: var(--shadow-dark); }
+.form-card-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--dark); }
+.form-card-sub { font-size: 14px; color: var(--mid); margin-top: 4px; margin-bottom: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 500; color: var(--dark); }
+.form-group input { padding: 11px 14px; border: 1.5px solid #E5E7EB; border-radius: 10px; font-size: 14px; font-family: var(--font-body); color: var(--dark); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.form-group input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(217,70,239,0.12); }
+.btn-form { width: 100%; background: var(--brand); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font-body); box-shadow: 0 8px 20px var(--brand-glow); transition: all 0.22s; margin-top: 4px; }
+.btn-form:hover:not(:disabled) { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 12px 28px var(--brand-glow); }
+.btn-form:disabled { opacity: 0.7; cursor: not-allowed; }
+.form-terms { font-size: 11.5px; color: #9CA3AF; margin-top: 10px; text-align: center; }
+.form-terms a { color: var(--brand); text-decoration: none; }
+.form-success { display: none; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 20px 0; }
+.success-ring { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D946EF, #A21CAF); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(217,70,239,0.45); }
+.success-ring svg { width: 28px; height: 28px; stroke: white; stroke-width: 3; fill: none; }
+.form-success h4 { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--dark); }
+.form-success p { font-size: 14px; color: var(--mid); line-height: 1.6; }
+
+/* ─── FOOTER ─── */
+footer { background: var(--dark); padding: 56px 0 0; }
+.footer-top { max-width: 1140px; margin: 0 auto; padding: 0 24px 48px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.footer-logo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: white; text-decoration: none; }
+.footer-logo span { color: var(--brand); }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 10px; line-height: 1.65; }
+.footer-nav-group h5 { font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+.footer-nav-group ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-nav-group a { font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+.footer-nav-group a:hover { color: white; }
+.footer-bottom { max-width: 1140px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.footer-copy { font-size: 13px; color: rgba(255,255,255,0.25); }
+.footer-made { font-size: 13px; color: rgba(255,255,255,0.25); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .hero-inner, .how-inner, .signup-inner, .pricing-layout { grid-template-columns: 1fr; }
+  .hero-mockup { display: none; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .dash-metrics { grid-template-columns: repeat(2, 1fr); }
+  .strip { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+  .hero-stats { flex-wrap: wrap; gap: 16px; }
+  .hero-stat { padding: 0; border: none; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: block; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">agendo<span>fy</span></a>
+    <ul class="nav-links">
+      <li><a href="#funcionalidades">Funcionalidades</a></li>
+      <li><a href="#como-funciona">Como funciona</a></li>
+      <li><a href="#preco">Preço</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#cadastro" class="btn-nav">Começar grátis →</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="nav-mobile" id="mobile-nav">
+  <a href="#funcionalidades" onclick="closeMobile()">Funcionalidades</a>
+  <a href="#como-funciona" onclick="closeMobile()">Como funciona</a>
+  <a href="#preco" onclick="closeMobile()">Preço</a>
+  <a href="#faq" onclick="closeMobile()">FAQ</a>
+  <a href="#cadastro" class="btn-nav-mobile" onclick="closeMobile()">Começar grátis →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-glow hero-bg-glow-1"></div>
+  <div class="hero-bg-glow hero-bg-glow-2"></div>
+  <div class="hero-bg-glow hero-bg-glow-3"></div>
+  <div class="hero-bg-grid"></div>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="hero-badge-pulse"></span>
+        Para salões de beleza, nail studios e estúdios
+      </div>
+
+      <h1>A agenda que seu salão <span class="highlight">merecia</span> ter</h1>
+
+      <p class="hero-sub">
+        Catálogo de serviços, agendamento online pelo cliente e controle completo da sua agenda. Sem WhatsApp, sem caderninho, sem confusão.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#cadastro" class="btn-hero-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Cadastrar meu salão
+        </a>
+        <a href="#como-funciona" class="btn-hero-secondary">
+          Ver demonstração →
+        </a>
+      </div>
+
+      <p class="hero-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        14 dias grátis · Sem cartão de crédito · Cancele quando quiser
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">R$19</span>
+          <span class="hero-stat-label">por mês</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">∞</span>
+          <span class="hero-stat-label">clientes</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">10min</span>
+          <span class="hero-stat-label">p/ configurar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mockup">
+      <div class="hero-mockup-glow"></div>
+
+      <!-- floating badges -->
+      <div class="badge-float badge-float-1">
+        <div class="badge-float-icon green">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="badge-float-text">
+          <div class="badge-float-title">Agendamento confirmado</div>
+          <div class="badge-float-sub">Ana · Progressiva 14:00</div>
+        </div>
+      </div>
+
+      <div class="badge-float badge-float-2">
+        <div class="badge-float-icon purple">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="badge-float-text">
+          <div class="badge-float-title">3 horários disponíveis</div>
+          <div class="badge-float-sub">Hoje · Manicure</div>
+        </div>
+      </div>
+
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="sp-header">
+            <div class="sp-salon-name">💅 Studio Belle</div>
+            <div class="sp-user">Olá, Maria!</div>
+            <div class="sp-services-label">Escolha um serviço</div>
+          </div>
+          <div class="sp-body">
+            <div class="sp-service-card">
+              <div class="sp-dot" style="background:#D946EF"></div>
+              <div class="sp-svc-info">
+                <div class="sp-svc-name">Progressiva</div>
+                <div class="sp-svc-meta">120min</div>
+              </div>
+              <div class="sp-svc-price">R$180</div>
+              <button class="sp-btn">Agendar</button>
+            </div>
+            <div class="sp-service-card">
+              <div class="sp-dot" style="background:#8B5CF6"></div>
+              <div class="sp-svc-info">
+                <div class="sp-svc-name">Coloração</div>
+                <div class="sp-svc-meta">90min</div>
+              </div>
+              <div class="sp-svc-price">R$140</div>
+              <button class="sp-btn">Agendar</button>
+            </div>
+            <div class="sp-service-card">
+              <div class="sp-dot" style="background:#EC4899"></div>
+              <div class="sp-svc-info">
+                <div class="sp-svc-name">Manicure</div>
+                <div class="sp-svc-meta">45min</div>
+              </div>
+              <div class="sp-svc-price">R$45</div>
+              <button class="sp-btn">Agendar</button>
+            </div>
+            <div class="sp-slots-label">Horários disponíveis · Seg 24</div>
+            <div class="sp-slots">
+              <div class="sp-slot">09:00</div>
+              <div class="sp-slot active">11:00</div>
+              <div class="sp-slot">14:00</div>
+              <div class="sp-slot">16:30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item"><span class="strip-icon">💅</span><span class="strip-text">Para <strong>salões, nail studios</strong> e estúdios de beleza</span></div>
+  <div class="strip-item"><span class="strip-icon">📱</span><span class="strip-text">Cliente agenda <strong>pelo celular</strong>, sem app</span></div>
+  <div class="strip-item"><span class="strip-icon">🗓️</span><span class="strip-text">Agenda <strong>automática</strong> por serviço e horário</span></div>
+  <div class="strip-item"><span class="strip-icon">✅</span><span class="strip-text">Check-in e <strong>confirmação</strong> em tempo real</span></div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="funcionalidades">
+  <div class="features-header container">
+    <span class="tag">Funcionalidades</span>
+    <h2 class="section-title">Tudo que seu salão precisa. Nada que não precisa.</h2>
+    <p class="section-sub">Pensado para salões e estúdios de qualquer porte, sem sistema complicado.</p>
+  </div>
+
+  <div class="features-grid container">
+    <div class="feat-card reveal">
+      <div class="feat-icon pink">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3>Agenda por disponibilidade</h3>
+      <p>Configure os dias e horários em que você atende. O sistema calcula automaticamente os slots disponíveis por duração de serviço.</p>
+    </div>
+
+    <div class="feat-card reveal reveal-d1">
+      <div class="feat-icon purple">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Agendamento pelo cliente</h3>
+      <p>A cliente acessa pelo celular, vê o catálogo de serviços e escolhe o horário disponível. Sem WhatsApp, sem ligação.</p>
+    </div>
+
+    <div class="feat-card reveal reveal-d2">
+      <div class="feat-icon rose">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Catálogo de serviços</h3>
+      <p>Crie seus serviços com nome, duração, preço e cor. O cliente vê tudo organizado e escolhe o que quiser agendar.</p>
+    </div>
+
+    <div class="feat-card reveal reveal-d3">
+      <div class="feat-icon green">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>Dashboard em tempo real</h3>
+      <p>Atendimentos do dia, serviços mais agendados, receita estimada e clientes mais fiéis. Tudo visível num painel.</p>
+    </div>
+
+    <div class="feat-card reveal reveal-d4">
+      <div class="feat-icon orange">
+        <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <h3>Check-in e confirmação</h3>
+      <p>Confirme o atendimento com um clique quando a cliente chegar. Histórico completo de presença por cliente.</p>
+    </div>
+
+    <div class="feat-card reveal reveal-d5">
+      <div class="feat-icon teal">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <h3>White label</h3>
+      <p>Seu salão com seu logo, suas cores e seu domínio. A cliente nunca vê o nome do sistema — só o seu negócio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="como-funciona">
+  <div class="how-inner container">
+    <div>
+      <span class="tag white">Como funciona</span>
+      <h2 class="section-title white" style="margin-top:0">Configure em menos de 10 minutos</h2>
+      <p class="section-sub white">Sem instalação, sem servidor. Acessa pelo navegador e já começa a receber agendamentos.</p>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <div>
+            <h4>Cadastre seu salão</h4>
+            <p>Preencha o formulário aqui na página. Você recebe acesso imediato ao painel administrativo.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-d1">
+          <div class="step-num">02</div>
+          <div>
+            <h4>Configure serviços e disponibilidade</h4>
+            <p>Crie seus serviços (progressiva, coloração, manicure…) e defina os horários em que você atende.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-d2">
+          <div class="step-num">03</div>
+          <div>
+            <h4>Compartilhe o link com suas clientes</h4>
+            <p>Cada cliente cria seu acesso e agenda sozinha. Você recebe a notificação e gerencia tudo pelo painel.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-d3">
+          <div class="step-num">04</div>
+          <div>
+            <h4>Confirme com um clique no dia</h4>
+            <p>Quando a cliente chegar, faça o check-in. O histórico de atendimentos fica registrado automaticamente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard mock -->
+    <div class="dashboard-mock reveal">
+      <div class="dash-header">
+        <div class="dash-header-left">
+          <div class="dash-dots"><div class="dash-dot r"></div><div class="dash-dot y"></div><div class="dash-dot g"></div></div>
+          <span class="dash-title">Painel Admin — Studio Belle</span>
+        </div>
+        <span class="dash-date">Qua, 18 mar 2026</span>
+      </div>
+      <div class="dash-body">
+        <div class="dash-metrics">
+          <div class="dash-metric">
+            <div class="dash-metric-label">Atendimentos hoje</div>
+            <div class="dash-metric-value">8</div>
+            <div class="dash-metric-sub">↑ 2 a mais</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Clientes ativas</div>
+            <div class="dash-metric-value">94</div>
+            <div class="dash-metric-sub">↑ 5 este mês</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Receita mês</div>
+            <div class="dash-metric-value">4.2k</div>
+            <div class="dash-metric-sub">↑ 18%</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Cancelamentos</div>
+            <div class="dash-metric-value" style="color:#F97316;">2%</div>
+            <div class="dash-metric-sub" style="color:#F97316;">este mês</div>
+          </div>
+        </div>
+
+        <div class="dash-today">
+          <div class="dash-today-title">Agenda de hoje</div>
+          <div class="dash-class-row">
+            <span class="dash-class-time">09:00</span>
+            <span class="dash-class-name">Progressiva · Ana S.</span>
+            <span class="dash-class-badge done">✓ Check-in</span>
+          </div>
+          <div class="dash-class-row">
+            <span class="dash-class-time">11:00</span>
+            <span class="dash-class-name">Coloração · Juliana M.</span>
+            <span class="dash-class-badge ok">Confirmado</span>
+          </div>
+          <div class="dash-class-row">
+            <span class="dash-class-time">14:00</span>
+            <span class="dash-class-name">Manicure · Carla R.</span>
+            <span class="dash-class-badge ok">Confirmado</span>
+          </div>
+        </div>
+
+        <div class="dash-chart">
+          <div class="dash-chart-title">Agendamentos — últimos 7 dias</div>
+          <div class="dash-bars">
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:24px"></div><span class="dash-bar-lbl">SEG</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:36px"></div><span class="dash-bar-lbl">TER</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar active" style="height:44px"></div><span class="dash-bar-lbl">QUA</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:30px"></div><span class="dash-bar-lbl">QUI</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:42px"></div><span class="dash-bar-lbl">SEX</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:38px"></div><span class="dash-bar-lbl">SÁB</span></div>
+            <div class="dash-bar-wrap"><div class="dash-bar" style="height:10px"></div><span class="dash-bar-lbl">DOM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="preco">
+  <div class="pricing-header container">
+    <span class="tag">Preço</span>
+    <h2 class="section-title">Um plano. Tudo incluso.</h2>
+    <p class="section-sub">Sem surpresas, sem limite de clientes, sem cobrar mais conforme você cresce.</p>
+  </div>
+
+  <div class="pricing-layout container">
+    <div class="pricing-compare reveal">
+      <h3>Antes e depois do Agendofy</h3>
+
+      <div class="compare-row">
+        <div class="compare-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        <span class="compare-before">Agendamento pelo WhatsApp</span>
+      </div>
+      <div class="compare-row">
+        <div class="compare-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="compare-after">Cliente agenda sozinha pelo celular</span>
+      </div>
+
+      <div class="compare-row">
+        <div class="compare-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        <span class="compare-before">Agenda no caderninho ou planilha</span>
+      </div>
+      <div class="compare-row">
+        <div class="compare-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="compare-after">Agenda digital com horários automáticos</span>
+      </div>
+
+      <div class="compare-row">
+        <div class="compare-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        <span class="compare-before">Sem histórico de clientes</span>
+      </div>
+      <div class="compare-row">
+        <div class="compare-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="compare-after">Histórico completo e clientes mais fiéis</span>
+      </div>
+
+      <div class="compare-row">
+        <div class="compare-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        <span class="compare-before">Sem visão dos seus números</span>
+      </div>
+      <div class="compare-row">
+        <div class="compare-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="compare-after">Dashboard com receita e métricas do salão</span>
+      </div>
+    </div>
+
+    <div class="pricing-card reveal reveal-d2">
+      <div class="pricing-card-inner">
+        <div class="pricing-pill">Plano único</div>
+        <h3>Tudo incluso</h3>
+        <p class="pricing-desc">Para salões e estúdios de beleza de qualquer porte</p>
+
+        <div class="price-row">
+          <span class="price-cur">R$</span>
+          <span class="price-amt">19</span>
+          <span class="price-mo">/mês</span>
+        </div>
+        <p class="price-note">Cancele quando quiser · Sem taxa de adesão</p>
+
+        <div class="price-divider"></div>
+
+        <ul class="price-features">
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Clientes ilimitadas</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Catálogo de serviços com preço e duração</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Agendamento online pelo cliente</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Agenda por disponibilidade automática</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Check-in e histórico de atendimentos</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>White label com logo e cores do seu salão</li>
+          <li><div class="price-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Dashboard e relatórios do seu negócio</li>
+        </ul>
+
+        <a href="#cadastro" class="btn-pricing">Começar 14 dias grátis →</a>
+
+        <p class="price-guarantee">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Sem precisar de cartão de crédito
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="faq-header container">
+    <span class="tag">Dúvidas</span>
+    <h2 class="section-title">Perguntas frequentes</h2>
+  </div>
+
+  <div class="faq-wrapper">
+    <div class="faq-item open">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Preciso instalar alguma coisa?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Não. O Agendofy é 100% online. Você acessa pelo navegador do computador, celular ou tablet. Suas clientes também acessam pelo celular, sem instalar nenhum aplicativo.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Como funciona a disponibilidade de horários?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Você configura os dias da semana e os horários em que atende. O sistema divide automaticamente a janela de disponibilidade em slots com base na duração de cada serviço. Se um horário já tiver agendamento, ele some da lista.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        A cliente precisa criar uma conta?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim, a cliente cria um login simples (e-mail e senha) para visualizar o catálogo e fazer agendamentos. Você também pode cadastrar clientes manualmente pelo painel e enviar o link de acesso.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Posso personalizar com o nome e as cores do meu salão?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim. Você configura o nome do salão, logo, cor principal e cor de destaque. Suas clientes vão ver apenas a identidade visual do seu negócio — sem mencionar o Agendofy.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Posso agendar por minhas clientes quando elas ligam?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim. Pelo painel administrativo você pode criar agendamentos diretamente para qualquer cliente, escolhendo o serviço, a data e o horário. Ideal para quem liga ou manda mensagem por outros meios.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Posso cancelar quando quiser?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim, sem burocracia e sem multa. Você pode cancelar a qualquer momento diretamente pelo painel. O acesso permanece ativo até o fim do período pago.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Tenho suporte caso precise de ajuda?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim. Todo plano inclui suporte dedicado diretamente com a equipe do Agendofy. Respondemos em até 1 dia útil.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN UP -->
+<section class="signup" id="cadastro">
+  <div class="signup-inner container">
+    <div class="signup-left">
+      <span class="tag white">Comece agora</span>
+      <h2>Comece <em>hoje</em>, de graça</h2>
+      <p>14 dias grátis, sem cartão de crédito. Configure em minutos e compartilhe com suas clientes.</p>
+
+      <ul class="signup-perks" style="margin-top:28px">
+        <li class="signup-perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          Setup completo em menos de 10 minutos
+        </li>
+        <li class="signup-perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          Suas clientes não precisam instalar nada
+        </li>
+        <li class="signup-perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          Cancele quando quiser, sem burocracia
+        </li>
+        <li class="signup-perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          </div>
+          Dados sempre seus, exportáveis a qualquer momento
+        </li>
+      </ul>
+    </div>
+
+    <div class="form-card">
+      <h3 class="form-card-title">Criar conta gratuita</h3>
+      <p class="form-card-sub">14 dias grátis · Depois apenas R$19/mês</p>
+
+      <div id="form-content">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Seu nome</label>
+            <input type="text" id="nome" placeholder="Ana Silva">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp</label>
+            <input type="tel" id="whatsapp" placeholder="(11) 99999-9999">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Nome do salão / estúdio</label>
+            <input type="text" id="academia" placeholder="Studio Belle">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="email" placeholder="ana@studiobelle.com.br">
+          </div>
+          <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="senha" placeholder="Mínimo 6 caracteres">
+          </div>
+        </div>
+
+        <div id="form-error" style="display:none; background:#FEE2E2; border:1px solid #FECACA; border-radius:8px; padding:10px 14px; font-size:13px; color:#DC2626; margin-bottom:4px;"></div>
+
+        <button class="btn-form" id="btn-submit" onclick="submitForm()">Criar minha conta grátis →</button>
+        <p class="form-terms">
+          Ao criar a conta você concorda com os
+          <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.
+        </p>
+      </div>
+
+      <div class="form-success" id="form-success">
+        <div class="success-ring">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h4>Conta criada com sucesso!</h4>
+        <p>Enviamos as instruções de acesso para o seu e-mail.<br>Você receberá o link do seu painel em instantes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="footer-logo">agendo<span>fy</span></a>
+      <p class="footer-tagline">Agendamento inteligente para salões de beleza e estúdios. Simples, rápido, com a cara da sua marca.</p>
+    </div>
+    <div class="footer-nav-group">
+      <h5>Produto</h5>
+      <ul>
+        <li><a href="#funcionalidades">Funcionalidades</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#preco">Preço</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-nav-group">
+      <h5>Legal</h5>
+      <ul>
+        <li><a href="#">Termos de Uso</a></li>
+        <li><a href="#">Privacidade</a></li>
+        <li><a href="#">Cookies</a></li>
+      </ul>
+    </div>
+    <div class="footer-nav-group">
+      <h5>Contato</h5>
+      <ul>
+        <li><a href="#">contato@agendofy.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Agendofy. Todos os direitos reservados.</span>
+    <span class="footer-made">Feito para negócios brasileiros 🇧🇷</span>
+  </div>
+</footer>
+
+<script>
+// ── Nav scroll effect ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── Mobile menu ──
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+hamburger.addEventListener('click', () => { mobileNav.classList.toggle('open'); });
+function closeMobile() { mobileNav.classList.remove('open'); }
+
+// ── FAQ accordion ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── Scroll reveal ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Form submit ──
+async function submitForm() {
+  const nome = document.getElementById('nome').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const academia = document.getElementById('academia').value.trim();
+  const whatsapp = document.getElementById('whatsapp').value.trim();
+  const senha = document.getElementById('senha').value;
+
+  hideFormError();
+
+  if (!nome || !email || !academia || !whatsapp || !senha) {
+    shakeForm();
+    showFormError('Preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showFormError('Informe um e-mail válido.');
+    document.getElementById('email').focus();
+    return;
+  }
+
+  if (senha.length < 6) {
+    showFormError('A senha deve ter pelo menos 6 caracteres.');
+    document.getElementById('senha').focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Criando conta...';
+
+  try {
+    const res = await fetch('/api/public/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminName: nome,
+        academyName: academia,
+        email: email,
+        password: senha,
+        phone: whatsapp,
+        tenantType: 'BeautySalon'
+      })
+    });
+
+    if (res.status === 201) {
+      gtag('event', 'sign_up', { method: 'landing_salao' });
+      document.getElementById('form-content').style.display = 'none';
+      document.getElementById('form-success').style.display = 'flex';
+      return;
+    }
+
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 409) {
+      showFormError(data.detail || data || 'Este e-mail já está cadastrado. Tente outro.');
+    } else {
+      showFormError('Ocorreu um erro. Tente novamente em instantes.');
+    }
+  } catch {
+    showFormError('Não foi possível conectar ao servidor. Verifique sua conexão.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar minha conta grátis →';
+  }
+}
+
+function showFormError(msg) {
+  const el = document.getElementById('form-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideFormError() {
+  document.getElementById('form-error').style.display = 'none';
+}
+function shakeForm() {
+  const card = document.querySelector('.form-card');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'shake 0.4s ease';
+}
+</script>
+</body>
+</html>

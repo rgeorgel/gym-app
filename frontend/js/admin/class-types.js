@@ -27,13 +27,14 @@ async function loadClassTypes() {
     card.innerHTML = `
       <div class="table-wrapper">
         <table>
-          <thead><tr><th>${t('field.color')}</th><th>${t('field.name')}</th><th>${t('classTypes.col.modality')}</th><th>${t('field.status')}</th><th></th></tr></thead>
+          <thead><tr><th>${t('field.color')}</th><th>${t('field.name')}</th><th>${t('classTypes.col.modality')}</th><th>${t('classTypes.col.price')}</th><th>${t('field.status')}</th><th></th></tr></thead>
           <tbody>
             ${types.map(ct => `
               <tr>
                 <td><div style="width:20px;height:20px;background:${ct.color};border-radius:4px"></div></td>
                 <td class="font-medium">${ct.name}</td>
                 <td>${{ Group: t('classTypes.type.group'), Individual: t('classTypes.type.individual'), Pair: t('classTypes.type.pair') }[ct.modalityType] ?? ct.modalityType}</td>
+                <td>${ct.price != null ? `R$ ${Number(ct.price).toFixed(2).replace('.', ',')}` : '—'}</td>
                 <td><span class="badge ${ct.isActive ? 'badge-success' : 'badge-gray'}">${ct.isActive ? t('status.active') : t('status.inactive')}</span></td>
                 <td><button class="btn btn-secondary btn-sm" onclick="window._editClassType('${ct.id}')">${t('btn.edit')}</button></td>
               </tr>
@@ -75,6 +76,16 @@ function openClassTypeModal(ct = null) {
           </select>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <label class="form-label">${t('field.price')}</label>
+          <input class="form-control" id="ctPrice" type="number" min="0" step="0.01" placeholder="ex: 35.00" value="${ct?.price ?? ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${t('field.durationMinutes')}</label>
+          <input class="form-control" id="ctDuration" type="number" min="5" step="5" placeholder="ex: 30" value="${ct?.durationMinutes ?? ''}">
+        </div>
+      </div>
       ${ct ? `
       <div class="form-group">
         <label class="form-label">${t('field.status')}</label>
@@ -92,11 +103,15 @@ function openClassTypeModal(ct = null) {
   openModal('classTypeModal');
 
   document.getElementById('btnSaveCt').addEventListener('click', async () => {
+    const priceVal = document.getElementById('ctPrice').value.trim();
+    const durationVal = document.getElementById('ctDuration').value.trim();
     const body = {
       name: document.getElementById('ctName').value.trim(),
       description: document.getElementById('ctDesc').value.trim() || null,
       color: document.getElementById('ctColor').value,
       modalityType: document.getElementById('ctModality').value,
+      price: priceVal !== '' ? parseFloat(priceVal) : null,
+      durationMinutes: durationVal !== '' ? parseInt(durationVal) : null,
     };
     if (ct) body.isActive = document.getElementById('ctActive').value === 'true';
 

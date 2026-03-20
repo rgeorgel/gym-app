@@ -105,12 +105,13 @@ public static class StudentEndpoints
                 return Results.Forbid();
 
             var bookings = await db.Bookings.AsNoTracking()
-                .Include(b => b.Session).ThenInclude(s => s.Schedule).ThenInclude(s => s.ClassType)
-                .Where(b => b.StudentId == id && b.Session.Schedule.TenantId == tenant.TenantId)
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Where(b => b.StudentId == id && b.Session.TenantId == tenant.TenantId)
                 .OrderByDescending(b => b.Session.Date)
                 .Select(b => new BookingResponse(
-                    b.Id, b.SessionId, b.Session.Date, b.Session.Schedule.StartTime,
-                    b.Session.Schedule.ClassType.Name, b.StudentId, b.Student.Name,
+                    b.Id, b.SessionId, b.Session.Date, b.Session.StartTime,
+                    b.Session.ClassType != null ? b.Session.ClassType.Name : "",
+                    b.StudentId, b.Student.Name,
                     b.Status, b.CheckedInAt, b.CreatedAt))
                 .ToListAsync();
 

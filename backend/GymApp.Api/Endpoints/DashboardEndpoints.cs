@@ -22,12 +22,12 @@ public static class DashboardEndpoints
                 u.TenantId == tenant.TenantId && u.Role == UserRole.Student && u.Status == StudentStatus.Active);
 
             var bookingsThisMonth = await db.Bookings.CountAsync(b =>
-                b.Session.Schedule.TenantId == tenant.TenantId &&
+                b.Session.TenantId == tenant.TenantId &&
                 b.Session.Date >= startOfMonth &&
                 b.Status != BookingStatus.Cancelled);
 
             var sessionsToday = await db.Sessions.CountAsync(s =>
-                s.Schedule.TenantId == tenant.TenantId &&
+                s.TenantId == tenant.TenantId &&
                 s.Date == today &&
                 s.Status == SessionStatus.Scheduled);
 
@@ -37,12 +37,13 @@ public static class DashboardEndpoints
                 p.ExpiresAt.HasValue &&
                 p.ExpiresAt <= DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
 
-            // Average occupancy — last 30 days
+            // Average occupancy — last 30 days (gym sessions only, since salon sessions have capacity=1)
             var sessionStats = await db.Sessions.AsNoTracking()
-                .Where(s => s.Schedule.TenantId == tenant.TenantId && s.Date >= thirtyDaysAgo && s.Date < today)
+                .Include(s => s.Schedule)
+                .Where(s => s.TenantId == tenant.TenantId && s.Date >= thirtyDaysAgo && s.Date < today)
                 .Select(s => new
                 {
-                    Capacity = s.Schedule.Capacity,
+                    Capacity = s.Schedule != null ? s.Schedule.Capacity : 1,
                     Active = s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)
                 })
                 .ToListAsync();
@@ -51,18 +52,16 @@ public static class DashboardEndpoints
                 ? Math.Round(sessionStats.Average(s => s.Capacity > 0 ? (double)s.Active / s.Capacity * 100 : 0), 1)
                 : 0.0;
 
-            // Revenue this month (sum of price × credits for packages created this month)
+            // Revenue this month
             var revenueThisMonth = await db.PackageItems.AsNoTracking()
                 .Where(i => i.Package.TenantId == tenant.TenantId && i.Package.CreatedAt >= startOfMonthUtc)
                 .SumAsync(i => i.PricePerCredit * i.TotalCredits);
 
-            // New students this month
             var newStudentsThisMonth = await db.Users.CountAsync(u =>
                 u.TenantId == tenant.TenantId &&
                 u.Role == UserRole.Student &&
                 u.CreatedAt >= startOfMonthUtc);
 
-            // Active students with no remaining credits
             var studentsWithCreditIds = await db.PackageItems.AsNoTracking()
                 .Where(i => i.Package.TenantId == tenant.TenantId && i.Package.IsActive && i.UsedCredits < i.TotalCredits)
                 .Select(i => i.Package.StudentId)
@@ -75,12 +74,11 @@ public static class DashboardEndpoints
                 u.Status == StudentStatus.Active &&
                 !studentsWithCreditIds.Contains(u.Id));
 
-            // Cancellation rate this month
             var totalBookingsMonth = await db.Bookings.CountAsync(b =>
-                b.Session.Schedule.TenantId == tenant.TenantId && b.Session.Date >= startOfMonth);
+                b.Session.TenantId == tenant.TenantId && b.Session.Date >= startOfMonth);
 
             var cancelledBookingsMonth = await db.Bookings.CountAsync(b =>
-                b.Session.Schedule.TenantId == tenant.TenantId &&
+                b.Session.TenantId == tenant.TenantId &&
                 b.Session.Date >= startOfMonth &&
                 b.Status == BookingStatus.Cancelled);
 
@@ -106,24 +104,25 @@ public static class DashboardEndpoints
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             var sessions = await db.Sessions.AsNoTracking()
-                .Include(s => s.Schedule).ThenInclude(s => s.ClassType)
+                .Include(s => s.ClassType)
+                .Include(s => s.Schedule)
                 .Include(s => s.Bookings)
-                .Where(s => s.Schedule.TenantId == tenant.TenantId && s.Date == today)
-                .OrderBy(s => s.Schedule.StartTime)
+                .Where(s => s.TenantId == tenant.TenantId && s.Date == today)
+                .OrderBy(s => s.StartTime)
                 .ToListAsync();
 
             return Results.Ok(sessions.Select(s => new
             {
                 s.Id,
                 s.Date,
-                StartTime = s.Schedule.StartTime,
-                ClassType = s.Schedule.ClassType.Name,
-                ClassTypeColor = s.Schedule.ClassType.Color,
-                s.Schedule.Capacity,
+                s.StartTime,
+                ClassType = s.ClassType?.Name ?? "",
+                ClassTypeColor = s.ClassType?.Color ?? "#ccc",
+                Capacity = s.Schedule?.Capacity ?? 1,
                 s.Status,
                 Bookings = s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn),
                 CheckedIn = s.Bookings.Count(b => b.Status == BookingStatus.CheckedIn),
-                OccupancyPct = s.Schedule.Capacity > 0
+                OccupancyPct = s.Schedule != null && s.Schedule.Capacity > 0
                     ? Math.Round((double)s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn) / s.Schedule.Capacity * 100)
                     : 0.0
             }));
@@ -135,25 +134,26 @@ public static class DashboardEndpoints
             var nextWeek = today.AddDays(7);
 
             var sessions = await db.Sessions.AsNoTracking()
-                .Include(s => s.Schedule).ThenInclude(s => s.ClassType)
+                .Include(s => s.ClassType)
+                .Include(s => s.Schedule)
                 .Include(s => s.Bookings)
-                .Where(s => s.Schedule.TenantId == tenant.TenantId
+                .Where(s => s.TenantId == tenant.TenantId
                     && s.Date >= today && s.Date <= nextWeek
                     && s.Status == SessionStatus.Scheduled)
-                .OrderBy(s => s.Date).ThenBy(s => s.Schedule.StartTime)
+                .OrderBy(s => s.Date).ThenBy(s => s.StartTime)
                 .ToListAsync();
 
             return Results.Ok(sessions.Select(s => new
             {
                 s.Id,
                 s.Date,
-                StartTime = s.Schedule.StartTime,
-                ClassType = s.Schedule.ClassType.Name,
-                ClassTypeColor = s.Schedule.ClassType.Color,
-                s.Schedule.Capacity,
+                s.StartTime,
+                ClassType = s.ClassType?.Name ?? "",
+                ClassTypeColor = s.ClassType?.Color ?? "#ccc",
+                Capacity = s.Schedule?.Capacity ?? 1,
                 s.SlotsAvailable,
                 Bookings = s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn),
-                OccupancyPct = s.Schedule.Capacity > 0
+                OccupancyPct = s.Schedule != null && s.Schedule.Capacity > 0
                     ? Math.Round((double)s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn) / s.Schedule.Capacity * 100)
                     : 0.0
             }));
@@ -194,7 +194,7 @@ public static class DashboardEndpoints
 
             var data = await db.Bookings.AsNoTracking()
                 .Where(b =>
-                    b.Session.Schedule.TenantId == tenant.TenantId &&
+                    b.Session.TenantId == tenant.TenantId &&
                     b.Session.Date >= since &&
                     b.Status == BookingStatus.CheckedIn)
                 .GroupBy(b => new { b.StudentId, b.Student.Name })
@@ -217,7 +217,7 @@ public static class DashboardEndpoints
 
             var dates = await db.Bookings.AsNoTracking()
                 .Where(b =>
-                    b.Session.Schedule.TenantId == tenant.TenantId &&
+                    b.Session.TenantId == tenant.TenantId &&
                     b.Session.Date >= since &&
                     (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn))
                 .Select(b => b.Session.Date)
@@ -247,7 +247,7 @@ public static class DashboardEndpoints
 
             var recentIds = await db.Bookings
                 .Where(b =>
-                    b.Session.Schedule.TenantId == tenant.TenantId &&
+                    b.Session.TenantId == tenant.TenantId &&
                     b.Session.Date >= inactiveSince &&
                     b.Status != BookingStatus.Cancelled)
                 .Select(b => b.StudentId)
@@ -255,6 +255,157 @@ public static class DashboardEndpoints
                 .ToListAsync();
 
             return Results.Ok(activeStudents.Where(s => !recentIds.Contains(s.Id)));
+        });
+
+        // ── BeautySalon dashboard endpoints ─────────────────────────────────
+
+        group.MapGet("/salon-stats", async (AppDbContext db, TenantContext tenant) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var startOfMonth = new DateOnly(today.Year, today.Month, 1);
+            var startOfMonthUtc = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            var appointmentsToday = await db.Bookings.CountAsync(b =>
+                b.Session.TenantId == tenant.TenantId &&
+                b.Session.Date == today &&
+                b.Status != BookingStatus.Cancelled);
+
+            var appointmentsThisMonth = await db.Bookings.CountAsync(b =>
+                b.Session.TenantId == tenant.TenantId &&
+                b.Session.Date >= startOfMonth &&
+                b.Status != BookingStatus.Cancelled);
+
+            var revenueThisMonth = await db.Bookings
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= startOfMonth &&
+                    b.Status != BookingStatus.Cancelled)
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .SumAsync(b => b.Session.ClassType != null ? (b.Session.ClassType.Price ?? 0) : 0);
+
+            var totalClients = await db.Users.CountAsync(u =>
+                u.TenantId == tenant.TenantId && u.Role == UserRole.Student && u.Status == StudentStatus.Active);
+
+            var newClientsThisMonth = await db.Users.CountAsync(u =>
+                u.TenantId == tenant.TenantId &&
+                u.Role == UserRole.Student &&
+                u.CreatedAt >= startOfMonthUtc);
+
+            var totalBookingsMonth = await db.Bookings.CountAsync(b =>
+                b.Session.TenantId == tenant.TenantId && b.Session.Date >= startOfMonth);
+
+            var cancelledBookingsMonth = await db.Bookings.CountAsync(b =>
+                b.Session.TenantId == tenant.TenantId &&
+                b.Session.Date >= startOfMonth &&
+                b.Status == BookingStatus.Cancelled);
+
+            var cancellationRatePct = totalBookingsMonth > 0
+                ? Math.Round((double)cancelledBookingsMonth / totalBookingsMonth * 100, 1)
+                : 0.0;
+
+            return Results.Ok(new
+            {
+                AppointmentsToday = appointmentsToday,
+                AppointmentsThisMonth = appointmentsThisMonth,
+                RevenueThisMonth = revenueThisMonth,
+                TotalClients = totalClients,
+                NewClientsThisMonth = newClientsThisMonth,
+                CancellationRatePct = cancellationRatePct,
+            });
+        });
+
+        group.MapGet("/salon-today", async (AppDbContext db, TenantContext tenant) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var bookings = await db.Bookings.AsNoTracking()
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Include(b => b.Student)
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date == today &&
+                    b.Status != BookingStatus.Cancelled)
+                .OrderBy(b => b.Session.StartTime)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.Session.StartTime,
+                    b.Session.DurationMinutes,
+                    ServiceName = b.Session.ClassType != null ? b.Session.ClassType.Name : "",
+                    ServiceColor = b.Session.ClassType != null ? b.Session.ClassType.Color : "#ccc",
+                    ServicePrice = b.Session.ClassType != null ? b.Session.ClassType.Price : null,
+                    ClientName = b.Student.Name,
+                    ClientPhone = b.Student.Phone,
+                    b.Status,
+                    b.CheckedInAt,
+                })
+                .ToListAsync();
+
+            return Results.Ok(bookings);
+        });
+
+        group.MapGet("/salon-top-services", async (AppDbContext db, TenantContext tenant, int? days) =>
+        {
+            var since = DateOnly.FromDateTime(DateTime.Today.AddDays(-(days ?? 30)));
+            var data = await db.Bookings.AsNoTracking()
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= since &&
+                    b.Status != BookingStatus.Cancelled)
+                .GroupBy(b => new
+                {
+                    b.Session.ClassTypeId,
+                    Name = b.Session.ClassType != null ? b.Session.ClassType.Name : "",
+                    Color = b.Session.ClassType != null ? b.Session.ClassType.Color : "#ccc"
+                })
+                .Select(g => new { g.Key.Name, g.Key.Color, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(6)
+                .ToListAsync();
+
+            return Results.Ok(data);
+        });
+
+        group.MapGet("/salon-top-clients", async (AppDbContext db, TenantContext tenant, int? days) =>
+        {
+            var since = DateOnly.FromDateTime(DateTime.Today.AddDays(-(days ?? 30)));
+            var data = await db.Bookings.AsNoTracking()
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= since &&
+                    b.Status != BookingStatus.Cancelled)
+                .GroupBy(b => new { b.StudentId, b.Student.Name, b.Student.Phone })
+                .Select(g => new { ClientName = g.Key.Name, ClientPhone = g.Key.Phone, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(5)
+                .ToListAsync();
+
+            return Results.Ok(data);
+        });
+
+        group.MapGet("/salon-weekly", async (AppDbContext db, TenantContext tenant) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var since = today.AddDays(-56);
+
+            var dates = await db.Bookings.AsNoTracking()
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= since &&
+                    b.Status != BookingStatus.Cancelled)
+                .Select(b => b.Session.Date)
+                .ToListAsync();
+
+            var result = Enumerable.Range(0, 8).Select(weekAgo =>
+            {
+                var weekEnd = today.AddDays(-(weekAgo * 7));
+                var weekStart = weekEnd.AddDays(-6);
+                return new { WeekStart = weekStart, WeekEnd = weekEnd, Count = dates.Count(d => d >= weekStart && d <= weekEnd) };
+            })
+            .OrderBy(x => x.WeekStart)
+            .ToList();
+
+            return Results.Ok(result);
         });
     }
 }

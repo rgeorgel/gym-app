@@ -8,7 +8,8 @@ public record TenantConfigResponse(
     string PrimaryColor,
     string SecondaryColor,
     string Slug,
-    string Language
+    string Language,
+    TenantType TenantType
 );
 
 public record CreateTenantRequest(
@@ -20,7 +21,8 @@ public record CreateTenantRequest(
     TenantPlan Plan,
     string AdminName,
     string AdminEmail,
-    string AdminPassword
+    string AdminPassword,
+    TenantType TenantType = TenantType.Gym
 );
 
 public record TenantResponse(
@@ -36,7 +38,9 @@ public record TenantResponse(
     DateTime CreatedAt,
     bool PaymentsAllowedBySuperAdmin,
     bool PaymentsEnabled,
-    string? EfiPayeeCode
+    string? EfiPayeeCode,
+    string TenantType,
+    int SubscriptionPriceCents
 );
 
 public record UpdateTenantRequest(
@@ -45,7 +49,8 @@ public record UpdateTenantRequest(
     string PrimaryColor,
     string SecondaryColor,
     string? CustomDomain,
-    bool IsActive
+    bool IsActive,
+    TenantType? TenantType = null
 );
 
 public record TenantSettingsResponse(
@@ -58,8 +63,11 @@ public record TenantSettingsResponse(
     string SecondaryColor,
     string? LogoUrl,
     bool HasAbacatePayStudentApiKey,
-    bool HasAbacatePayStudentWebhookSecret
+    bool HasAbacatePayStudentWebhookSecret,
+    TenantType TenantType
 );
+
+public record SetTenantTypeRequest(TenantType TenantType);
 
 public record SetLogoUrlRequest(
     string? LogoUrl
@@ -103,7 +111,8 @@ public record SelfSignupRequest(
     string AcademyName,
     string Email,
     string Password,
-    string? Phone = null
+    string? Phone = null,
+    TenantType TenantType = TenantType.Gym
 );
 
 public record SelfSignupResponse(

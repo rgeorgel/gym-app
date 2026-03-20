@@ -3,6 +3,7 @@ using System;
 using GymApp.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymApp.Infra.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260320023624_AddAvailabilityModel")]
+    partial class AddAvailabilityModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -537,9 +540,6 @@ namespace GymApp.Infra.Data.Migrations
 
                     b.Property<DateTime?>("SubscriptionCurrentPeriodEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("SubscriptionPriceCents")
-                        .HasColumnType("integer");
 
                     b.Property<int>("SubscriptionStatus")
                         .HasColumnType("integer");

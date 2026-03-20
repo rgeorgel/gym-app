@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { formatDate } from '../ui.js';
+import { formatDate, showToast } from '../ui.js';
 
 export async function renderRevenue(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -12,8 +12,7 @@ export async function renderRevenue(container) {
     return;
   }
 
-  const price = (data.subscriptionPriceCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const mrr   = (data.estimatedMrrCents   / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const mrr = (data.estimatedMrrCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:1.5rem">
@@ -29,7 +28,7 @@ export async function renderRevenue(container) {
       </div>
 
       <p class="text-muted text-sm" style="margin:0">
-        MRR calculado com base em ${data.activeTenants} academia(s) ativa(s) × ${price}/mês.
+        MRR calculado com base nos preços individuais de ${data.activeTenants} cliente(s) ativo(s).
       </p>
 
       <!-- Tenants table -->
@@ -39,9 +38,10 @@ export async function renderRevenue(container) {
             <table>
               <thead>
                 <tr>
-                  <th>Academia</th>
+                  <th>Cliente</th>
                   <th>Slug</th>
                   <th>Status</th>
+                  <th>Mensalidade</th>
                   <th>Vencimento / Trial</th>
                   <th>Desde</th>
                 </tr>
@@ -52,6 +52,11 @@ export async function renderRevenue(container) {
                     <td><strong>${row.name}</strong></td>
                     <td><span style="font-family:monospace;font-size:0.8rem;color:var(--gray-500)">${row.slug}</span></td>
                     <td>${statusBadge(row.status, row.isInTrial, row.trialDaysRemaining)}</td>
+                    <td>
+                      <span class="price-display" data-id="${row.id}" style="cursor:pointer;border-bottom:1px dashed var(--gray-400)" title="Clique para editar">
+                        ${(row.subscriptionPriceCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      </span>
+                    </td>
                     <td>${periodCell(row)}</td>
                     <td>${formatDate(row.createdAt)}</td>
                   </tr>
@@ -64,6 +69,38 @@ export async function renderRevenue(container) {
 
     </div>
   `;
+
+  // Inline price editing
+  container.querySelectorAll('.price-display').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const currentCents = Math.round(parseFloat(el.textContent.replace(/[^\d,]/g, '').replace(',', '.')) * 100);
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.step = '1';
+      input.value = (currentCents / 100).toFixed(2);
+      input.style.cssText = 'width:90px;padding:2px 6px;font-size:0.85rem;border:1px solid var(--brand-secondary);border-radius:4px';
+      el.replaceWith(input);
+      input.focus();
+      input.select();
+
+      const save = async () => {
+        const cents = Math.round(parseFloat(input.value) * 100);
+        if (isNaN(cents) || cents < 0) { input.replaceWith(el); return; }
+        try {
+          await api.put(`/admin/tenants/${id}/subscription-price`, { priceCents: cents });
+          el.textContent = (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          showToast('Preço atualizado', 'success');
+        } catch (e) {
+          showToast(e.message, 'error');
+        }
+        input.replaceWith(el);
+      };
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') input.replaceWith(el); });
+    });
+  });
 }
 
 function kpiCard(label, value, color, icon) {

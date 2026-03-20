@@ -77,7 +77,8 @@ public static class BillingEndpoints
             var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
 
             var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl);
+                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl,
+                tenant.SubscriptionPriceCents);
 
             if (billing is null)
                 return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
@@ -124,7 +125,8 @@ public static class BillingEndpoints
             var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
 
             var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl);
+                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl,
+                tenant.SubscriptionPriceCents);
 
             if (billing is null)
                 return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
@@ -172,11 +174,13 @@ public static class BillingEndpoints
                 .ThenBy(t => t.Name)
                 .ToListAsync();
 
-            var priceCents = config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
             var active   = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Active);
             var trial    = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Trial);
             var pastDue  = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.PastDue);
             var canceled = tenants.Count(t => t.SubscriptionStatus == SubscriptionStatus.Canceled);
+            var mrrCents = tenants
+                .Where(t => t.SubscriptionStatus == SubscriptionStatus.Active)
+                .Sum(t => t.SubscriptionPriceCents);
 
             var rows = tenants.Select(t => new TenantBillingRow(
                 t.Id, t.Name, t.Slug,
@@ -184,16 +188,32 @@ public static class BillingEndpoints
                 t.IsInTrial,
                 t.TrialDaysRemaining,
                 t.SubscriptionCurrentPeriodEnd,
-                t.CreatedAt
+                t.CreatedAt,
+                t.SubscriptionPriceCents
             )).ToList();
 
             return Results.Ok(new RevenueOverviewResponse(
                 tenants.Count, active, trial, pastDue, canceled,
-                priceCents,
-                active * priceCents,
+                0,   // deprecated global price — kept for DTO compat
+                mrrCents,
                 rows
             ));
         }).RequireAuthorization("SuperAdmin");
+
+        adminGroup.MapPut("/{id:guid}/subscription-price", async (
+            Guid id, SetSubscriptionPriceRequest req, AppDbContext db) =>
+        {
+            if (req.PriceCents < 0)
+                return Results.BadRequest("Preço não pode ser negativo.");
+
+            var tenant = await db.Tenants.FindAsync(id);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.SubscriptionPriceCents = req.PriceCents;
+            await db.SaveChangesAsync();
+
+            return Results.Ok(new { tenantId = tenant.Id, subscriptionPriceCents = tenant.SubscriptionPriceCents });
+        });
 
         adminGroup.MapPut("/{id:guid}/trial-days", async (
             Guid id, SetTrialDaysRequest req, AppDbContext db) =>

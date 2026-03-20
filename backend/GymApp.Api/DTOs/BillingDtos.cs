@@ -18,6 +18,7 @@ public record SubscriptionStatusResponse(
 );
 
 public record SetTrialDaysRequest(int Days);
+public record SetSubscriptionPriceRequest(int PriceCents);
 
 public record RevenueOverviewResponse(
     int TotalTenants,
@@ -38,5 +39,6 @@ public record TenantBillingRow(
     bool IsInTrial,
     int TrialDaysRemaining,
     DateTime? CurrentPeriodEnd,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    int SubscriptionPriceCents
 );

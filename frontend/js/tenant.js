@@ -8,6 +8,8 @@ loadTranslations('pt-BR', ptBR);
 loadTranslations('en-US', enUS);
 loadTranslations('es-ES', esES);
 
+export let tenantType = 'Gym';
+
 // Loads tenant config and applies white label theme + locale
 export async function loadTenantTheme() {
   // Default locale so t() works even if tenant config is unavailable (e.g. super admin)
@@ -25,6 +27,9 @@ export async function loadTenantTheme() {
     if (!res.ok) return;
 
     const config = await res.json();
+
+    // Store tenant type for use by other modules
+    tenantType = config.tenantType ?? 'Gym';
 
     // Set locale before any rendering
     const lang = config.language ?? 'pt-BR';

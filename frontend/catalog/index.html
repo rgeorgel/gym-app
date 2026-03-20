@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Serviços</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body { background: var(--bg-secondary, #f5f5f5); min-height: 100vh; }
+    .catalog-header {
+      background: var(--primary, #6c63ff);
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .catalog-header img { width: 64px; height: 64px; object-fit: contain; border-radius: 12px; background: #fff; margin-bottom: 0.75rem; }
+    .catalog-header h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+    .catalog-header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .service-card {
+      background: var(--bg-primary, #fff);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .service-card-header { display: flex; align-items: center; gap: 0.75rem; }
+    .service-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+    .service-name { font-weight: 600; font-size: 1rem; }
+    .service-description { font-size: 0.85rem; color: var(--text-muted, #666); flex: 1; }
+    .service-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
+    .service-price { font-weight: 700; font-size: 1.1rem; color: var(--primary, #6c63ff); }
+    .service-price-free { font-size: 0.8rem; color: var(--text-muted, #888); }
+    .service-pay-note { font-size: 0.75rem; color: var(--text-muted, #888); margin-top: 0.25rem; }
+    .catalog-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted, #888); }
+    .catalog-loading { text-align: center; padding: 3rem 1rem; }
+  </style>
+</head>
+<body>
+  <div class="catalog-header" id="catalogHeader">
+    <div class="catalog-loading"><span class="spinner"></span></div>
+  </div>
+
+  <div class="catalog-grid" id="catalogGrid">
+    <div class="catalog-loading"><span class="spinner"></span></div>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug') || location.hostname.split('.')[0];
+
+    const apiBase = '/api';
+    const headers = { 'Content-Type': 'application/json', 'X-Tenant-Slug': slug };
+
+    async function fetchJSON(path) {
+      const res = await fetch(apiBase + path, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    function formatPrice(price) {
+      if (price == null) return '';
+      return `R$ ${Number(price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    }
+
+    async function init() {
+      const header = document.getElementById('catalogHeader');
+      const grid = document.getElementById('catalogGrid');
+
+      try {
+        const [config, services] = await Promise.all([
+          fetchJSON('/tenant/config'),
+          fetchJSON('/public/services'),
+        ]);
+
+        // Update page title and header
+        document.title = config.name + ' — Serviços';
+        header.innerHTML = `
+          ${config.logoUrl ? `<img src="${config.logoUrl}" alt="${config.name}">` : ''}
+          <h1>${config.name}</h1>
+          <p>Conheça nossos serviços e agende o seu atendimento</p>
+        `;
+        if (config.primaryColor) {
+          document.documentElement.style.setProperty('--primary', config.primaryColor);
+          header.style.background = config.primaryColor;
+        }
+
+        if (!services.length) {
+          grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Nenhum serviço disponível no momento.</div>`;
+          return;
+        }
+
+        const loginUrl = `/index.html?slug=${encodeURIComponent(slug)}`;
+
+        grid.innerHTML = '';
+        services.forEach(svc => {
+          const card = document.createElement('div');
+          card.className = 'service-card';
+          card.innerHTML = `
+            <div class="service-card-header">
+              <span class="service-dot" style="background:${svc.color}"></span>
+              <span class="service-name">${svc.name}</span>
+            </div>
+            ${svc.description ? `<p class="service-description">${svc.description}</p>` : ''}
+            <div class="service-footer">
+              <div>
+                ${svc.price != null
+                  ? `<div class="service-price">${formatPrice(svc.price)}</div>
+                     <div class="service-pay-note">Pagamento no local</div>`
+                  : `<div class="service-price-free">Consultar valor</div>`}
+              </div>
+              <a class="btn btn-primary" href="${loginUrl}">Agendar</a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        header.innerHTML = `<h1>Catálogo de Serviços</h1>`;
+        grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Erro ao carregar serviços. Verifique o link e tente novamente.</div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

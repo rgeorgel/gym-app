@@ -2,7 +2,12 @@ using GymApp.Domain.Enums;
 
 namespace GymApp.Api.DTOs;
 
-public record CreateBookingRequest(Guid SessionId, Guid StudentId, Guid PackageItemId);
+// Gym booking: book into an existing pre-generated session
+public record CreateBookingRequest(Guid SessionId, Guid StudentId, Guid? PackageItemId);
+
+// BeautySalon booking: pick a date/time/service — session is created on demand
+public record CreateSalonBookingRequest(DateOnly Date, TimeOnly StartTime, Guid ServiceId, Guid StudentId);
+
 public record CancelBookingRequest(string? Reason);
 
 public record BookingResponse(

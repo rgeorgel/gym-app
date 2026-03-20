@@ -4,13 +4,14 @@ namespace GymApp.Api.DTOs;
 
 public record SessionResponse(
     Guid Id,
-    Guid ScheduleId,
+    Guid? ScheduleId,       // null for BeautySalon sessions
     DateOnly Date,
     TimeOnly StartTime,
     int DurationMinutes,
-    Guid ClassTypeId,
+    Guid? ClassTypeId,
     string ClassTypeName,
     string ClassTypeColor,
+    decimal? ClassTypePrice,
     ModalityType ModalityType,
     string? InstructorName,
     int Capacity,

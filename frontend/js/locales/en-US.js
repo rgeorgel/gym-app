@@ -433,6 +433,73 @@ export default {
   'settings.logo.placeholder': 'https://example.com/logo.png',
   'settings.logo.saved': 'Logo saved successfully',
 
+  // Services (BeautySalon)
+  'app.services': '💅 Services',
+  'app.services.short': 'Services',
+  'services.title': 'Our Services',
+  'services.none': 'No services available',
+  'services.book': 'Book',
+  'services.payAtLocation': 'Payment at location',
+  'field.price': 'Price',
+  'classTypes.col.price': 'Price',
+  'schedule.servicePrice': 'Service price:',
+  'schedule.bookDirect': 'Confirm booking',
+  'schedule.payAtLocation': 'Payment made on-site after the service.',
+  'settings.tenantType.title': 'Business type',
+  'settings.tenantType.desc': 'Defines the system model: gym/sports requires credit packages; beauty salon allows direct booking with payment on-site.',
+  'settings.tenantType.field': 'Business type',
+  'settings.tenantType.gym': 'Gym / Sports',
+  'settings.tenantType.beautySalon': 'Beauty Salon / Aesthetics',
+  'settings.tenantType.saved': 'Business type saved',
+
+  // BeautySalon admin — dynamic labels
+  'nav.availability': 'Availability',
+  'nav.clients': 'Clients',
+  'nav.appointments': 'Appointments',
+  'nav.services.admin': 'Services',
+
+  // Availability (BeautySalon admin)
+  'availability.title': 'Availability',
+  'availability.add': '+ Add Time Block',
+  'availability.none': 'No availability configured',
+  'availability.weekday': 'Day of week',
+  'availability.from': 'From',
+  'availability.to': 'To',
+  'availability.instructor': 'Professional',
+  'availability.saved': 'Time block saved',
+  'availability.deleted': 'Time block removed',
+  'availability.delete.confirm': 'Remove this availability block?',
+  'availability.modal.title': 'Add Availability',
+  'field.durationMinutes': 'Service duration (min)',
+
+  // Salon booking flow (client app)
+  'salonBook.selectDate': 'Choose a date',
+  'salonBook.selectSlot': 'Available times',
+  'salonBook.noSlots': 'No available times on this date',
+  'salonBook.confirm': 'Confirm booking',
+  'salonBook.success': 'Booking confirmed!',
+  'salonBook.back': '← Back',
+
+  // Appointments (BeautySalon admin)
+  'appointments.title': 'Appointments',
+  'appointments.date': 'Date',
+  'appointments.none': 'No appointments on this date',
+  'appointments.col.time': 'Time',
+  'appointments.col.service': 'Service',
+  'appointments.col.client': 'Client',
+  'appointments.col.phone': 'Phone',
+  'appointments.col.status': 'Status',
+  'appointments.col.price': 'Price',
+  'appointments.checkin': 'Check-in',
+  'appointments.checkin.success': 'Checked in!',
+
+  // Catalog (public page)
+  'catalog.book': 'Book',
+  'catalog.payAtLocation': 'Pay on-site',
+  'catalog.loading': 'Loading services...',
+  'catalog.none': 'No services available',
+  'catalog.loginPrompt': 'Log in to book',
+
   // App — My Packages
   'myPackages.none': "You don't have any active packages",
   'myPackages.overallUsage': 'Overall usage',

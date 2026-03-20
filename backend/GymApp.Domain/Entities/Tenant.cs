@@ -11,6 +11,7 @@ public class Tenant
     public string PrimaryColor { get; set; } = "#1a1a2e";
     public string SecondaryColor { get; set; } = "#e94560";
     public TenantPlan Plan { get; set; } = TenantPlan.Basic;
+    public TenantType TenantType { get; set; } = TenantType.Gym;
     public bool IsActive { get; set; } = true;
     public string? CustomDomain { get; set; }
     public int CancellationHoursLimit { get; set; } = 2;
@@ -25,6 +26,7 @@ public class Tenant
     public bool PaymentsActive => PaymentsEnabled && PaymentsAllowedBySuperAdmin;
 
     // ── Subscription / billing ──────────────────────────────────────────────
+    public int SubscriptionPriceCents { get; set; } = 4900;
     public int TrialDays { get; set; } = 14;
     public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Trial;
     public DateTime? SubscriptionCurrentPeriodEnd { get; set; }

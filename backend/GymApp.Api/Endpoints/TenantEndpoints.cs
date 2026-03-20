@@ -37,7 +37,7 @@ public static class TenantEndpoints
             if (tenant is null) return Results.NotFound();
 
             return Results.Ok(new TenantConfigResponse(
-                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language));
+                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language, tenant.TenantType));
         }).AllowAnonymous();
 
         // Public: self-signup from landing page
@@ -65,7 +65,9 @@ public static class TenantEndpoints
                 Slug = slug,
                 PrimaryColor = "#1a1a2e",
                 SecondaryColor = "#e94560",
-                Plan = GymApp.Domain.Enums.TenantPlan.Basic
+                Plan = GymApp.Domain.Enums.TenantPlan.Basic,
+                TenantType = req.TenantType,
+                SubscriptionPriceCents = req.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon ? 1900 : 4900
             };
             db.Tenants.Add(tenant);
 
@@ -100,7 +102,7 @@ public static class TenantEndpoints
             var tenants = await db.Tenants.AsNoTracking()
                 .OrderBy(t => t.Name)
                 .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor,
-                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin, t.PaymentsEnabled, t.EfiPayeeCode))
+                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin, t.PaymentsEnabled, t.EfiPayeeCode, t.TenantType.ToString(), t.SubscriptionPriceCents))
                 .ToListAsync();
             return Results.Ok(tenants);
         });
@@ -117,7 +119,9 @@ public static class TenantEndpoints
                 LogoUrl = req.LogoUrl,
                 PrimaryColor = req.PrimaryColor,
                 SecondaryColor = req.SecondaryColor,
-                Plan = req.Plan
+                Plan = req.Plan,
+                TenantType = req.TenantType,
+                SubscriptionPriceCents = req.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon ? 1900 : 4900
             };
             db.Tenants.Add(tenant);
 
@@ -136,7 +140,7 @@ public static class TenantEndpoints
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
                 new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                     tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                    tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
+                    tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode, tenant.TenantType.ToString(), tenant.SubscriptionPriceCents));
         });
 
         // Super Admin: toggle payments allowed per tenant
@@ -149,7 +153,7 @@ public static class TenantEndpoints
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                 tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode, tenant.TenantType.ToString(), tenant.SubscriptionPriceCents));
         });
 
         // Admin: tenant settings
@@ -261,6 +265,16 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        settingsGroup.MapPut("/tenant-type", async (SetTenantTypeRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.TenantType = req.TenantType;
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        }).RequireAuthorization("SuperAdmin");
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             var tenant = await db.Tenants.FindAsync(id);
@@ -272,18 +286,20 @@ public static class TenantEndpoints
             tenant.SecondaryColor = req.SecondaryColor;
             tenant.CustomDomain = string.IsNullOrWhiteSpace(req.CustomDomain) ? null : req.CustomDomain.ToLowerInvariant().Trim();
             tenant.IsActive = req.IsActive;
+            if (req.TenantType.HasValue) tenant.TenantType = req.TenantType.Value;
 
             await db.SaveChangesAsync();
             return Results.Ok(new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.LogoUrl,
                 tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
-                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode));
+                tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode, tenant.TenantType.ToString(), tenant.SubscriptionPriceCents));
         });
     }
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
         new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl,
             HasAbacatePayStudentApiKey: !string.IsNullOrEmpty(t.AbacatePayStudentApiKey),
-            HasAbacatePayStudentWebhookSecret: !string.IsNullOrEmpty(t.AbacatePayStudentWebhookSecret));
+            HasAbacatePayStudentWebhookSecret: !string.IsNullOrEmpty(t.AbacatePayStudentWebhookSecret),
+            TenantType: t.TenantType);
 
     private static string GenerateSlug(string name)
     {

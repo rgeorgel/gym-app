@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { showToast } from '../ui.js';
 import { t } from '../i18n.js';
+import { getUser } from '../auth.js';
 
 export async function renderSettings(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -129,6 +130,24 @@ export async function renderSettings(container) {
           </div>
         </div>
       </div>
+
+      ${getUser()?.role === 'SuperAdmin' ? `
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">${t('settings.tenantType.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.tenantType.desc')}</p>
+          <div class="form-group">
+            <label class="form-label">${t('settings.tenantType.field')}</label>
+            <select class="form-control" id="selectTenantType">
+              <option value="Gym" ${settings.tenantType === 'Gym' || !settings.tenantType ? 'selected' : ''}>${t('settings.tenantType.gym')}</option>
+              <option value="BeautySalon" ${settings.tenantType === 'BeautySalon' ? 'selected' : ''}>${t('settings.tenantType.beautySalon')}</option>
+            </select>
+          </div>
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" id="btnSaveTenantType">${t('btn.save')}</button>
+          </div>
+        </div>
+      </div>` : ''}
 
       <div class="card" style="grid-column:1/-1">
         <div class="card-body" style="padding:1.5rem">
@@ -279,6 +298,20 @@ export async function renderSettings(container) {
     try {
       await api.put('/settings/logo', { logoUrl: url || null });
       showToast(t('settings.logo.saved'), 'success');
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnSaveTenantType')?.addEventListener('click', async () => {
+    const val = document.getElementById('selectTenantType').value;
+    const btn = document.getElementById('btnSaveTenantType');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/tenant-type', { tenantType: val });
+      showToast(t('settings.tenantType.saved'), 'success');
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {

@@ -7,7 +7,7 @@ public class Booking
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid SessionId { get; set; }
     public Guid StudentId { get; set; }
-    public Guid PackageItemId { get; set; }
+    public Guid? PackageItemId { get; set; }
     public BookingStatus Status { get; set; } = BookingStatus.Confirmed;
     public DateTime? CheckedInAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -16,5 +16,5 @@ public class Booking
 
     public Session Session { get; set; } = null!;
     public User Student { get; set; } = null!;
-    public PackageItem PackageItem { get; set; } = null!;
+    public PackageItem? PackageItem { get; set; }
 }

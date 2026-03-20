@@ -3,24 +3,34 @@ import { showToast, createModal, openModal, closeModal, emptyState, formatDate, 
 import { t } from '../i18n.js';
 
 const PLANS = { Basic: 'Basic', Pro: 'Pro', Enterprise: 'Enterprise' };
+const TENANT_TYPES = { Gym: '🏋️ Academia', BeautySalon: '💅 Salão' };
 
 export async function renderTenants(container) {
   container.innerHTML = `
-    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-      <button class="btn btn-primary" id="btnNewTenant">${t('tenants.new')}</button>
+    <div class="filters-bar" style="margin-bottom:1rem">
+      <select class="form-control" id="filterTenantType" style="width:180px">
+        <option value="">Todos os tipos</option>
+        <option value="Gym">🏋️ Academia</option>
+        <option value="BeautySalon">💅 Salão</option>
+      </select>
+      <button class="btn btn-primary" id="btnNewTenant" style="margin-left:auto">${t('tenants.new')}</button>
     </div>
     <div id="tenantsList"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
   await loadTenants();
 
+  document.getElementById('filterTenantType').addEventListener('change', loadTenants);
   document.getElementById('btnNewTenant').addEventListener('click', () => openTenantModal());
 }
 
 async function loadTenants() {
   const list = document.getElementById('tenantsList');
+  const typeFilter = document.getElementById('filterTenantType')?.value ?? '';
   try {
-    const tenants = await api.get('/admin/tenants');
+    let tenants = await api.get('/admin/tenants');
+
+    if (typeFilter) tenants = tenants.filter(ten => ten.tenantType === typeFilter);
 
     if (!tenants.length) {
       list.innerHTML = emptyState('🏢', t('tenants.none'));
@@ -33,8 +43,9 @@ async function loadTenants() {
           <table>
             <thead>
               <tr>
-                <th>${t('field.name')}</th>
+                <th>Cliente</th>
                 <th>Slug</th>
+                <th>Tipo</th>
                 <th>${t('tenants.col.plan')}</th>
                 <th>${t('field.status')}</th>
                 <th>${t('tenants.col.payments')}</th>
@@ -47,6 +58,7 @@ async function loadTenants() {
                 <tr>
                   <td class="font-medium">${ten.name}</td>
                   <td class="text-sm text-muted">${ten.slug}</td>
+                  <td class="text-sm">${TENANT_TYPES[ten.tenantType] ?? ten.tenantType}</td>
                   <td class="text-sm">${PLANS[ten.plan] ?? ten.plan}</td>
                   <td><span class="badge ${ten.isActive ? 'badge-success' : 'badge-gray'}">${ten.isActive ? t('tenants.status.active') : t('tenants.status.inactive')}</span></td>
                   <td>
@@ -150,6 +162,20 @@ function openTenantModal(tenant = null) {
             ${Object.entries(PLANS).map(([v, l]) => `<option value="${v}" ${tenant?.plan === v ? 'selected' : ''}>${l}</option>`).join('')}
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de negócio</label>
+          <select class="form-control" id="tTenantType">
+            <option value="Gym" ${(tenant?.tenantType ?? 'Gym') === 'Gym' ? 'selected' : ''}>🏋️ Academia</option>
+            <option value="BeautySalon" ${tenant?.tenantType === 'BeautySalon' ? 'selected' : ''}>💅 Salão de Beleza</option>
+          </select>
+        </div>
+        ${tenant ? `
+        <div class="form-group">
+          <label class="form-label">Mensalidade (R$)</label>
+          <input class="form-control" id="tPriceCents" type="number" min="0" step="0.01"
+            value="${((tenant.subscriptionPriceCents ?? 4900) / 100).toFixed(2)}">
+        </div>
+        ` : ''}
         ${tenant ? `
         <div class="form-group" style="grid-column:1/-1">
           <label class="form-label">${t('tenants.field.customDomain')} <span class="text-muted" style="font-weight:400;font-size:0.75rem">${t('tenants.field.customDomainNote')}</span></label>
@@ -200,6 +226,7 @@ function openTenantModal(tenant = null) {
     try {
       if (tenant) {
         const newAllowed = document.getElementById('tPaymentsAllowed').value === 'true';
+        const newPriceCents = Math.round(parseFloat(document.getElementById('tPriceCents').value) * 100);
         const tasks = [
           api.put(`/admin/tenants/${tenant.id}`, {
             name,
@@ -208,10 +235,14 @@ function openTenantModal(tenant = null) {
             secondaryColor: document.getElementById('tSecondary').value,
             customDomain: document.getElementById('tCustomDomain').value.trim() || null,
             isActive: document.getElementById('tActive').value === 'true',
+            tenantType: document.getElementById('tTenantType').value,
           }),
         ];
         if (newAllowed !== tenant.paymentsAllowedBySuperAdmin) {
           tasks.push(api.put(`/admin/tenants/${tenant.id}/payments-allowed`, { allowed: newAllowed }));
+        }
+        if (!isNaN(newPriceCents) && newPriceCents !== tenant.subscriptionPriceCents) {
+          tasks.push(api.put(`/admin/tenants/${tenant.id}/subscription-price`, { priceCents: newPriceCents }));
         }
         await Promise.all(tasks);
         showToast(t('tenants.saved'), 'success');
@@ -229,6 +260,7 @@ function openTenantModal(tenant = null) {
           primaryColor: document.getElementById('tPrimary').value,
           secondaryColor: document.getElementById('tSecondary').value,
           plan: document.getElementById('tPlan').value,
+          tenantType: document.getElementById('tTenantType').value,
           adminName,
           adminEmail,
           adminPassword,

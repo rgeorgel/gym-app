@@ -3,6 +3,7 @@ import { showToast, createModal, openModal, closeModal, formatTime, emptyState, 
 import { getUser } from '../auth.js';
 import { t, getWeekdays } from '../i18n.js';
 import { trackEvent } from '../analytics.js';
+import { tenantType } from '../tenant.js';
 
 let currentDate = new Date();
 let sessions = [];
@@ -19,7 +20,7 @@ export async function renderSchedule(container) {
     <div id="scheduleList" class="sessions-list"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
-  await loadPackages();
+  if (tenantType !== 'BeautySalon') await loadPackages();
   renderDaySelector();
   await loadSessions();
 }
@@ -128,9 +129,39 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   if (!session) return;
   trackEvent('view_class', { class_type: session.classTypeName });
 
-  // Get available package items for this class type
-  const items = packages.flatMap(p => p.items.filter(i => i.classTypeId === session.classTypeId && i.remainingCredits > 0))
-    .filter(Boolean);
+  const isBeautySalon = tenantType === 'BeautySalon';
+
+  // Get available package items for this class type (gym only)
+  const items = isBeautySalon ? [] :
+    packages.flatMap(p => p.items.filter(i => i.classTypeId === session.classTypeId && i.remainingCredits > 0))
+      .filter(Boolean);
+
+  const canBook = !isBooked && !isFull && (isBeautySalon || items.length > 0);
+
+  const bookingBody = isBooked
+    ? `<div class="badge badge-success" style="font-size:var(--font-size-sm);padding:0.5rem 1rem">${t('schedule.booked')}</div>`
+    : isFull
+      ? `<p class="text-sm">${t('schedule.full')}</p>`
+      : isBeautySalon
+        ? `
+          ${session.classTypePrice
+            ? `<div style="margin-bottom:0.75rem">
+                 <span style="font-size:var(--font-size-sm);color:var(--gray-500)">${t('schedule.servicePrice')}</span>
+                 <span style="font-size:1.25rem;font-weight:700;color:var(--brand-secondary);margin-left:0.5rem">R$ ${Number(session.classTypePrice).toFixed(2)}</span>
+               </div>`
+            : ''}
+          <p class="text-sm text-muted">${t('schedule.payAtLocation')}</p>
+        `
+        : items.length === 0
+          ? `<p class="text-sm text-muted">${t('schedule.noCredits')}</p>`
+          : `
+            <div class="form-group">
+              <label class="form-label">${t('schedule.useCreditsFrom')}</label>
+              <select class="form-control" id="pkgItemSelect">
+                ${items.map(i => `<option value="${i.id}">${i.classTypeName} — ${i.remainingCredits} ${t('dash.credits')}</option>`).join('')}
+              </select>
+            </div>
+          `;
 
   createModal({
     id: 'sessionModal',
@@ -145,27 +176,12 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
           ${session.slotsAvailable} ${t('schedule.slotsAvailable')}
         </div>
       </div>
-
-      ${isBooked
-        ? `<div class="badge badge-success" style="font-size:var(--font-size-sm);padding:0.5rem 1rem">${t('schedule.booked')}</div>`
-        : isFull
-          ? `<p class="text-sm">${t('schedule.full')}</p>`
-          : items.length === 0
-            ? `<p class="text-sm text-muted">${t('schedule.noCredits')}</p>`
-            : `
-              <div class="form-group">
-                <label class="form-label">${t('schedule.useCreditsFrom')}</label>
-                <select class="form-control" id="pkgItemSelect">
-                  ${items.map(i => `<option value="${i.id}">${i.classTypeName} — ${i.remainingCredits} ${t('dash.credits')}</option>`).join('')}
-                </select>
-              </div>
-            `
-      }
+      ${bookingBody}
     `,
     footer: `
       <button class="btn btn-secondary" onclick="closeModal('sessionModal')">${t('btn.close')}</button>
-      ${!isBooked && !isFull && items.length > 0
-        ? `<button class="btn btn-primary" id="btnBook">${t('schedule.book')}</button>`
+      ${canBook
+        ? `<button class="btn btn-primary" id="btnBook">${isBeautySalon ? t('schedule.bookDirect') : t('schedule.book')}</button>`
         : !isBooked && isFull
           ? `<button class="btn btn-secondary" id="btnWaitlist">${t('schedule.joinWaitlist')}</button>`
           : ''}
@@ -175,13 +191,15 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   openModal('sessionModal');
 
   document.getElementById('btnBook')?.addEventListener('click', async () => {
-    const pkgItemId = document.getElementById('pkgItemSelect').value;
+    const body = isBeautySalon
+      ? { sessionId, studentId: user.id }
+      : { sessionId, studentId: user.id, packageItemId: document.getElementById('pkgItemSelect').value };
     try {
-      await api.post('/bookings', { sessionId, studentId: user.id, packageItemId: pkgItemId });
+      await api.post('/bookings', body);
       trackEvent('booking_created', { class_type: session.classTypeName });
       showToast(t('schedule.book.success'), 'success');
       closeModal('sessionModal');
-      await loadPackages();
+      if (!isBeautySalon) await loadPackages();
       await loadSessions();
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');

@@ -18,6 +18,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PackageTemplate> PackageTemplates => Set<PackageTemplate>();
     public DbSet<PackageTemplateItem> PackageTemplateItems => Set<PackageTemplateItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<ProfessionalAvailability> ProfessionalAvailability => Set<ProfessionalAvailability>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -70,7 +71,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasKey(x => x.Id);
             e.Property(x => x.Name).HasMaxLength(200);
             e.Property(x => x.Color).HasMaxLength(20);
+            e.Property(x => x.Price).HasPrecision(10, 2);
             e.HasOne(x => x.Tenant).WithMany(t => t.ClassTypes).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ProfessionalAvailability
+        modelBuilder.Entity<ProfessionalAvailability>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Instructor).WithMany().HasForeignKey(x => x.InstructorId).OnDelete(DeleteBehavior.SetNull);
         });
 
         // Schedule
@@ -86,8 +96,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Session>(e =>
         {
             e.HasKey(x => x.Id);
-            e.HasIndex(x => new { x.ScheduleId, x.Date }).IsUnique();
-            e.HasOne(x => x.Schedule).WithMany(s => s.Sessions).HasForeignKey(x => x.ScheduleId).OnDelete(DeleteBehavior.Cascade);
+            // Filtered unique index — only enforce uniqueness for gym sessions (with a schedule)
+            e.HasIndex(x => new { x.ScheduleId, x.Date })
+                .IsUnique()
+                .HasFilter("\"ScheduleId\" IS NOT NULL");
+            // Index for efficient querying of salon sessions by tenant+date
+            e.HasIndex(x => new { x.TenantId, x.Date });
+            e.HasOne(x => x.Schedule).WithMany(s => s.Sessions).HasForeignKey(x => x.ScheduleId)
+                .OnDelete(DeleteBehavior.Cascade).IsRequired(false);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.ClassType).WithMany().HasForeignKey(x => x.ClassTypeId)
+                .OnDelete(DeleteBehavior.Restrict).IsRequired(false);
         });
 
         // Booking
@@ -97,7 +116,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(x => new { x.SessionId, x.StudentId });
             e.HasOne(x => x.Session).WithMany(s => s.Bookings).HasForeignKey(x => x.SessionId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Student).WithMany(u => u.Bookings).HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
-            e.HasOne(x => x.PackageItem).WithMany(pi => pi.Bookings).HasForeignKey(x => x.PackageItemId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.PackageItem).WithMany(pi => pi.Bookings).HasForeignKey(x => x.PackageItemId).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
         });
 
         // Package

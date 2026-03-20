@@ -433,6 +433,73 @@ export default {
   'settings.logo.placeholder': 'https://ejemplo.com/logo.png',
   'settings.logo.saved': 'Logo guardado correctamente',
 
+  // Services (BeautySalon)
+  'app.services': '💅 Servicios',
+  'app.services.short': 'Servicios',
+  'services.title': 'Nuestros servicios',
+  'services.none': 'No hay servicios disponibles',
+  'services.book': 'Reservar',
+  'services.payAtLocation': 'Pago en el local',
+  'field.price': 'Precio',
+  'classTypes.col.price': 'Precio',
+  'schedule.servicePrice': 'Precio del servicio:',
+  'schedule.bookDirect': 'Confirmar reserva',
+  'schedule.payAtLocation': 'El pago se realiza en el local tras el servicio.',
+  'settings.tenantType.title': 'Tipo de negocio',
+  'settings.tenantType.desc': 'Define el modelo del sistema: gimnasio/deportes requiere paquetes de créditos; salón de belleza permite reservas directas con pago en el local.',
+  'settings.tenantType.field': 'Tipo de negocio',
+  'settings.tenantType.gym': 'Gimnasio / Deportes',
+  'settings.tenantType.beautySalon': 'Salón de Belleza / Estética',
+  'settings.tenantType.saved': 'Tipo de negocio guardado',
+
+  // BeautySalon admin — dynamic labels
+  'nav.availability': 'Disponibilidad',
+  'nav.clients': 'Clientes',
+  'nav.appointments': 'Citas',
+  'nav.services.admin': 'Servicios',
+
+  // Availability (BeautySalon admin)
+  'availability.title': 'Disponibilidad',
+  'availability.add': '+ Agregar Horario',
+  'availability.none': 'Sin horarios configurados',
+  'availability.weekday': 'Día de la semana',
+  'availability.from': 'Desde',
+  'availability.to': 'Hasta',
+  'availability.instructor': 'Profesional',
+  'availability.saved': 'Horario guardado',
+  'availability.deleted': 'Horario eliminado',
+  'availability.delete.confirm': '¿Eliminar este horario de disponibilidad?',
+  'availability.modal.title': 'Agregar Disponibilidad',
+  'field.durationMinutes': 'Duración del servicio (min)',
+
+  // Salon booking flow (client app)
+  'salonBook.selectDate': 'Elige una fecha',
+  'salonBook.selectSlot': 'Horarios disponibles',
+  'salonBook.noSlots': 'Sin horarios disponibles en esta fecha',
+  'salonBook.confirm': 'Confirmar reserva',
+  'salonBook.success': '¡Reserva confirmada!',
+  'salonBook.back': '← Volver',
+
+  // Appointments (BeautySalon admin)
+  'appointments.title': 'Citas',
+  'appointments.date': 'Fecha',
+  'appointments.none': 'Sin citas en esta fecha',
+  'appointments.col.time': 'Hora',
+  'appointments.col.service': 'Servicio',
+  'appointments.col.client': 'Cliente',
+  'appointments.col.phone': 'Teléfono',
+  'appointments.col.status': 'Estado',
+  'appointments.col.price': 'Precio',
+  'appointments.checkin': 'Check-in',
+  'appointments.checkin.success': '¡Check-in realizado!',
+
+  // Catalog (public page)
+  'catalog.book': 'Reservar',
+  'catalog.payAtLocation': 'Pago en el local',
+  'catalog.loading': 'Cargando servicios...',
+  'catalog.none': 'No hay servicios disponibles',
+  'catalog.loginPrompt': 'Inicia sesión para reservar',
+
   // App — My Packages
   'myPackages.none': 'No tienes paquetes activos',
   'myPackages.overallUsage': 'Uso general',
