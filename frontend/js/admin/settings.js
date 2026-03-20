@@ -28,6 +28,14 @@ export async function renderSettings(container) {
     ? `<span class="badge badge-success" style="font-size:0.75rem">${settings.efiPayeeCode}</span>`
     : `<span class="text-muted text-sm">${t('settings.efi.notConfigured')}</span>`;
 
+  // Build catalog URL from current hostname
+  const slug = localStorage.getItem('tenant_slug') ?? '';
+  const host = location.hostname;
+  const parts = host.split('.');
+  const catalogUrl = parts.length >= 3
+    ? `${location.protocol}//${host}/catalog/`
+    : `${location.protocol}//${host}/catalog/?slug=${slug}`;
+
   container.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:1.25rem;align-items:start">
       <div class="card">
@@ -130,6 +138,23 @@ export async function renderSettings(container) {
           </div>
         </div>
       </div>
+
+      ${settings.tenantType === 'BeautySalon' ? `
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">Link de Agendamento</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">
+            Compartilhe este link com suas clientes. Elas poderão ver seus serviços e agendar diretamente.
+          </p>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <input class="form-control" id="inputCatalogUrl" value="${catalogUrl}" readonly
+              style="font-size:0.8rem;font-family:monospace;background:var(--gray-50);cursor:text">
+            <button class="btn btn-primary btn-sm" id="btnCopyCatalog" style="white-space:nowrap">Copiar link</button>
+            <a href="${catalogUrl}" target="_blank" class="btn btn-secondary btn-sm" style="white-space:nowrap">Abrir</a>
+          </div>
+        </div>
+      </div>
+      ` : ''}
 
       ${getUser()?.role === 'SuperAdmin' ? `
       <div class="card">
@@ -317,6 +342,14 @@ export async function renderSettings(container) {
     } finally {
       btn.disabled = false;
     }
+  });
+
+  document.getElementById('btnCopyCatalog')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(catalogUrl).then(() => {
+      const btn = document.getElementById('btnCopyCatalog');
+      btn.textContent = 'Copiado!';
+      setTimeout(() => { btn.textContent = 'Copiar link'; }, 2000);
+    });
   });
 
   document.getElementById('btnSaveLanguage').addEventListener('click', async () => {
