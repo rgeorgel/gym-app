@@ -116,6 +116,6 @@ public static class AvailabilityEndpoints
             }).ToList();
 
             return Results.Ok(available);
-        }).RequireAuthorization();
+        }).AllowAnonymous();
     }
 }

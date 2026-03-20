@@ -28,6 +28,22 @@ export async function renderSalonBooking(container) {
       container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💅</div><div class="empty-state-text">${t('services.none')}</div></div>`;
       return;
     }
+
+    // Resume a booking started anonymously from the catalog
+    const raw = sessionStorage.getItem('pendingBooking');
+    if (raw) {
+      sessionStorage.removeItem('pendingBooking');
+      try {
+        const pending = JSON.parse(raw);
+        const svc = active.find(s => s.id === pending.serviceId);
+        if (svc && pending.date && pending.time) {
+          renderServiceList(container, active);
+          confirmBooking(container, svc, pending.date, pending.time, active);
+          return;
+        }
+      } catch { /* ignore malformed entry */ }
+    }
+
     renderServiceList(container, active);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${e.message}</div></div>`;

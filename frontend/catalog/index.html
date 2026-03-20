@@ -43,6 +43,67 @@
     .service-pay-note { font-size: 0.75rem; color: var(--text-muted, #888); margin-top: 0.25rem; }
     .catalog-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted, #888); }
     .catalog-loading { text-align: center; padding: 3rem 1rem; }
+
+    /* Slot picker */
+    .slot-panel {
+      margin-top: 1rem;
+      border-top: 1px solid var(--border-color, #eee);
+      padding-top: 1rem;
+    }
+    .date-strip {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    .date-strip::-webkit-scrollbar { display: none; }
+    .date-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 52px;
+      padding: 0.4rem 0.5rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-color, #ddd);
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.7rem;
+      color: var(--text-muted, #666);
+      font-weight: 500;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .date-btn .date-num { font-size: 1rem; font-weight: 700; color: #222; }
+    .date-btn.active {
+      border-color: var(--primary, #6c63ff);
+      background: var(--primary, #6c63ff);
+      color: #fff;
+    }
+    .date-btn.active .date-num { color: #fff; }
+    .slots-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .slot-btn {
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--primary, #6c63ff);
+      background: #fff;
+      color: var(--primary, #6c63ff);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .slot-btn:hover {
+      background: var(--primary, #6c63ff);
+      color: #fff;
+    }
+    .slots-empty { font-size: 0.85rem; color: var(--text-muted, #888); }
+    .slots-loading { font-size: 0.85rem; color: var(--text-muted, #888); }
   </style>
 </head>
 <body>
@@ -72,6 +133,50 @@
       return `R$ ${Number(price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     }
 
+    function toDateStr(d) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const MONTH_NAMES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+    function buildDateStrip(days) {
+      return days.map(d => `
+        <button class="date-btn" data-date="${toDateStr(d)}">
+          <span>${DAY_NAMES[d.getDay()]}</span>
+          <span class="date-num">${d.getDate()}</span>
+          <span>${MONTH_NAMES[d.getMonth()]}</span>
+        </button>
+      `).join('');
+    }
+
+    async function loadSlots(svcId, date, slotsContainer, primaryColor) {
+      slotsContainer.innerHTML = `<span class="slots-loading">Carregando horários...</span>`;
+      try {
+        const slots = await fetchJSON(`/slots?date=${date}&serviceId=${svcId}`);
+        if (!slots.length) {
+          slotsContainer.innerHTML = `<span class="slots-empty">Sem horários disponíveis neste dia.</span>`;
+          return;
+        }
+        slotsContainer.innerHTML = `<div class="slots-grid">
+          ${slots.map(s => `<button class="slot-btn" data-slot="${s}">${s.substring(0,5)}</button>`).join('')}
+        </div>`;
+        slotsContainer.querySelectorAll('.slot-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            sessionStorage.setItem('pendingBooking', JSON.stringify({
+              slug,
+              serviceId: svcId,
+              date,
+              time: btn.dataset.slot,
+            }));
+            location.href = `/index.html?slug=${encodeURIComponent(slug)}`;
+          });
+        });
+      } catch (e) {
+        slotsContainer.innerHTML = `<span class="slots-empty">Erro ao carregar horários.</span>`;
+      }
+    }
+
     async function init() {
       const header = document.getElementById('catalogHeader');
       const grid = document.getElementById('catalogGrid');
@@ -82,24 +187,28 @@
           fetchJSON('/public/services'),
         ]);
 
-        // Update page title and header
+        const primaryColor = config.primaryColor || '#6c63ff';
+
         document.title = config.name + ' — Serviços';
         header.innerHTML = `
           ${config.logoUrl ? `<img src="${config.logoUrl}" alt="${config.name}">` : ''}
           <h1>${config.name}</h1>
-          <p>Conheça nossos serviços e agende o seu atendimento</p>
+          <p>Escolha o serviço e veja os horários disponíveis</p>
         `;
-        if (config.primaryColor) {
-          document.documentElement.style.setProperty('--primary', config.primaryColor);
-          header.style.background = config.primaryColor;
-        }
+        document.documentElement.style.setProperty('--primary', primaryColor);
+        header.style.background = primaryColor;
 
         if (!services.length) {
           grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Nenhum serviço disponível no momento.</div>`;
           return;
         }
 
-        const loginUrl = `/index.html?slug=${encodeURIComponent(slug)}`;
+        // Build next 14 days
+        const days = Array.from({ length: 14 }, (_, i) => {
+          const d = new Date();
+          d.setDate(d.getDate() + i);
+          return d;
+        });
 
         grid.innerHTML = '';
         services.forEach(svc => {
@@ -117,10 +226,46 @@
                   ? `<div class="service-price">${formatPrice(svc.price)}</div>
                      <div class="service-pay-note">Pagamento no local</div>`
                   : `<div class="service-price-free">Consultar valor</div>`}
+                ${svc.durationMinutes ? `<div class="service-pay-note">${svc.durationMinutes} min</div>` : ''}
               </div>
-              <a class="btn btn-primary" href="${loginUrl}">Agendar</a>
+              <button class="btn btn-primary btn-agendar">Ver horários</button>
+            </div>
+            <div class="slot-panel" style="display:none">
+              <p style="font-size:0.8rem;font-weight:600;margin:0 0 0.5rem;color:var(--text-muted)">SELECIONE UMA DATA</p>
+              <div class="date-strip">${buildDateStrip(days)}</div>
+              <div class="slots-area"></div>
             </div>
           `;
+
+          const panel = card.querySelector('.slot-panel');
+          const slotsArea = card.querySelector('.slots-area');
+          const btnAgendar = card.querySelector('.btn-agendar');
+          let selectedDate = null;
+
+          btnAgendar.addEventListener('click', () => {
+            const isOpen = panel.style.display !== 'none';
+            // Close all other panels
+            document.querySelectorAll('.slot-panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.btn-agendar').forEach(b => b.textContent = 'Ver horários');
+            if (isOpen) return;
+
+            panel.style.display = 'block';
+            btnAgendar.textContent = 'Fechar';
+
+            // Auto-select today
+            const firstBtn = panel.querySelector('.date-btn');
+            if (firstBtn && !selectedDate) firstBtn.click();
+          });
+
+          card.querySelectorAll('.date-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              card.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              selectedDate = btn.dataset.date;
+              loadSlots(svc.id, selectedDate, slotsArea, primaryColor);
+            });
+          });
+
           grid.appendChild(card);
         });
       } catch (e) {
