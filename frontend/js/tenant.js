@@ -43,7 +43,7 @@ export async function loadTenantTheme() {
     root.style.setProperty('--brand-primary-light', shadeColor(config.primaryColor, -20));
 
     // Update page title
-    document.title = config.name + ' — Gym App';
+    document.title = config.name + ' — Agendofy';
 
     // Update logo if present
     const logos = document.querySelectorAll('[data-tenant-logo]');
