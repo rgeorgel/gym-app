@@ -1,11 +1,15 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, emptyState } from '../ui.js';
 import { t } from '../i18n.js';
+import { tenantType } from '../tenant.js';
 
 export async function renderClassTypes(container) {
+  const isSalon = tenantType === 'BeautySalon';
+  const newLabel = isSalon ? '+ Novo Serviço' : t('classTypes.new');
+
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-      <button class="btn btn-primary" id="btnNewClassType">${t('classTypes.new')}</button>
+      <button class="btn btn-primary" id="btnNewClassType">${newLabel}</button>
     </div>
     <div class="card" id="classTypesCard">
       <div class="loading-center"><span class="spinner"></span></div>
@@ -17,23 +21,31 @@ export async function renderClassTypes(container) {
 }
 
 async function loadClassTypes() {
+  const isSalon = tenantType === 'BeautySalon';
   const card = document.getElementById('classTypesCard');
   try {
     const types = await api.get('/class-types');
     if (!types.length) {
-      card.innerHTML = emptyState('🥊', t('classTypes.none'));
+      card.innerHTML = emptyState(isSalon ? '💅' : '🥊', isSalon ? 'Nenhum serviço cadastrado' : t('classTypes.none'));
       return;
     }
     card.innerHTML = `
       <div class="table-wrapper">
         <table>
-          <thead><tr><th>${t('field.color')}</th><th>${t('field.name')}</th><th>${t('classTypes.col.modality')}</th><th>${t('classTypes.col.price')}</th><th>${t('field.status')}</th><th></th></tr></thead>
+          <thead><tr>
+            <th>${t('field.color')}</th>
+            <th>${isSalon ? 'Serviço' : t('field.name')}</th>
+            ${isSalon ? '' : `<th>${t('classTypes.col.modality')}</th>`}
+            <th>${t('classTypes.col.price')}</th>
+            <th>${t('field.status')}</th>
+            <th></th>
+          </tr></thead>
           <tbody>
             ${types.map(ct => `
               <tr>
                 <td><div style="width:20px;height:20px;background:${ct.color};border-radius:4px"></div></td>
                 <td class="font-medium">${ct.name}</td>
-                <td>${{ Group: t('classTypes.type.group'), Individual: t('classTypes.type.individual'), Pair: t('classTypes.type.pair') }[ct.modalityType] ?? ct.modalityType}</td>
+                ${isSalon ? '' : `<td>${{ Group: t('classTypes.type.group'), Individual: t('classTypes.type.individual'), Pair: t('classTypes.type.pair') }[ct.modalityType] ?? ct.modalityType}</td>`}
                 <td>${ct.price != null ? `R$ ${Number(ct.price).toFixed(2).replace('.', ',')}` : '—'}</td>
                 <td><span class="badge ${ct.isActive ? 'badge-success' : 'badge-gray'}">${ct.isActive ? t('status.active') : t('status.inactive')}</span></td>
                 <td><button class="btn btn-secondary btn-sm" onclick="window._editClassType('${ct.id}')">${t('btn.edit')}</button></td>
@@ -50,12 +62,16 @@ async function loadClassTypes() {
 }
 
 function openClassTypeModal(ct = null) {
+  const isSalon = tenantType === 'BeautySalon';
+  const titleNew = isSalon ? 'Novo Serviço' : t('classTypes.title.new');
+  const titleEdit = isSalon ? 'Editar Serviço' : t('classTypes.title.edit');
+
   createModal({
     id: 'classTypeModal',
-    title: ct ? t('classTypes.title.edit') : t('classTypes.title.new'),
+    title: ct ? titleEdit : titleNew,
     body: `
       <div class="form-group">
-        <label class="form-label">${t('field.name')} *</label>
+        <label class="form-label">${isSalon ? 'Nome do serviço' : t('field.name')} *</label>
         <input class="form-control" id="ctName" required value="${ct?.name ?? ''}">
       </div>
       <div class="form-group">
@@ -67,6 +83,7 @@ function openClassTypeModal(ct = null) {
           <label class="form-label">${t('field.color')}</label>
           <input class="form-control" id="ctColor" type="color" value="${ct?.color ?? '#3498db'}" style="height:42px;padding:2px 4px;cursor:pointer">
         </div>
+        ${isSalon ? '' : `
         <div class="form-group">
           <label class="form-label">${t('field.type')}</label>
           <select class="form-control" id="ctModality">
@@ -74,7 +91,7 @@ function openClassTypeModal(ct = null) {
             <option value="Individual" ${ct?.modalityType==='Individual'?'selected':''}>${t('classTypes.type.individual')}</option>
             <option value="Pair" ${ct?.modalityType==='Pair'?'selected':''}>${t('classTypes.type.pair')}</option>
           </select>
-        </div>
+        </div>`}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
         <div class="form-group">
@@ -109,7 +126,7 @@ function openClassTypeModal(ct = null) {
       name: document.getElementById('ctName').value.trim(),
       description: document.getElementById('ctDesc').value.trim() || null,
       color: document.getElementById('ctColor').value,
-      modalityType: document.getElementById('ctModality').value,
+      modalityType: isSalon ? 'Individual' : document.getElementById('ctModality').value,
       price: priceVal !== '' ? parseFloat(priceVal) : null,
       durationMinutes: durationVal !== '' ? parseInt(durationVal) : null,
     };
@@ -118,7 +135,7 @@ function openClassTypeModal(ct = null) {
     try {
       if (ct) await api.put(`/class-types/${ct.id}`, body);
       else await api.post('/class-types', body);
-      showToast(t('classTypes.saved'), 'success');
+      showToast(isSalon ? 'Serviço salvo' : t('classTypes.saved'), 'success');
       closeModal('classTypeModal');
       await loadClassTypes();
     } catch (e) {
