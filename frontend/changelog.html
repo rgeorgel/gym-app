@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novidades — Agendofy</title>
+<meta name="description" content="Acompanhe as últimas atualizações e melhorias do Agendofy.">
+
+<link rel="canonical" href="https://www.agendofy.com/changelog.html">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.agendofy.com/changelog.html">
+<meta property="og:title" content="Novidades — Agendofy">
+<meta property="og:description" content="Acompanhe as últimas atualizações e melhorias do Agendofy.">
+<meta property="og:locale" content="pt_BR">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #D946EF;
+  --brand-dark: #A21CAF;
+  --brand-light: #FDF4FF;
+  --brand-glow: rgba(217, 70, 239, 0.35);
+  --green: #10B981;
+  --green-light: #D1FAE5;
+  --blue: #3B82F6;
+  --blue-light: #EFF6FF;
+  --orange: #F59E0B;
+  --orange-light: #FFFBEB;
+  --dark: #0D0714;
+  --dark2: #160B21;
+  --mid: #64748B;
+  --muted: #94A3B8;
+  --light: #FDF4FF;
+  --white: #ffffff;
+  --border: rgba(0,0,0,0.07);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  color: var(--dark);
+  background: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 24px; height: 64px;
+  display: flex; align-items: center;
+  background: rgba(255,255,255,0.94); backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--border);
+}
+.nav-inner { max-width: 720px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--dark); text-decoration: none; letter-spacing: -0.5px; }
+.nav-logo span { color: var(--brand); }
+.nav-back { font-size: 13px; font-weight: 500; color: var(--mid); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.nav-back:hover { color: var(--brand); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 120px 0 64px;
+  background: linear-gradient(160deg, var(--dark2) 0%, #1a0a2e 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(217,70,239,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--brand); background: rgba(217,70,239,0.12);
+  padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900; line-height: 1.05; letter-spacing: -1px;
+  color: var(--white); margin-bottom: 14px;
+}
+.hero p {
+  font-size: 16px; font-weight: 300;
+  color: rgba(255,255,255,0.5); max-width: 460px;
+}
+
+/* ─── TIMELINE ─── */
+.timeline-section { padding: 72px 0 96px; }
+
+.release {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0 40px;
+  margin-bottom: 56px;
+  position: relative;
+}
+
+/* vertical line */
+.release::before {
+  content: '';
+  position: absolute;
+  left: 140px; top: 10px; bottom: -56px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--border), transparent);
+  transform: translateX(19px);
+}
+.release:last-child::before { display: none; }
+
+/* date column */
+.release-date {
+  text-align: right;
+  padding-top: 6px;
+}
+.release-date-label {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  white-space: nowrap;
+}
+
+/* dot */
+.release-dot {
+  position: absolute;
+  left: 140px; top: 6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-light), 0 0 0 4px rgba(217,70,239,0.2);
+  transform: translateX(15px);
+  z-index: 1;
+}
+
+/* content column */
+.release-content { padding-left: 20px; }
+
+.release-version {
+  display: inline-block;
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--brand); background: var(--brand-light);
+  padding: 2px 10px; border-radius: 999px; margin-bottom: 10px;
+}
+
+.release-title {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 800; color: var(--dark);
+  letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 16px;
+}
+
+.changes { display: flex; flex-direction: column; gap: 10px; }
+
+.change {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: box-shadow 0.2s;
+}
+.change:hover { box-shadow: var(--shadow-sm); }
+
+.change-badge {
+  flex-shrink: 0; margin-top: 1px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+}
+.badge-new    { background: var(--green-light); color: #065F46; }
+.badge-fix    { background: var(--blue-light);  color: #1E40AF; }
+.badge-update { background: var(--orange-light); color: #92400E; }
+
+.change-text { font-size: 14px; color: var(--mid); line-height: 1.55; }
+.change-text strong { color: var(--dark); font-weight: 600; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--dark); padding: 32px 24px;
+  text-align: center;
+  font-size: 13px; color: rgba(255,255,255,0.3);
+}
+footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+footer a:hover { color: var(--brand); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 560px) {
+  .release { grid-template-columns: 1fr; }
+  .release::before { display: none; }
+  .release-dot { display: none; }
+  .release-date { text-align: left; margin-bottom: 8px; }
+  .release-content { padding-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="landing-salao.html" class="nav-logo">Agendo<span>fy</span></a>
+    <a href="landing-salao.html" class="nav-back">← Voltar ao site</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-tag">📋 Changelog</div>
+    <h1>Novidades do produto</h1>
+    <p>Todas as atualizações, melhorias e correções — em ordem cronológica.</p>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+  <div class="container">
+
+    <!-- 21 Mar 2026 -->
+    <div class="release">
+      <div class="release-date">
+        <div class="release-date-label">21 Mar 2026</div>
+      </div>
+      <div class="release-dot"></div>
+      <div class="release-content">
+        <div class="release-version">Atualização</div>
+        <div class="release-title">Catálogo por categoria e calculadora de no-shows</div>
+        <div class="changes">
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Calculadora de no-shows</strong> — ferramenta gratuita para donos de salão calcularem quanto perdem com faltas por mês e por ano.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Filtro de categorias no catálogo</strong> — clientes podem filtrar serviços por categoria diretamente na página pública de agendamento.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Categorias de serviço para salões</strong> — administradores podem classificar seus serviços por categoria (ex: cabelo, unhas, estética).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 20 Mar 2026 -->
+    <div class="release">
+      <div class="release-date">
+        <div class="release-date-label">20 Mar 2026</div>
+      </div>
+      <div class="release-dot"></div>
+      <div class="release-content">
+        <div class="release-version">Atualização</div>
+        <div class="release-title">Suporte a salões de beleza</div>
+        <div class="changes">
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Suporte a salões de beleza</strong> — o Agendofy agora atende salões e estúdios, com interface e configurações adaptadas ao setor.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Horários disponíveis antes do login</strong> — clientes podem ver os horários livres no catálogo público antes de criar uma conta.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Link de agendamento no painel</strong> — administradores encontram o link público do catálogo diretamente nas configurações.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-update">Melhoria</span>
+            <div class="change-text"><strong>Email de boas-vindas personalizado</strong> — salões recebem um email de boas-vindas com instruções específicas para o setor.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18 Mar 2026 -->
+    <div class="release">
+      <div class="release-date">
+        <div class="release-date-label">18 Mar 2026</div>
+      </div>
+      <div class="release-dot"></div>
+      <div class="release-content">
+        <div class="release-version">Atualização</div>
+        <div class="release-title">Pagamentos e gestão avançada</div>
+        <div class="changes">
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Pagamentos por PIX via AbacatePay</strong> — alunos e clientes podem comprar pacotes diretamente pelo app com geração de cobrança PIX.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-new">Novo</span>
+            <div class="change-text"><strong>Pacotes ativos e inativos separados</strong> — no app do aluno, pacotes expirados ficam em uma seção separada para melhor organização.</div>
+          </div>
+          <div class="change">
+            <span class="change-badge badge-fix">Correção</span>
+            <div class="change-text"><strong>Bloqueio de login para usuários inativos</strong> — contas suspensas ou desativadas não conseguem mais fazer login nem renovar tokens.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 17 Mar 2026 -->
+    <div class="release">
+      <div class="release-date">
+        <div class="release-date-label">17 Mar 2026</div>
+      </div>
+      <div class="release-dot"></div>
+      <div class="release-content">
+        <div class="release-version">Melhoria</div>
+        <div class="release-title">Experiência no painel admin</div>
+        <div class="changes">
+          <div class="change">
+            <span class="change-badge badge-update">Melhoria</span>
+            <div class="change-text"><strong>Navegação preservada ao recarregar</strong> — ao recarregar o painel admin, o sistema volta para a mesma página em que você estava.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Agendofy · <a href="landing-salao.html">Para Salões</a> · <a href="mailto:contato@agendofy.com">Contato</a></p>
+</footer>
+
+</body>
+</html>
