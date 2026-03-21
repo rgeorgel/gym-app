@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(grep:*)",
+      "Read(//c/code/personal/gym-app/backend/**)",
+      "Bash(dotnet ef migrations add FixDateOnlyColumns --project GymApp.Infra --startup-project GymApp.Api)",
+      "Bash(dotnet:*)",
+      "Bash(xargs:*)",
+      "Bash(echo === Tenant admin login \\(slug in body\\) ===:*)",
+      "Bash(curl:*)",
+      "Bash(docker ps:*)",
+      "Bash(__NEW_LINE_3f350e137c49e3f0__ echo:*)",
+      "Bash(__NEW_LINE_c605f3b12669d9e2__ echo:*)",
+      "Bash(git:*)",
+      "Bash(docker run:*)",
+      "Bash(find /c/code/personal/gym-app/backend -type f -name *SeedData* -o -name *Seed*)",
+      "Bash(find /c/code/personal/gym-app/backend/GymApp.Infra/Migrations -type f -name *.cs)",
+      "WebFetch(domain:docs.abacatepay.com)",
+      "WebSearch",
+      "WebFetch(domain:abacatepay.readme.io)",
+      "WebFetch(domain:app.abacatepay.com)",
+      "Bash(find /c/code/personal/gym-app/frontend -type f -name *.html -o -name *.js)",
+      "Bash(find /c/code/personal/gym-app/backend -name *EmailService* -o -name *email*)",
+      "Bash(find /c/code/personal/gym-app/frontend -name *.html)",
+      "Bash(find /c/code/personal/gym-app/backend -name *AddAvailabilityModel*)",
+      "Bash(wc:*)",
+      "Bash(infsh --version)"
+    ]
+  }
+}

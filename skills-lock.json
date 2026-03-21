@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "logo-design-guide": {
+      "source": "inferen-sh/skills",
+      "sourceType": "github",
+      "computedHash": "18ce93931d0ee2ef0111b1f180911a39ca0185fc9a202692c76b49d8eae5b553"
+    },
+    "seo-geo": {
+      "source": "resciencelab/opc-skills",
+      "sourceType": "github",
+      "computedHash": "1d38520f453282af8712874c360e3e34a379827f737fb536bd45055e2d60d964"
+    }
+  }
+}

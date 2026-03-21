@@ -20,4 +20,4 @@ Thumbs.db
 *.suo
 *.ncrunchproject
 
-.claude/
+.claude/worktrees/
