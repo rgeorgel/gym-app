@@ -73,7 +73,7 @@
 
 ---
 
-## 6. Programa de Indicação Bidirecional
+## ✅ 6. Programa de Indicação Bidirecional
 
 **Por que encaixa:** Donos de academia/saloes se conhecem — associações, grupos, eventos da modalidade.
 
