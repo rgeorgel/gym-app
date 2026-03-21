@@ -185,6 +185,16 @@ nav {
 .change-text { font-size: 14px; color: var(--mid); line-height: 1.55; }
 .change-text strong { color: var(--dark); font-weight: 600; }
 
+.change-audience {
+  flex-shrink: 0; margin-top: 1px; margin-left: auto;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
+  padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+  align-self: flex-start;
+}
+.audience-salon  { background: #FDF4FF; color: #86198F; border: 1px solid rgba(217,70,239,0.2); }
+.audience-gym    { background: #F0FDF4; color: #166534; border: 1px solid rgba(16,185,129,0.2); }
+.audience-all    { background: var(--border); color: var(--mid); border: 1px solid var(--border); }
+
 /* ─── FOOTER ─── */
 footer {
   background: var(--dark); padding: 32px 24px;
@@ -240,14 +250,17 @@ footer a:hover { color: var(--brand); }
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Calculadora de no-shows</strong> — ferramenta gratuita para donos de salão calcularem quanto perdem com faltas por mês e por ano.</div>
+            <span class="change-audience audience-salon">Salões</span>
           </div>
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Filtro de categorias no catálogo</strong> — clientes podem filtrar serviços por categoria diretamente na página pública de agendamento.</div>
+            <span class="change-audience audience-salon">Salões</span>
           </div>
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Categorias de serviço para salões</strong> — administradores podem classificar seus serviços por categoria (ex: cabelo, unhas, estética).</div>
+            <span class="change-audience audience-salon">Salões</span>
           </div>
         </div>
       </div>
@@ -266,18 +279,22 @@ footer a:hover { color: var(--brand); }
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Suporte a salões de beleza</strong> — o Agendofy agora atende salões e estúdios, com interface e configurações adaptadas ao setor.</div>
+            <span class="change-audience audience-salon">Salões</span>
           </div>
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Horários disponíveis antes do login</strong> — clientes podem ver os horários livres no catálogo público antes de criar uma conta.</div>
+            <span class="change-audience audience-all">Todos</span>
           </div>
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Link de agendamento no painel</strong> — administradores encontram o link público do catálogo diretamente nas configurações.</div>
+            <span class="change-audience audience-all">Todos</span>
           </div>
           <div class="change">
             <span class="change-badge badge-update">Melhoria</span>
             <div class="change-text"><strong>Email de boas-vindas personalizado</strong> — salões recebem um email de boas-vindas com instruções específicas para o setor.</div>
+            <span class="change-audience audience-salon">Salões</span>
           </div>
         </div>
       </div>
@@ -296,14 +313,17 @@ footer a:hover { color: var(--brand); }
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Pagamentos por PIX via AbacatePay</strong> — alunos e clientes podem comprar pacotes diretamente pelo app com geração de cobrança PIX.</div>
+            <span class="change-audience audience-gym">Academias</span>
           </div>
           <div class="change">
             <span class="change-badge badge-new">Novo</span>
             <div class="change-text"><strong>Pacotes ativos e inativos separados</strong> — no app do aluno, pacotes expirados ficam em uma seção separada para melhor organização.</div>
+            <span class="change-audience audience-gym">Academias</span>
           </div>
           <div class="change">
             <span class="change-badge badge-fix">Correção</span>
             <div class="change-text"><strong>Bloqueio de login para usuários inativos</strong> — contas suspensas ou desativadas não conseguem mais fazer login nem renovar tokens.</div>
+            <span class="change-audience audience-all">Todos</span>
           </div>
         </div>
       </div>
@@ -322,6 +342,7 @@ footer a:hover { color: var(--brand); }
           <div class="change">
             <span class="change-badge badge-update">Melhoria</span>
             <div class="change-text"><strong>Navegação preservada ao recarregar</strong> — ao recarregar o painel admin, o sistema volta para a mesma página em que você estava.</div>
+            <span class="change-audience audience-all">Todos</span>
           </div>
         </div>
       </div>
