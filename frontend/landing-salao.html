@@ -371,6 +371,41 @@ nav.scrolled .nav-hamburger { color: var(--dark); }
 .btn-pricing:hover { background: var(--brand-dark); transform: translateY(-2px); }
 .price-guarantee { margin-top: 14px; font-size: 12px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 6px; justify-content: center; }
 
+/* ─── CALCULATOR TEASER ─── */
+.calc-teaser { padding: 80px 0; background: var(--brand-light); }
+.calc-teaser-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.calc-teaser-text .tag { margin-bottom: 16px; }
+.calc-teaser-text .section-sub { margin-bottom: 28px; }
+.btn-calc {
+  display: inline-flex; align-items: center;
+  background: var(--brand); color: var(--white);
+  font-size: 15px; font-weight: 700; font-family: var(--font-display);
+  padding: 14px 28px; border-radius: 12px; text-decoration: none;
+  box-shadow: 0 4px 20px var(--brand-glow); transition: all 0.2s;
+}
+.btn-calc:hover { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 8px 28px var(--brand-glow); }
+.calc-teaser-preview { display: flex; justify-content: center; }
+.preview-card {
+  background: var(--white); border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(217,70,239,0.14);
+  padding: 28px 32px; min-width: 260px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.preview-row { display: flex; justify-content: space-between; align-items: center; }
+.preview-label { font-size: 13px; color: var(--mid); font-weight: 500; }
+.preview-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+.preview-val.red { color: #EF4444; }
+.preview-val.orange { color: #D97706; }
+.preview-cta {
+  margin-top: 4px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--brand);
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  .calc-teaser-inner { grid-template-columns: 1fr; gap: 36px; }
+  .calc-teaser-preview { display: none; }
+}
+
 /* ─── FAQ ─── */
 .faq { padding: 100px 0; }
 .faq-header { text-align: center; margin-bottom: 56px; }
@@ -865,6 +900,37 @@ footer { background: var(--dark); padding: 56px 0 0; }
     </div>
   </div>
 </section>
+
+<!-- CALCULATOR TEASER -->
+<!-- <section class="calc-teaser reveal" style="display:none">
+  <div class="container">
+    <div class="calc-teaser-inner">
+      <div class="calc-teaser-text">
+        <span class="tag">🧮 Ferramenta gratuita</span>
+        <h2 class="section-title">Quanto você perde com<br>no-shows por mês?</h2>
+        <p class="section-sub">Faltas custam mais do que parecem. Use nossa calculadora gratuita e descubra o impacto real no seu faturamento.</p>
+        <a href="calculadora-noshows.html" class="btn-calc">Calcular agora — é grátis →</a>
+      </div>
+      <div class="calc-teaser-preview" aria-hidden="true">
+        <div class="preview-card">
+          <div class="preview-row">
+            <span class="preview-label">Faltas por mês</span>
+            <span class="preview-val red">18</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-label">Perda mensal</span>
+            <span class="preview-val red">R$1.800</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-label">Perda anual</span>
+            <span class="preview-val orange">R$21.600</span>
+          </div>
+          <div class="preview-cta">Veja o seu número →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
 
 <!-- FAQ -->
 <section class="faq" id="faq">

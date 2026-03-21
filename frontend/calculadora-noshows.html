@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+  gtag('event', 'page_view', { page_title: 'Calculadora No-show' });
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de No-show — Quanto seu salão perde com faltas?</title>
+<meta name="description" content="Calcule em segundos quanto seu salão de beleza perde por mês com clientes que faltam sem avisar. Ferramenta gratuita.">
+
+<link rel="canonical" href="https://www.agendofy.com/calculadora-noshows.html">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.agendofy.com/calculadora-noshows.html">
+<meta property="og:title" content="Calculadora de No-show — Quanto seu salão perde com faltas?">
+<meta property="og:description" content="Calcule em segundos quanto seu salão de beleza perde por mês com clientes que faltam sem avisar.">
+<meta property="og:image" content="https://www.agendofy.com/assets/og-salao.png">
+<meta property="og:locale" content="pt_BR">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculadora de No-show — Quanto seu salão perde com faltas?">
+<meta name="twitter:description" content="Calcule quanto seu salão perde com no-shows por mês.">
+<meta name="twitter:image" content="https://www.agendofy.com/assets/og-salao.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de No-show para Salões de Beleza",
+  "url": "https://www.agendofy.com/calculadora-noshows.html",
+  "description": "Calcule quanto seu salão de beleza perde por mês com clientes que faltam sem avisar.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Agendofy",
+    "url": "https://www.agendofy.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #D946EF;
+  --brand-dark: #A21CAF;
+  --brand-light: #FDF4FF;
+  --brand-glow: rgba(217, 70, 239, 0.35);
+  --accent: #8B5CF6;
+  --green: #10B981;
+  --green-light: #D1FAE5;
+  --red: #EF4444;
+  --red-light: #FEE2E2;
+  --dark: #0D0714;
+  --dark2: #160B21;
+  --mid: #64748B;
+  --muted: #94A3B8;
+  --light: #FDF4FF;
+  --white: #ffffff;
+  --border: rgba(0,0,0,0.07);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow: 0 8px 32px rgba(217,70,239,0.12);
+  --shadow-lg: 0 16px 56px rgba(217,70,239,0.18);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  color: var(--dark);
+  background: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 24px; height: 64px;
+  display: flex; align-items: center;
+  background: rgba(255,255,255,0.94); backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--border);
+}
+.nav-inner { max-width: 780px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--dark); text-decoration: none; letter-spacing: -0.5px; }
+.nav-logo span { color: var(--brand); }
+.nav-back { font-size: 13px; font-weight: 500; color: var(--mid); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.nav-back:hover { color: var(--brand); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 120px 0 64px;
+  text-align: center;
+  background: linear-gradient(160deg, var(--dark2) 0%, #1a0a2e 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(217,70,239,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--brand); background: rgba(217,70,239,0.12);
+  padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 900; line-height: 1.05; letter-spacing: -1.5px;
+  color: var(--white); margin-bottom: 18px;
+}
+.hero h1 .highlight { color: var(--brand); }
+.hero p {
+  font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.6);
+  max-width: 520px; margin: 0 auto;
+}
+
+/* ─── CALCULATOR CARD ─── */
+.calc-section {
+  padding: 0 0 80px;
+  background: linear-gradient(180deg, #1a0a2e 0%, #f8f4ff 80px);
+}
+.calc-card {
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+  overflow: hidden;
+  margin-top: -20px;
+}
+
+/* inputs */
+.calc-inputs {
+  padding: 40px 40px 32px;
+  display: flex; flex-direction: column; gap: 28px;
+}
+.input-group label {
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--dark); margin-bottom: 10px; letter-spacing: 0.2px;
+}
+.input-group label span {
+  font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 4px;
+}
+.slider-row { display: flex; align-items: center; gap: 16px; }
+.slider-row input[type="range"] {
+  flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
+  background: var(--brand-light); border-radius: 999px; cursor: pointer; outline: none;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--brand); box-shadow: 0 2px 8px var(--brand-glow); cursor: pointer;
+  transition: transform 0.15s;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.slider-val {
+  min-width: 72px; text-align: right;
+  font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--brand);
+}
+.slider-hints { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+/* divider */
+.calc-divider { height: 1px; background: var(--border); margin: 0 40px; }
+
+/* results */
+.calc-results {
+  padding: 32px 40px 0;
+}
+.results-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.results-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.result-card {
+  background: var(--red-light);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.result-card.accent { background: #FEF3C7; }
+.result-card.main { background: var(--red-light); grid-column: span 1; }
+.result-value {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900; color: var(--red);
+  line-height: 1; margin-bottom: 6px;
+}
+.result-card.accent .result-value { color: #D97706; }
+.result-label { font-size: 12px; color: var(--mid); font-weight: 500; }
+
+/* insight */
+.calc-insight {
+  margin: 24px 40px 0;
+  background: linear-gradient(135deg, rgba(217,70,239,0.06) 0%, rgba(139,92,246,0.06) 100%);
+  border: 1px solid rgba(217,70,239,0.15);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.insight-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.insight-text { font-size: 14px; color: var(--mid); line-height: 1.55; }
+.insight-text strong { color: var(--dark); }
+
+/* CTA inside card */
+.calc-cta {
+  padding: 32px 40px 40px;
+  text-align: center;
+}
+.calc-cta p {
+  font-size: 15px; color: var(--mid); margin-bottom: 20px; line-height: 1.6;
+}
+.calc-cta p strong { color: var(--dark); }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--brand); color: var(--white);
+  font-size: 15px; font-weight: 700; font-family: var(--font-display);
+  padding: 14px 32px; border-radius: 12px; text-decoration: none;
+  box-shadow: 0 4px 20px var(--brand-glow);
+  transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 8px 28px var(--brand-glow); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--mid); font-size: 13px; font-weight: 500;
+  text-decoration: none; margin-top: 14px; transition: color 0.2s;
+}
+.btn-secondary:hover { color: var(--brand); }
+
+/* ─── HOW TO AVOID ─── */
+.tips-section { padding: 72px 0; background: var(--white); }
+.tips-header { text-align: center; margin-bottom: 48px; }
+.tips-header .tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--brand); background: var(--brand-light);
+  padding: 5px 14px; border-radius: 999px; margin-bottom: 16px;
+}
+.tips-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 800; letter-spacing: -0.5px; color: var(--dark);
+  line-height: 1.15; margin-bottom: 12px;
+}
+.tips-header p { font-size: 16px; color: var(--mid); max-width: 480px; margin: 0 auto; }
+.tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tip-card {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px 24px; transition: box-shadow 0.2s, border-color 0.2s;
+}
+.tip-card:hover { box-shadow: var(--shadow-sm); border-color: rgba(217,70,239,0.2); }
+.tip-icon { font-size: 28px; margin-bottom: 14px; }
+.tip-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.tip-card p { font-size: 14px; color: var(--mid); line-height: 1.6; }
+.tip-card .tip-badge {
+  display: inline-block; margin-top: 12px;
+  font-size: 11px; font-weight: 600; color: var(--green);
+  background: var(--green-light); padding: 3px 10px; border-radius: 999px;
+}
+
+/* ─── SOCIAL PROOF ─── */
+.proof-section {
+  padding: 64px 0;
+  background: linear-gradient(135deg, var(--dark2) 0%, #1a0a2e 100%);
+  text-align: center;
+}
+.proof-section .tag { color: var(--brand); background: rgba(217,70,239,0.12); }
+.proof-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 36px); font-weight: 800;
+  color: var(--white); letter-spacing: -0.5px; margin-bottom: 12px;
+}
+.proof-section p { font-size: 16px; color: rgba(255,255,255,0.55); margin-bottom: 32px; }
+.proof-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--brand); color: var(--white);
+  font-size: 16px; font-weight: 700; font-family: var(--font-display);
+  padding: 16px 36px; border-radius: 12px; text-decoration: none;
+  box-shadow: 0 4px 24px var(--brand-glow); transition: all 0.2s;
+}
+.proof-btn:hover { background: var(--brand-dark); transform: translateY(-2px); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--dark); padding: 32px 24px;
+  text-align: center;
+  font-size: 13px; color: rgba(255,255,255,0.3);
+}
+footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+footer a:hover { color: var(--brand); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .calc-inputs { padding: 28px 24px 24px; }
+  .calc-divider { margin: 0 24px; }
+  .calc-results { padding: 24px 24px 0; }
+  .results-grid { grid-template-columns: 1fr; }
+  .calc-insight { margin: 20px 24px 0; }
+  .calc-cta { padding: 24px 24px 32px; }
+  .tips-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="landing-salao.html" class="nav-logo">Agendo<span>fy</span></a>
+    <a href="landing-salao.html" class="nav-back">
+      ← Voltar ao site
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">🧮 Ferramenta gratuita</div>
+    <h1>Quanto seu salão perde<br>com <span class="highlight">no-shows</span>?</h1>
+    <p>Descubra em segundos o impacto real das faltas no seu faturamento mensal e anual.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section">
+  <div class="container">
+    <div class="calc-card">
+
+      <!-- INPUTS -->
+      <div class="calc-inputs">
+
+        <div class="input-group">
+          <label>Atendimentos por dia <span>(média)</span></label>
+          <div class="slider-row">
+            <input type="range" id="atendimentos" min="2" max="30" value="8" step="1" oninput="calcular()">
+            <div class="slider-val" id="val-atendimentos">8</div>
+          </div>
+          <div class="slider-hints"><span>2</span><span>30</span></div>
+        </div>
+
+        <div class="input-group">
+          <label>Dias trabalhados por semana</label>
+          <div class="slider-row">
+            <input type="range" id="dias" min="3" max="7" value="6" step="1" oninput="calcular()">
+            <div class="slider-val" id="val-dias">6</div>
+          </div>
+          <div class="slider-hints"><span>3</span><span>7</span></div>
+        </div>
+
+        <div class="input-group">
+          <label>Ticket médio por atendimento <span>(R$)</span></label>
+          <div class="slider-row">
+            <input type="range" id="ticket" min="30" max="500" value="100" step="10" oninput="calcular()">
+            <div class="slider-val" id="val-ticket">R$100</div>
+          </div>
+          <div class="slider-hints"><span>R$30</span><span>R$500</span></div>
+        </div>
+
+        <div class="input-group">
+          <label>Taxa de no-show <span>(% dos agendamentos que faltam)</span></label>
+          <div class="slider-row">
+            <input type="range" id="noshowrate" min="1" max="40" value="15" step="1" oninput="calcular()">
+            <div class="slider-val" id="val-noshow">15%</div>
+          </div>
+          <div class="slider-hints"><span>1%</span><span>40%</span></div>
+        </div>
+
+      </div>
+
+      <div class="calc-divider"></div>
+
+      <!-- RESULTS -->
+      <div class="calc-results">
+        <div class="results-label">📊 Resultado da calculadora</div>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-value" id="res-noshow-mes">—</div>
+            <div class="result-label">faltas por mês</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="res-perda-mes">—</div>
+            <div class="result-label">perdidos por mês</div>
+          </div>
+          <div class="result-card accent">
+            <div class="result-value" id="res-perda-ano">—</div>
+            <div class="result-label">perdidos por ano</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSIGHT -->
+      <div class="calc-insight" id="insight-box">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text" id="insight-text">
+          Ajuste os valores acima para ver o resultado.
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="calc-cta">
+        <p>O Agendofy <strong>envia lembretes automáticos por WhatsApp</strong> antes de cada agendamento —<br>salões reduzem no-shows em até 70%.</p>
+        <a href="landing-salao.html#cadastro" class="btn-primary" onclick="trackCTA()">
+          Quero reduzir minhas faltas →
+        </a>
+        <br>
+        <a href="landing-salao.html" class="btn-secondary">Conhecer o Agendofy</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section class="tips-section">
+  <div class="container">
+    <div class="tips-header">
+      <div class="tag">Como evitar</div>
+      <h2>4 formas de reduzir<br>no-shows no seu salão</h2>
+      <p>Estratégias simples que funcionam — com ou sem tecnologia.</p>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">📲</div>
+        <h3>Lembrete automático por WhatsApp</h3>
+        <p>Envie uma mensagem 24h antes do agendamento. A maioria das faltas acontece por esquecimento — um lembrete resolve.</p>
+        <span class="tip-badge">Reduz até 70% das faltas</span>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💳</div>
+        <h3>Política de confirmação</h3>
+        <p>Peça uma confirmação ativa (responder o WhatsApp ou clicar num link). Quem não confirma abre vaga para outra pessoa.</p>
+        <span class="tip-badge">Fácil de implementar</span>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📋</div>
+        <h3>Lista de espera</h3>
+        <p>Mantenha clientes em espera para horários disputados. Quando alguém cancela, a vaga é preenchida na hora.</p>
+        <span class="tip-badge">Receita zero desperdiçada</span>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔁</div>
+        <h3>Reagendamento fácil</h3>
+        <p>Permita que o cliente reagende sozinho até X horas antes. Quem pode cancelar com facilidade, cancela — e não some.</p>
+        <span class="tip-badge">Melhora experiência</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="proof-section">
+  <div class="container">
+    <div class="tag">Grátis por 14 dias</div>
+    <h2>O Agendofy faz tudo isso por você</h2>
+    <p>Lembrete automático, confirmação, lista de espera e reagendamento — tudo em um só lugar.</p>
+    <a href="landing-salao.html#cadastro" class="proof-btn" onclick="trackCTA()">
+      Começar grátis agora →
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Agendofy · <a href="landing-salao.html">Para Salões</a> · <a href="mailto:contato@agendofy.com">Contato</a></p>
+</footer>
+
+<script>
+function fmt(n) {
+  if (n >= 1000) return 'R$' + (n / 1000).toFixed(1).replace('.', ',') + 'k';
+  return 'R$' + n.toLocaleString('pt-BR');
+}
+
+function calcular() {
+  const atend   = parseInt(document.getElementById('atendimentos').value);
+  const dias    = parseInt(document.getElementById('dias').value);
+  const ticket  = parseInt(document.getElementById('ticket').value);
+  const rate    = parseInt(document.getElementById('noshowrate').value);
+
+  document.getElementById('val-atendimentos').textContent = atend;
+  document.getElementById('val-dias').textContent = dias;
+  document.getElementById('val-ticket').textContent = 'R$' + ticket;
+  document.getElementById('val-noshow').textContent = rate + '%';
+
+  const diasMes    = Math.round(dias * 4.33);
+  const atendMes   = atend * diasMes;
+  const noshowMes  = Math.round(atendMes * rate / 100);
+  const perdaMes   = noshowMes * ticket;
+  const perdaAno   = perdaMes * 12;
+
+  document.getElementById('res-noshow-mes').textContent = noshowMes;
+  document.getElementById('res-perda-mes').textContent  = fmt(perdaMes);
+  document.getElementById('res-perda-ano').textContent  = fmt(perdaAno);
+
+  // Insight dinâmico
+  const insight = document.getElementById('insight-text');
+  if (perdaAno >= 50000) {
+    insight.innerHTML = `Seu salão pode estar perdendo <strong>${fmt(perdaAno)} por ano</strong> com no-shows. Isso é o equivalente a contratar um profissional extra — ou um carro popular.`;
+  } else if (perdaAno >= 20000) {
+    insight.innerHTML = `<strong>${fmt(perdaAno)} por ano</strong> é dinheiro que já passou pela sua agenda mas não entrou no caixa. Com lembretes automáticos, a maioria desses atendimentos poderia ter acontecido.`;
+  } else if (perdaAno >= 5000) {
+    insight.innerHTML = `São <strong>${fmt(perdaAno)} por ano</strong> — suficiente para reformar uma parte do salão ou investir em equipamentos novos.`;
+  } else {
+    insight.innerHTML = `Mesmo com poucos no-shows, <strong>${fmt(perdaAno)} por ano</strong> é valor que pode ser recuperado com um simples lembrete automático por WhatsApp.`;
+  }
+}
+
+function trackCTA() {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'click_cta_calculadora', {
+      event_category: 'conversao',
+      event_label: 'calculadora_noshows'
+    });
+  }
+}
+
+// Inicializar na carga
+calcular();
+</script>
+
+</body>
+</html>
