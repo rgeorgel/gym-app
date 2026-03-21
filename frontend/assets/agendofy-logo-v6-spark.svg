@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 72" width="292" height="72">
+  <!-- Icon: Diamond / rhombus (rotated square) -->
+  <rect x="18" y="18" width="38" height="38" rx="6" transform="rotate(45 37 37)" fill="#E8264A"/>
+  <!-- Inner white ring (subtle) -->
+  <rect x="24" y="24" width="26" height="26" rx="3" transform="rotate(45 37 37)"
+        fill="none" stroke="white" stroke-width="1.5" opacity="0.2"/>
+  <!-- Lightning bolt / spark inside -->
+  <polygon points="41,15 29,37 36,37 33,59 45,35 38,35 44,15" fill="white"/>
+
+  <!-- Wordmark -->
+  <text x="82" y="50" font-family="'Segoe UI', Arial, sans-serif" font-size="34" font-weight="700" fill="#0C1220" letter-spacing="-0.5">agendo<tspan fill="#E8264A">fy</tspan></text>
+</svg>

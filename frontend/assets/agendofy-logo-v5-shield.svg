@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 72" width="292" height="72">
+  <!-- Icon: Shield shape -->
+  <path d="M34 66 L8 50 L8 14 Q8 7 15 7 L53 7 Q60 7 60 14 L60 50 Z" fill="#E8264A"/>
+  <!-- Subtle inner shield outline -->
+  <path d="M34 58 L14 45 L14 18 Q14 13 19 13 L49 13 Q54 13 54 18 L54 45 Z"
+        fill="none" stroke="white" stroke-width="1.5" opacity="0.2"/>
+  <!-- Checkmark -->
+  <path d="M21 36 L30 46 L48 24" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Wordmark -->
+  <text x="76" y="50" font-family="'Segoe UI', Arial, sans-serif" font-size="34" font-weight="700" fill="#0C1220" letter-spacing="-0.5">agendo<tspan fill="#E8264A">fy</tspan></text>
+</svg>
