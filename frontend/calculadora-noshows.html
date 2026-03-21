@@ -421,7 +421,7 @@ footer a:hover { color: var(--brand); }
 
       <!-- CTA -->
       <div class="calc-cta">
-        <p>O Agendofy <strong>envia lembretes automáticos por email</strong> antes de cada agendamento — para que seus clientes nunca esqueçam e você não perca receita.</p>
+        <p>O Agendofy <strong>envia uma confirmação por email</strong> no momento do agendamento — para que seu cliente tenha o horário registrado e você mantenha um histórico de tudo.</p>
         <a href="landing-salao.html#cadastro" class="btn-primary" onclick="trackCTA()">
           Quero reduzir minhas faltas →
         </a>
@@ -444,14 +444,14 @@ footer a:hover { color: var(--brand); }
     <div class="tips-grid">
       <div class="tip-card">
         <div class="tip-icon">📲</div>
-        <h3>Lembrete automático por email</h3>
-        <p>Envie um email 24h antes do agendamento. A maioria das faltas acontece por esquecimento — um lembrete resolve.</p>
-        <span class="tip-badge">Simples e eficaz</span>
+        <h3>Confirmação por email no agendamento</h3>
+        <p>Ao agendar, o cliente recebe um email de confirmação com data e horário. Ter o compromisso registrado reduz o esquecimento.</p>
+        <span class="tip-badge">Já disponível no Agendofy</span>
       </div>
       <div class="tip-card">
         <div class="tip-icon">💳</div>
         <h3>Política de confirmação</h3>
-        <p>Peça uma confirmação ativa via email (clicar num link de confirmação). Quem não confirma abre vaga para outra pessoa.</p>
+        <p>Peça ao cliente que confirme presença com antecedência. Quem não confirma abre vaga para outra pessoa.</p>
         <span class="tip-badge">Fácil de implementar</span>
       </div>
       <div class="tip-card">
@@ -475,7 +475,7 @@ footer a:hover { color: var(--brand); }
   <div class="container">
     <div class="tag">Grátis por 14 dias</div>
     <h2>O Agendofy faz tudo isso por você</h2>
-    <p>Lembrete automático, confirmação, lista de espera e reagendamento — tudo em um só lugar.</p>
+    <p>Agendamento online, confirmação por email e gestão completa do seu salão — tudo em um só lugar.</p>
     <a href="landing-salao.html#cadastro" class="proof-btn" onclick="trackCTA()">
       Começar grátis agora →
     </a>
@@ -519,11 +519,11 @@ function calcular() {
   if (perdaAno >= 50000) {
     insight.innerHTML = `Seu salão pode estar perdendo <strong>${fmt(perdaAno)} por ano</strong> com no-shows. Isso é o equivalente a contratar um profissional extra — ou um carro popular.`;
   } else if (perdaAno >= 20000) {
-    insight.innerHTML = `<strong>${fmt(perdaAno)} por ano</strong> é dinheiro que já passou pela sua agenda mas não entrou no caixa. Com lembretes automáticos, a maioria desses atendimentos poderia ter acontecido.`;
+    insight.innerHTML = `<strong>${fmt(perdaAno)} por ano</strong> é dinheiro que já passou pela sua agenda mas não entrou no caixa. Com agendamento online e confirmação por email, seus clientes chegam mais preparados.`;
   } else if (perdaAno >= 5000) {
     insight.innerHTML = `São <strong>${fmt(perdaAno)} por ano</strong> — suficiente para reformar uma parte do salão ou investir em equipamentos novos.`;
   } else {
-    insight.innerHTML = `Mesmo com poucos no-shows, <strong>${fmt(perdaAno)} por ano</strong> é valor que pode ser recuperado com um simples lembrete automático por email.`;
+    insight.innerHTML = `Mesmo com poucos no-shows, <strong>${fmt(perdaAno)} por ano</strong> é valor que pode ser recuperado com agendamento online e confirmação automática por email.`;
   }
 }
 
