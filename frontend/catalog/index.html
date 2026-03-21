@@ -104,12 +104,40 @@
     }
     .slots-empty { font-size: 0.85rem; color: var(--text-muted, #888); }
     .slots-loading { font-size: 0.85rem; color: var(--text-muted, #888); }
+
+    /* Category filter */
+    .category-filter {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 1.5rem auto 0;
+      padding: 0 1rem;
+    }
+    .cat-btn {
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--primary, #6c63ff);
+      background: #fff;
+      color: var(--primary, #6c63ff);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .cat-btn.active {
+      background: var(--primary, #6c63ff);
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <div class="catalog-header" id="catalogHeader">
     <div class="catalog-loading"><span class="spinner"></span></div>
   </div>
+
+  <div class="category-filter" id="categoryFilter" style="display:none"></div>
 
   <div class="catalog-grid" id="catalogGrid">
     <div class="catalog-loading"><span class="spinner"></span></div>
@@ -266,25 +294,89 @@
           return card;
         }
 
-        // Group services by category
-        const groups = new Map();
+        // Collect unique category names (preserving order from API)
+        const categoryNames = [];
         for (const svc of services) {
-          const key = svc.categoryName ?? null;
-          if (!groups.has(key)) groups.set(key, []);
-          groups.get(key).push(svc);
-        }
-        const hasCategories = groups.size > 1 || (groups.size === 1 && groups.keys().next().value !== null);
-
-        grid.innerHTML = '';
-        for (const [catName, svcs] of groups) {
-          if (hasCategories && catName !== null) {
-            const heading = document.createElement('h2');
-            heading.style.cssText = 'grid-column:1/-1;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted,#666);margin:0.5rem 0 -0.25rem';
-            heading.textContent = catName;
-            grid.appendChild(heading);
+          if (svc.categoryName && !categoryNames.includes(svc.categoryName)) {
+            categoryNames.push(svc.categoryName);
           }
-          svcs.forEach(svc => grid.appendChild(buildServiceCard(svc)));
         }
+        const hasCategories = categoryNames.length > 0;
+
+        // Build filter bar if there are categories
+        let activeFilter = null;
+        const filterBar = document.getElementById('categoryFilter');
+        if (hasCategories) {
+          filterBar.style.display = 'flex';
+          const allBtn = document.createElement('button');
+          allBtn.className = 'cat-btn active';
+          allBtn.textContent = 'Todos';
+          allBtn.addEventListener('click', () => applyFilter(null));
+          filterBar.appendChild(allBtn);
+
+          for (const name of categoryNames) {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn';
+            btn.textContent = name;
+            btn.addEventListener('click', () => applyFilter(name));
+            filterBar.appendChild(btn);
+          }
+        }
+
+        // Build all cards upfront, keyed by service id
+        const cardEls = new Map();
+        for (const svc of services) {
+          cardEls.set(svc.id, buildServiceCard(svc));
+        }
+
+        function applyFilter(catName) {
+          activeFilter = catName;
+          // Update pill styles
+          filterBar.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.classList.toggle('active',
+              catName === null ? btn.textContent === 'Todos' : btn.textContent === catName);
+          });
+          renderGrid();
+        }
+
+        function renderGrid() {
+          // Close any open slot panels when filter changes
+          document.querySelectorAll('.slot-panel').forEach(p => p.style.display = 'none');
+          document.querySelectorAll('.btn-agendar').forEach(b => b.textContent = 'Ver horários');
+
+          const filtered = activeFilter === null
+            ? services
+            : services.filter(s => s.categoryName === activeFilter);
+
+          grid.innerHTML = '';
+          if (!filtered.length) {
+            grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Nenhum serviço nesta categoria.</div>`;
+            return;
+          }
+
+          // Group by category only when showing all
+          if (activeFilter === null && hasCategories) {
+            const groups = new Map();
+            for (const svc of filtered) {
+              const key = svc.categoryName ?? null;
+              if (!groups.has(key)) groups.set(key, []);
+              groups.get(key).push(svc);
+            }
+            for (const [catName, svcs] of groups) {
+              if (catName !== null) {
+                const heading = document.createElement('h2');
+                heading.style.cssText = 'grid-column:1/-1;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted,#666);margin:0.5rem 0 -0.25rem';
+                heading.textContent = catName;
+                grid.appendChild(heading);
+              }
+              svcs.forEach(svc => grid.appendChild(cardEls.get(svc.id)));
+            }
+          } else {
+            filtered.forEach(svc => grid.appendChild(cardEls.get(svc.id)));
+          }
+        }
+
+        renderGrid();
       } catch (e) {
         header.innerHTML = `<h1>Catálogo de Serviços</h1>`;
         grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Erro ao carregar serviços. Verifique o link e tente novamente.</div>`;
