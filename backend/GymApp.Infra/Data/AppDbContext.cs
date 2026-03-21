@@ -19,6 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PackageTemplateItem> PackageTemplateItems => Set<PackageTemplateItem>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<ProfessionalAvailability> ProfessionalAvailability => Set<ProfessionalAvailability>();
+    public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +66,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        // ServiceCategory
+        modelBuilder.Entity<ServiceCategory>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(100);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
         // ClassType
         modelBuilder.Entity<ClassType>(e =>
         {
@@ -73,6 +82,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.Color).HasMaxLength(20);
             e.Property(x => x.Price).HasPrecision(10, 2);
             e.HasOne(x => x.Tenant).WithMany(t => t.ClassTypes).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Category).WithMany(c => c.Services).HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull).IsRequired(false);
         });
 
         // ProfessionalAvailability

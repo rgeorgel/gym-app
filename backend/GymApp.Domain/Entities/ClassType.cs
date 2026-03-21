@@ -12,10 +12,12 @@ public class ClassType
     public ModalityType ModalityType { get; set; } = ModalityType.Group;
     public decimal? Price { get; set; }
     public int? DurationMinutes { get; set; } // Used in BeautySalon mode for slot calculation
+    public Guid? CategoryId { get; set; } // Only used for BeautySalon tenant type
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Tenant Tenant { get; set; } = null!;
+    public ServiceCategory? Category { get; set; }
     public ICollection<Schedule> Schedules { get; set; } = [];
     public ICollection<PackageItem> PackageItems { get; set; } = [];
 }

@@ -210,8 +210,7 @@
           return d;
         });
 
-        grid.innerHTML = '';
-        services.forEach(svc => {
+        function buildServiceCard(svc) {
           const card = document.createElement('div');
           card.className = 'service-card';
           card.innerHTML = `
@@ -244,7 +243,6 @@
 
           btnAgendar.addEventListener('click', () => {
             const isOpen = panel.style.display !== 'none';
-            // Close all other panels
             document.querySelectorAll('.slot-panel').forEach(p => p.style.display = 'none');
             document.querySelectorAll('.btn-agendar').forEach(b => b.textContent = 'Ver horários');
             if (isOpen) return;
@@ -252,7 +250,6 @@
             panel.style.display = 'block';
             btnAgendar.textContent = 'Fechar';
 
-            // Auto-select today
             const firstBtn = panel.querySelector('.date-btn');
             if (firstBtn && !selectedDate) firstBtn.click();
           });
@@ -266,8 +263,28 @@
             });
           });
 
-          grid.appendChild(card);
-        });
+          return card;
+        }
+
+        // Group services by category
+        const groups = new Map();
+        for (const svc of services) {
+          const key = svc.categoryName ?? null;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(svc);
+        }
+        const hasCategories = groups.size > 1 || (groups.size === 1 && groups.keys().next().value !== null);
+
+        grid.innerHTML = '';
+        for (const [catName, svcs] of groups) {
+          if (hasCategories && catName !== null) {
+            const heading = document.createElement('h2');
+            heading.style.cssText = 'grid-column:1/-1;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted,#666);margin:0.5rem 0 -0.25rem';
+            heading.textContent = catName;
+            grid.appendChild(heading);
+          }
+          svcs.forEach(svc => grid.appendChild(buildServiceCard(svc)));
+        }
       } catch (e) {
         header.innerHTML = `<h1>Catálogo de Serviços</h1>`;
         grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Erro ao carregar serviços. Verifique o link e tente novamente.</div>`;

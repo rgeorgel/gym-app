@@ -50,28 +50,50 @@ export async function renderSalonBooking(container) {
   }
 }
 
-function renderServiceList(container, services) {
-  container.innerHTML = `
-    <div style="padding:1rem;display:grid;gap:1rem">
-      ${services.map(s => `
-        <div class="card" style="padding:1.25rem">
-          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
-            <span style="width:14px;height:14px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0"></span>
-            <span style="font-weight:600;font-size:1rem">${s.name}</span>
-          </div>
-          ${s.description ? `<p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem">${s.description}</p>` : ''}
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
-            <div>
-              ${s.price != null ? `<div style="font-weight:700;font-size:1.1rem;color:var(--brand-secondary)">${formatPrice(s.price)}</div>` : ''}
-              ${s.durationMinutes ? `<div style="font-size:0.8rem;color:var(--text-muted)">${s.durationMinutes} min</div>` : ''}
-              <div style="font-size:0.75rem;color:var(--text-muted)">${t('schedule.payAtLocation')}</div>
-            </div>
-            <button class="btn btn-primary btn-book-service" data-id="${s.id}" data-name="${s.name}">${t('services.book')}</button>
-          </div>
+function serviceCard(s) {
+  return `
+    <div class="card" style="padding:1.25rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+        <span style="width:14px;height:14px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0"></span>
+        <span style="font-weight:600;font-size:1rem">${s.name}</span>
+      </div>
+      ${s.description ? `<p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem">${s.description}</p>` : ''}
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+        <div>
+          ${s.price != null ? `<div style="font-weight:700;font-size:1.1rem;color:var(--brand-secondary)">${formatPrice(s.price)}</div>` : ''}
+          ${s.durationMinutes ? `<div style="font-size:0.8rem;color:var(--text-muted)">${s.durationMinutes} min</div>` : ''}
+          <div style="font-size:0.75rem;color:var(--text-muted)">${t('schedule.payAtLocation')}</div>
         </div>
-      `).join('')}
+        <button class="btn btn-primary btn-book-service" data-id="${s.id}" data-name="${s.name}">${t('services.book')}</button>
+      </div>
     </div>
   `;
+}
+
+function renderServiceList(container, services) {
+  // Group by category; services without a category go last under null key
+  const groups = new Map();
+  for (const s of services) {
+    const key = s.categoryName ?? null;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+
+  const hasCategories = groups.size > 1 || (groups.size === 1 && groups.keys().next().value !== null);
+
+  let html = '<div style="padding:1rem;display:grid;gap:1rem">';
+  for (const [catName, svcs] of groups) {
+    if (hasCategories && catName !== null) {
+      html += `<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding-top:0.25rem">${catName}</div>`;
+    }
+    html += svcs.map(serviceCard).join('');
+    if (hasCategories && catName === null && groups.size > 1) {
+      // "Outros" label is omitted intentionally — they just appear without header
+    }
+  }
+  html += '</div>';
+
+  container.innerHTML = html;
 
   container.querySelectorAll('.btn-book-service').forEach(btn => {
     btn.addEventListener('click', () => {

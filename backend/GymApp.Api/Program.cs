@@ -126,6 +126,7 @@ app.MapTenantEndpoints();
 app.MapAuthEndpoints();
 app.MapStudentEndpoints();
 app.MapClassTypeEndpoints();
+app.MapServiceCategoryEndpoints();
 app.MapScheduleEndpoints();
 app.MapSessionEndpoints();
 app.MapBookingEndpoints();
