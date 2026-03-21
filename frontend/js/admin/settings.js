@@ -6,12 +6,11 @@ import { getUser } from '../auth.js';
 export async function renderSettings(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
 
-  let settings, templates, referral;
+  let settings, templates;
   try {
-    [settings, templates, referral] = await Promise.all([
+    [settings, templates] = await Promise.all([
       api.get('/settings'),
       api.get('/package-templates'),
-      api.get('/referral/stats'),
     ]);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
@@ -202,33 +201,6 @@ export async function renderSettings(container) {
       </div>
     </div>
 
-    <!-- Referral card -->
-    <div class="card">
-      <div class="card-body" style="padding:1.5rem">
-        <h3 style="margin:0 0 0.25rem">Programa de Indicação</h3>
-        <p class="text-muted text-sm" style="margin:0 0 1.25rem">Indique o Agendofy para outros negócios e ganhe 1 mês grátis quando eles assinarem. Quem você indicar também ganha 30 dias extras de trial.</p>
-
-        <div class="form-group">
-          <label class="form-label">Seu link de indicação</label>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <input class="form-control" id="inputReferralUrl" value="${buildReferralUrl(referral.referralCode)}" readonly style="font-size:0.85rem;flex:1">
-            <button class="btn btn-secondary btn-sm" id="btnCopyReferral">Copiar</button>
-          </div>
-          <p class="text-sm text-muted" style="margin-top:0.35rem">Compartilhe este link. Quando alguém criar uma conta por ele, ambos ganham o bônus.</p>
-        </div>
-
-        <div style="display:flex;gap:1.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
-          <div style="text-align:center">
-            <div style="font-size:1.75rem;font-weight:800;color:var(--color-primary)">${referral.totalReferrals}</div>
-            <div class="text-sm text-muted">indicações feitas</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:1.75rem;font-weight:800;color:var(--color-success)">${referral.convertedReferrals}</div>
-            <div class="text-sm text-muted">convertidas (bônus recebido)</div>
-          </div>
-        </div>
-      </div>
-    </div>
   `;
 
   // Sync color picker ↔ hex input
@@ -395,22 +367,4 @@ export async function renderSettings(container) {
     }
   });
 
-  document.getElementById('btnCopyReferral').addEventListener('click', () => {
-    const url = document.getElementById('inputReferralUrl').value;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('btnCopyReferral');
-      btn.textContent = 'Copiado!';
-      setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
-    });
-  });
-}
-
-function buildReferralUrl(referralCode) {
-  const host = location.hostname;
-  const parts = host.split('.');
-  // In production: slug.agendofy.com → use base domain
-  const baseDomain = parts.length >= 3
-    ? `${location.protocol}//${parts.slice(1).join('.')}`
-    : `${location.protocol}//${host}`;
-  return `${baseDomain}/landing-salao.html?ref=${referralCode}`;
 }

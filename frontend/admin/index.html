@@ -59,6 +59,11 @@
           <span class="nav-icon">📋</span> <span data-i18n="nav.packageTemplates">Modelos de Pacote</span>
         </div>
 
+        <div class="nav-section-label">Crescimento</div>
+        <div class="nav-item" data-page="referral">
+          <span class="nav-icon">🎁</span> <span>Indicar &amp; Ganhar</span>
+        </div>
+
         <div class="nav-section-label" data-i18n="nav.config">Configurações</div>
         <div class="nav-item" data-page="admins">
           <span class="nav-icon">🔑</span> <span data-i18n="nav.admins">Administradores</span>
@@ -118,6 +123,7 @@
     import { renderBilling } from '/js/admin/billing.js';
     import { renderAppointments } from '/js/admin/appointments.js';
     import { renderAvailability } from '/js/admin/availability.js';
+    import { renderReferral } from '/js/admin/referral.js';
     import { trackPageView } from '/js/analytics.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
@@ -178,6 +184,7 @@
       admins: { titleKey: 'nav.admins', render: renderAdmins },
       settings: { titleKey: 'nav.settings', render: renderSettings },
       billing: { titleKey: 'nav.billing', render: renderBilling },
+      referral: { titleKey: 'nav.referral', render: renderReferral },
     };
 
     let currentPage = 'dashboard';
