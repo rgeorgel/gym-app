@@ -2257,6 +2257,8 @@ footer {
           </div>
         </div>
 
+        <input type="hidden" id="referral-code">
+
         <div id="form-error" style="display:none; background:#FEE2E2; border:1px solid #FECACA; border-radius:8px; padding:10px 14px; font-size:13px; color:#DC2626; margin-bottom:4px;"></div>
 
         <button class="btn-form" id="btn-submit" onclick="submitForm()">Criar minha conta grátis →</button>
@@ -2353,6 +2355,10 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// ── Pre-fill referral code from URL ──
+const _refParam = new URLSearchParams(window.location.search).get('ref');
+if (_refParam) document.getElementById('referral-code').value = _refParam;
+
 // ── Form submit ──
 async function submitForm() {
   const nome = document.getElementById('nome').value.trim();
@@ -2360,6 +2366,7 @@ async function submitForm() {
   const academia = document.getElementById('academia').value.trim();
   const whatsapp = document.getElementById('whatsapp').value.trim();
   const senha = document.getElementById('senha').value;
+  const referralCode = document.getElementById('referral-code').value.trim() || undefined;
 
   hideFormError();
 
@@ -2396,7 +2403,8 @@ async function submitForm() {
         email: email,
         password: senha,
         phone: whatsapp,
-        tenantType: 'Gym'
+        tenantType: 'Gym',
+        referralCode
       })
     });
 

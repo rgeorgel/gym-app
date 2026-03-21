@@ -59,6 +59,11 @@ public static class TenantEndpoints
             while (await db.Tenants.AnyAsync(t => t.Slug == slug))
                 slug = $"{baseSlug}-{suffix++}";
 
+            // Resolve referral code
+            Tenant? referrer = null;
+            if (!string.IsNullOrWhiteSpace(req.ReferralCode))
+                referrer = await db.Tenants.FirstOrDefaultAsync(t => t.Slug == req.ReferralCode.Trim().ToLowerInvariant());
+
             var tenant = new Tenant
             {
                 Name = req.AcademyName.Trim(),
@@ -67,7 +72,10 @@ public static class TenantEndpoints
                 SecondaryColor = "#e94560",
                 Plan = GymApp.Domain.Enums.TenantPlan.Basic,
                 TenantType = req.TenantType,
-                SubscriptionPriceCents = req.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon ? 1900 : 4900
+                SubscriptionPriceCents = req.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon ? 1900 : 4900,
+                ReferredByCode = referrer?.Slug,
+                ReferredByTenantId = referrer?.Id,
+                TrialDays = referrer is not null ? 44 : 14  // +30 bonus days for referred tenants
             };
             db.Tenants.Add(tenant);
 
@@ -155,6 +163,25 @@ public static class TenantEndpoints
                 tenant.PrimaryColor, tenant.SecondaryColor, tenant.Plan, tenant.IsActive,
                 tenant.CustomDomain, tenant.CreatedAt, tenant.PaymentsAllowedBySuperAdmin, tenant.PaymentsEnabled, tenant.EfiPayeeCode, tenant.TenantType.ToString(), tenant.SubscriptionPriceCents));
         });
+
+        // Admin: referral stats
+        app.MapGet("/api/referral/stats", async (AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            var referrals = await db.Tenants.AsNoTracking()
+                .Where(t => t.ReferredByTenantId == tenant.Id)
+                .Select(t => new { t.ReferralRewardClaimed })
+                .ToListAsync();
+
+            return Results.Ok(new ReferralStatsResponse(
+                ReferralCode: tenant.Slug,
+                TotalReferrals: referrals.Count,
+                ConvertedReferrals: referrals.Count(r => r.ReferralRewardClaimed)
+            ));
+        }).RequireAuthorization("AdminOrAbove");
 
         // Admin: tenant settings
         var settingsGroup = app.MapGroup("/api/settings").RequireAuthorization("AdminOrAbove");

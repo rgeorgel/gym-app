@@ -511,6 +511,16 @@ namespace GymApp.Infra.Data.Migrations
                     b.Property<string>("AbacatePayStudentWebhookSecret")
                         .HasColumnType("text");
 
+                    b.Property<bool>("ReferralRewardClaimed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReferredByCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("ReferredByTenantId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("CancellationHoursLimit")
                         .HasColumnType("integer");
 

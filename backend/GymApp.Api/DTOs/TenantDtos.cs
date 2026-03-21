@@ -112,7 +112,14 @@ public record SelfSignupRequest(
     string Email,
     string Password,
     string? Phone = null,
-    TenantType TenantType = TenantType.Gym
+    TenantType TenantType = TenantType.Gym,
+    string? ReferralCode = null
+);
+
+public record ReferralStatsResponse(
+    string ReferralCode,
+    int TotalReferrals,
+    int ConvertedReferrals
 );
 
 public record SelfSignupResponse(

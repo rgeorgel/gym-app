@@ -39,6 +39,11 @@ public class Tenant
     public string? AbacatePayStudentApiKey { get; set; }
     public string? AbacatePayStudentWebhookSecret { get; set; }
 
+    // ── Referral program ────────────────────────────────────────────────────
+    public string? ReferredByCode { get; set; }
+    public Guid? ReferredByTenantId { get; set; }
+    public bool ReferralRewardClaimed { get; set; } = false;
+
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>
     public bool HasStudentAccess => IsActive && SubscriptionStatus switch

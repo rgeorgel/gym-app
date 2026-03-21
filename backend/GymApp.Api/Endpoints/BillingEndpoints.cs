@@ -295,6 +295,7 @@ public static class BillingEndpoints
             switch (webhook.Event)
             {
                 case "billing.paid":
+                    var isFirstPayment = tenant.SubscriptionStatus != SubscriptionStatus.Active;
                     tenant.SubscriptionStatus = SubscriptionStatus.Active;
                     // Add 30 days from the current period end (or from now if already expired)
                     var from = tenant.SubscriptionCurrentPeriodEnd.HasValue
@@ -308,6 +309,24 @@ public static class BillingEndpoints
                     tenant.AbacatePayBillingUrl = null;
                     logger.LogInformation("Subscription activated for tenant {Slug}, period ends {End}",
                         tenant.Slug, tenant.SubscriptionCurrentPeriodEnd);
+
+                    // Referral reward: on first payment, give referrer +30 days
+                    if (isFirstPayment && !tenant.ReferralRewardClaimed && tenant.ReferredByTenantId.HasValue)
+                    {
+                        var referrer = await db.Tenants.FindAsync(tenant.ReferredByTenantId.Value);
+                        if (referrer is not null)
+                        {
+                            var referrerFrom = referrer.SubscriptionCurrentPeriodEnd.HasValue
+                                && referrer.SubscriptionCurrentPeriodEnd.Value > DateTime.UtcNow
+                                    ? referrer.SubscriptionCurrentPeriodEnd.Value
+                                    : DateTime.UtcNow;
+                            referrer.SubscriptionCurrentPeriodEnd = referrerFrom.AddDays(30);
+                            if (referrer.SubscriptionStatus == SubscriptionStatus.Trial)
+                                referrer.SubscriptionStatus = SubscriptionStatus.Active;
+                            logger.LogInformation("Referral reward granted to {Slug} — +30 days", referrer.Slug);
+                        }
+                        tenant.ReferralRewardClaimed = true;
+                    }
                     break;
 
                 case "billing.expired":
