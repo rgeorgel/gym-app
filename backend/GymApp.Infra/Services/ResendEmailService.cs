@@ -102,7 +102,7 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
                         <tr>
                           <td style="background:#F8FAFF;border-top:1px solid #E8ECF4;padding:24px 40px;text-align:center">
                             <p style="margin:0;font-size:12px;color:#94A3B8;line-height:1.6">
-                              Qualquer dúvida, responda este e-mail — estamos aqui para ajudar.<br>
+                              Qualquer dúvida, escreva para <a href="mailto:contato@agendofy.com" style="color:{accentColor};text-decoration:none">contato@agendofy.com</a> — estamos aqui para ajudar.<br>
                               <a href="https://agendofy.com" style="color:{accentColor};text-decoration:none">agendofy.com</a>
                             </p>
                           </td>
