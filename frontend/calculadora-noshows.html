@@ -421,7 +421,7 @@ footer a:hover { color: var(--brand); }
 
       <!-- CTA -->
       <div class="calc-cta">
-        <p>O Agendofy <strong>envia lembretes automáticos por WhatsApp</strong> antes de cada agendamento —<br>salões reduzem no-shows em até 70%.</p>
+        <p>O Agendofy <strong>envia lembretes automáticos por email</strong> antes de cada agendamento — para que seus clientes nunca esqueçam e você não perca receita.</p>
         <a href="landing-salao.html#cadastro" class="btn-primary" onclick="trackCTA()">
           Quero reduzir minhas faltas →
         </a>
@@ -444,14 +444,14 @@ footer a:hover { color: var(--brand); }
     <div class="tips-grid">
       <div class="tip-card">
         <div class="tip-icon">📲</div>
-        <h3>Lembrete automático por WhatsApp</h3>
-        <p>Envie uma mensagem 24h antes do agendamento. A maioria das faltas acontece por esquecimento — um lembrete resolve.</p>
-        <span class="tip-badge">Reduz até 70% das faltas</span>
+        <h3>Lembrete automático por email</h3>
+        <p>Envie um email 24h antes do agendamento. A maioria das faltas acontece por esquecimento — um lembrete resolve.</p>
+        <span class="tip-badge">Simples e eficaz</span>
       </div>
       <div class="tip-card">
         <div class="tip-icon">💳</div>
         <h3>Política de confirmação</h3>
-        <p>Peça uma confirmação ativa (responder o WhatsApp ou clicar num link). Quem não confirma abre vaga para outra pessoa.</p>
+        <p>Peça uma confirmação ativa via email (clicar num link de confirmação). Quem não confirma abre vaga para outra pessoa.</p>
         <span class="tip-badge">Fácil de implementar</span>
       </div>
       <div class="tip-card">
@@ -523,7 +523,7 @@ function calcular() {
   } else if (perdaAno >= 5000) {
     insight.innerHTML = `São <strong>${fmt(perdaAno)} por ano</strong> — suficiente para reformar uma parte do salão ou investir em equipamentos novos.`;
   } else {
-    insight.innerHTML = `Mesmo com poucos no-shows, <strong>${fmt(perdaAno)} por ano</strong> é valor que pode ser recuperado com um simples lembrete automático por WhatsApp.`;
+    insight.innerHTML = `Mesmo com poucos no-shows, <strong>${fmt(perdaAno)} por ano</strong> é valor que pode ser recuperado com um simples lembrete automático por email.`;
   }
 }
 
