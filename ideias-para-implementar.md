@@ -1,6 +1,6 @@
 # Ideias para Implementar
 
-## 5. Calculadora de Perdas — Quantos no-shows você tem? (#18)
+## ✅ 5. Calculadora de Perdas — Quantos no-shows você tem? (#18)
 
 **Por que encaixa:** No-show é a maior dor do setor de salões de beleza.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 21. Changelog Público — Mostrar evolução do produto (#108)
+## ✅ 21. Changelog Público — Mostrar evolução do produto (#108)
 
 **Por que encaixa:** Donos de salão querem saber que o software está sendo melhorado.
 
@@ -75,10 +75,10 @@
 
 ## 6. Programa de Indicação Bidirecional
 
-**Por que encaixa:** Donos de academia se conhecem — associações, grupos, eventos da modalidade.
+**Por que encaixa:** Donos de academia/saloes se conhecem — associações, grupos, eventos da modalidade.
 
 **Como começar:**
-- 1 mês grátis para quem indicar + 1 mês grátis para quem é indicado
+- 1 mês grátis para quem indicar + 1 mês grátis para quem é indicado. Quando o indicado pagar o primeiro mes
 - Link de indicação direto no painel admin
 
 **Resultado esperado:** Crescimento orgânico com CAC baixo
