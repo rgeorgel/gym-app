@@ -91,6 +91,13 @@ public static class TenantEndpoints
             };
             db.Users.Add(admin);
 
+            db.Locations.Add(new Location
+            {
+                TenantId = tenant.Id,
+                Name = tenant.Name,
+                IsMain = true
+            });
+
             await db.SaveChangesAsync();
 
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
@@ -143,6 +150,13 @@ public static class TenantEndpoints
                 ReceivesSubscriptionReminders = true
             };
             db.Users.Add(admin);
+
+            db.Locations.Add(new Location
+            {
+                TenantId = tenant.Id,
+                Name = tenant.Name,
+                IsMain = true
+            });
 
             await db.SaveChangesAsync();
             return Results.Created($"/api/admin/tenants/{tenant.Id}",
