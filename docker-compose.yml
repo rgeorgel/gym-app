@@ -55,6 +55,11 @@ services:
       Efi__PixKey: "${EFI_PIX_KEY:-}"
       Efi__PlatformPayeeCode: "${EFI_PLATFORM_PAYEE_CODE:-}"
       Efi__PlatformFeePercent: "${EFI_PLATFORM_FEE_PERCENT:-0}"
+      AI__ApiKey: "${XIAOMI_MIMO_API_KEY:-}"
+      AI__BaseUrl: "${AI_BASE_URL:-https://api.xiaomimimo.com}"
+      AI__Model: "${AI_MODEL:-mimo-v2-omni}"
+      AI__MaxTokens: "${AI_MAX_TOKENS:-2048}"
+      AI__MaxToolRounds: "${AI_MAX_TOOL_ROUNDS:-5}"
     networks:
       - gymapp
     healthcheck:

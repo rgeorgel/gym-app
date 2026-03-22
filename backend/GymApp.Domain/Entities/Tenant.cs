@@ -39,6 +39,9 @@ public class Tenant
     public string? AbacatePayStudentApiKey { get; set; }
     public string? AbacatePayStudentWebhookSecret { get; set; }
 
+    // ── AI Assistant ────────────────────────────────────────────────────────
+    public string? AiSystemPrompt { get; set; }
+
     // ── Referral program ────────────────────────────────────────────────────
     public string? ReferredByCode { get; set; }
     public Guid? ReferredByTenantId { get; set; }

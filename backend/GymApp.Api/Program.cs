@@ -102,6 +102,18 @@ builder.Services.AddSingleton<EfiService>();
 builder.Services.AddSingleton<AbacatePayService>();
 builder.Services.AddHostedService<SubscriptionReminderService>();
 
+// AI Assistant (MiMo-V2-Flash / MiMo-V2-Omni)
+builder.Services.AddHttpClient("MiMo", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["AI:BaseUrl"] ?? "https://api.xiaomimimo.com");
+    client.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue(
+            "Bearer", builder.Configuration["AI:ApiKey"] ?? "");
+    client.Timeout = TimeSpan.FromSeconds(60);
+});
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AiAssistantService>();
+
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
@@ -141,6 +153,7 @@ app.MapAdminUserEndpoints();
 app.MapBillingEndpoints();
 app.MapAbacatePayWebhook();
 app.MapSuperAdminEndpoints();
+app.MapAiAssistantEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

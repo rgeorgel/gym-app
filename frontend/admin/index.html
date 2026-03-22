@@ -125,6 +125,7 @@
     import { renderAvailability } from '/js/admin/availability.js';
     import { renderReferral } from '/js/admin/referral.js';
     import { trackPageView } from '/js/analytics.js';
+    import { initAiAssistant } from '/js/admin/ai-assistant.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
@@ -222,6 +223,8 @@
 
     const initialPage = location.hash.slice(1);
     await navigateTo(pages[initialPage] ? initialPage : 'dashboard');
+
+    initAiAssistant();
   </script>
 </body>
 </html>
