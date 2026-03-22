@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm, getWeekdaysFull } from '../ui.js';
 import { t } from '../i18n.js';
+import { loadLocationsForSelector } from './locations.js';
 
 export async function renderSchedules(container) {
   container.innerHTML = `
@@ -16,14 +17,15 @@ export async function renderSchedules(container) {
   await loadSchedules();
 }
 
-let classTypes = [], instructors = [], schedules = [];
+let classTypes = [], instructors = [], schedules = [], locations = [];
 
 async function loadSchedules() {
   try {
-    [schedules, classTypes, instructors] = await Promise.all([
+    [schedules, classTypes, instructors, locations] = await Promise.all([
       api.get('/schedules'),
       api.get('/class-types'),
       api.get('/instructors'),
+      loadLocationsForSelector(),
     ]);
     renderWeekGrid();
   } catch (e) {
@@ -40,14 +42,17 @@ function renderWeekGrid() {
         <div class="day-header">${day}</div>
         ${daySched.length === 0
           ? `<div class="empty-state" style="padding:1rem"><div class="empty-state-text text-xs">${t('schedules.noClasses')}</div></div>`
-          : daySched.map(s => `
-            <div class="class-card" onclick="window._editSchedule('${s.id}')" style="border-left-color:${s.classTypeColor}">
-              <div class="class-card-time">${formatTime(s.startTime?.toString())}</div>
-              <div class="class-card-name">${s.classTypeName}</div>
-              <div class="class-card-slots text-xs text-muted">👥 ${s.capacity} ${t('schedules.slots')} · ${s.durationMinutes}min</div>
-              ${s.instructorName ? `<div class="text-xs text-muted">👤 ${s.instructorName}</div>` : ''}
-            </div>
-          `).join('')}
+          : daySched.map(s => {
+              const loc = locations.find(l => l.id === s.locationId);
+              return `
+              <div class="class-card" onclick="window._editSchedule('${s.id}')" style="border-left-color:${s.classTypeColor}">
+                <div class="class-card-time">${formatTime(s.startTime?.toString())}</div>
+                <div class="class-card-name">${s.classTypeName}</div>
+                <div class="class-card-slots text-xs text-muted">👥 ${s.capacity} ${t('schedules.slots')} · ${s.durationMinutes}min</div>
+                ${s.instructorName ? `<div class="text-xs text-muted">👤 ${s.instructorName}</div>` : ''}
+                ${loc ? `<div class="text-xs text-muted">📍 ${loc.name}</div>` : ''}
+              </div>
+            `}).join('')}
       </div>
     `;
   }).join('');
@@ -56,10 +61,21 @@ function renderWeekGrid() {
 }
 
 function openScheduleModal(sched = null) {
+  const locationOptions = locations.map(l => 
+    `<option value="${l.id}" ${sched?.locationId === l.id ? 'selected' : ''}>${l.name}</option>`
+  ).join('');
+
   createModal({
     id: 'schedModal',
     title: sched ? t('schedules.title.edit') : t('schedules.title.new'),
     body: `
+      <div class="form-group">
+        <label class="form-label">Local *</label>
+        <select class="form-control" id="schedLocation" required>
+          <option value="">Selecione o local</option>
+          ${locationOptions}
+        </select>
+      </div>
       <div class="form-group">
         <label class="form-label">${t('nav.classTypes')} *</label>
         <select class="form-control" id="schedCt" required>
@@ -128,9 +144,16 @@ function openScheduleModal(sched = null) {
   }
 
   document.getElementById('btnSaveSched').addEventListener('click', async () => {
+    const locationId = document.getElementById('schedLocation').value;
+    if (!locationId) {
+      showToast('Local é obrigatório', 'error');
+      return;
+    }
+
     const body = {
       classTypeId: document.getElementById('schedCt').value,
       instructorId: document.getElementById('schedInstructor').value || null,
+      locationId,
       weekday: parseInt(document.getElementById('schedDay').value),
       startTime: document.getElementById('schedTime').value + ':00',
       durationMinutes: parseInt(document.getElementById('schedDuration').value),

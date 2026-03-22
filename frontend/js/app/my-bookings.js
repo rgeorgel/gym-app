@@ -4,11 +4,14 @@ import { getUser } from '../auth.js';
 import { t, getMonthNames } from '../i18n.js';
 import { trackEvent } from '../analytics.js';
 
+let locations = [];
+
 export async function renderMyBookings(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
   const user = getUser();
 
   try {
+    locations = await api.get('/locations').catch(() => []);
     const bookings = await api.get(`/students/${user.id}/bookings`);
     const today = new Date().toISOString().slice(0, 10);
     const upcoming = bookings.filter(b => b.status !== 'Cancelled' && b.sessionDate >= today);
@@ -58,6 +61,7 @@ export async function renderMyBookings(container) {
 function renderBookingRow(b, showCancel) {
   const d = new Date(b.sessionDate + 'T12:00:00');
   const months = getMonthNames();
+  const loc = locations.find(l => l.id === b.locationId);
   return `
     <div class="booking-item">
       <div class="booking-date-block">
@@ -66,7 +70,7 @@ function renderBookingRow(b, showCancel) {
       </div>
       <div class="booking-info">
         <div class="booking-class">${b.classTypeName}</div>
-        <div class="booking-time">${formatTime(b.sessionStartTime?.toString())}</div>
+        <div class="booking-time">${formatTime(b.sessionStartTime?.toString())}${loc ? ` · 📍 ${loc.name}` : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:0.75rem">
         ${statusBadge(b.status)}

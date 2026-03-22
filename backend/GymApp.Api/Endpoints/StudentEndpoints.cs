@@ -112,7 +112,8 @@ public static class StudentEndpoints
                     b.Id, b.SessionId, b.Session.Date, b.Session.StartTime,
                     b.Session.ClassType != null ? b.Session.ClassType.Name : "",
                     b.StudentId, b.Student.Name,
-                    b.Status, b.CheckedInAt, b.CreatedAt))
+                    b.Status, b.CheckedInAt, b.CreatedAt,
+                    b.Session.LocationId))
                 .ToListAsync();
 
             return Results.Ok(bookings);

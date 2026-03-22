@@ -30,7 +30,29 @@ public class TenantMiddleware(RequestDelegate next)
         }
 
         if (tenant is not null)
+        {
             tenantContext.Resolve(tenant.Id, tenant.Slug, tenant.HasStudentAccess);
+
+            // Resolve LocationId from header or default to main location
+            var locationIdHeader = context.Request.Headers["X-Location-Id"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(locationIdHeader) && Guid.TryParse(locationIdHeader, out var locationId))
+            {
+                tenantContext.LocationId = locationId;
+            }
+            else
+            {
+                // Default to main location if only one exists
+                var locationCount = await db.Locations
+                    .CountAsync(l => l.TenantId == tenant.Id);
+                if (locationCount == 1)
+                {
+                    var mainLocation = await db.Locations
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(l => l.TenantId == tenant.Id);
+                    tenantContext.LocationId = mainLocation?.Id;
+                }
+            }
+        }
 
         await next(context);
     }

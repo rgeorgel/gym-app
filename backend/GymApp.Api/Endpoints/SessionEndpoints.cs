@@ -21,11 +21,15 @@ public static class SessionEndpoints
             var start = from ?? DateOnly.FromDateTime(DateTime.Today);
             var end = to ?? start.AddDays(13);
 
-            var schedules = await db.Schedules.AsNoTracking()
+            var schedulesQuery = db.Schedules.AsNoTracking()
                 .Include(s => s.ClassType)
                 .Include(s => s.Instructor).ThenInclude(i => i!.User)
-                .Where(s => s.TenantId == tenant.TenantId && s.IsActive)
-                .ToListAsync();
+                .Where(s => s.TenantId == tenant.TenantId && s.IsActive);
+
+            if (tenant.LocationId.HasValue)
+                schedulesQuery = schedulesQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var schedules = await schedulesQuery.ToListAsync();
 
             var scheduleIds = schedules.Select(s => s.Id).ToList();
             var existingSessions = await db.Sessions.AsNoTracking()
@@ -51,6 +55,7 @@ public static class SessionEndpoints
                             ScheduleId = schedule.Id,
                             TenantId = schedule.TenantId,
                             ClassTypeId = schedule.ClassTypeId,
+                            LocationId = schedule.LocationId,
                             StartTime = schedule.StartTime,
                             DurationMinutes = schedule.DurationMinutes,
                             Date = date,
@@ -104,7 +109,8 @@ public static class SessionEndpoints
                     b.Id, b.SessionId, b.Session.Date, b.Session.StartTime,
                     b.Session.ClassType != null ? b.Session.ClassType.Name : "",
                     b.StudentId, b.Student.Name,
-                    b.Status, b.CheckedInAt, b.CreatedAt))
+                    b.Status, b.CheckedInAt, b.CreatedAt,
+                    b.Session.LocationId))
                 .ToListAsync();
 
             return Results.Ok(bookings);
@@ -171,6 +177,7 @@ public static class SessionEndpoints
         s.Schedule?.Instructor?.User.Name,
         s.Schedule?.Capacity ?? 1,
         s.SlotsAvailable, s.Status,
-        s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)
+        s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn),
+        s.LocationId
     );
 }

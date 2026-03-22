@@ -26,7 +26,8 @@ public static class BookingEndpoints
                     b.Id, b.SessionId, b.Session.Date, b.Session.StartTime,
                     b.Session.ClassType != null ? b.Session.ClassType.Name : "",
                     b.StudentId, b.Student.Name,
-                    b.Status, b.CheckedInAt, b.CreatedAt))
+                    b.Status, b.CheckedInAt, b.CreatedAt,
+                    b.Session.LocationId))
                 .ToListAsync();
             return Results.Ok(bookings);
         });
@@ -159,11 +160,18 @@ public static class BookingEndpoints
                     b.Status != BookingStatus.Cancelled);
             if (studentConflict) return Results.Conflict("You already have a booking at this time.");
 
+            // Get default location for salon bookings
+            var mainLocation = await db.Locations
+                .Where(l => l.TenantId == tenant.TenantId)
+                .OrderBy(l => l.IsMain ? 0 : 1)
+                .FirstOrDefaultAsync();
+
             // Create the session on demand
             var session = new Session
             {
                 TenantId = tenant.TenantId,
                 ClassTypeId = service.Id,
+                LocationId = mainLocation?.Id ?? Guid.Empty,
                 StartTime = req.StartTime,
                 DurationMinutes = duration,
                 Date = req.Date,

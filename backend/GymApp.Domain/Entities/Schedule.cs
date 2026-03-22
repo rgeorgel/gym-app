@@ -6,6 +6,7 @@ public class Schedule
     public Guid TenantId { get; set; }
     public Guid ClassTypeId { get; set; }
     public Guid? InstructorId { get; set; }
+    public Guid LocationId { get; set; }
     public int Weekday { get; set; } // 0=Sun, 1=Mon, ..., 6=Sat
     public TimeOnly StartTime { get; set; }
     public int DurationMinutes { get; set; } = 60;
@@ -16,5 +17,6 @@ public class Schedule
     public Tenant Tenant { get; set; } = null!;
     public ClassType ClassType { get; set; } = null!;
     public Instructor? Instructor { get; set; }
+    public Location Location { get; set; } = null!;
     public ICollection<Session> Sessions { get; set; } = [];
 }

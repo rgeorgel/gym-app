@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
     public DbSet<AiConversation> AiConversations => Set<AiConversation>();
     public DbSet<AiMessage> AiMessages => Set<AiMessage>();
+    public DbSet<Location> Locations => Set<Location>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -204,6 +205,34 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(x => x.Student).WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.PackageTemplate).WithMany().HasForeignKey(x => x.PackageTemplateId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.AssignedPackage).WithMany().HasForeignKey(x => x.AssignedPackageId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Location
+        modelBuilder.Entity<Location>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.Address).HasMaxLength(500);
+            e.Property(x => x.Phone).HasMaxLength(50);
+            e.HasOne(x => x.Tenant).WithMany(t => t.Locations).HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Update Schedule to include Location
+        modelBuilder.Entity<Schedule>(e =>
+        {
+            e.HasOne(x => x.Location).WithMany(l => l.Schedules).HasForeignKey(x => x.LocationId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Update Session to include Location
+        modelBuilder.Entity<Session>(e =>
+        {
+            e.HasOne(x => x.Location).WithMany(l => l.Sessions).HasForeignKey(x => x.LocationId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Update Instructor to include Location
+        modelBuilder.Entity<Instructor>(e =>
+        {
+            e.HasOne(x => x.PrimaryLocation).WithMany(l => l.Instructors).HasForeignKey(x => x.PrimaryLocationId).OnDelete(DeleteBehavior.SetNull);
         });
     }
 

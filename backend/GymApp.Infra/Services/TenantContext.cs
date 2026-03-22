@@ -8,6 +8,7 @@ public class TenantContext : ITenantContext
     public string Slug { get; private set; } = string.Empty;
     public bool IsResolved { get; private set; }
     public bool HasStudentAccess { get; private set; } = true;
+    public Guid? LocationId { get; set; }
 
     public void Resolve(Guid tenantId, string slug, bool hasStudentAccess = true)
     {

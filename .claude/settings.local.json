@@ -25,7 +25,9 @@
       "Bash(find /c/code/personal/gym-app/frontend -name *.html)",
       "Bash(find /c/code/personal/gym-app/backend -name *AddAvailabilityModel*)",
       "Bash(wc:*)",
-      "Bash(infsh --version)"
+      "Bash(infsh --version)",
+      "Bash(ls /c/code/personal/gym-app/.env*)",
+      "Bash(find /c/code/personal/gym-app -name nginx* -o -name *.conf)"
     ]
   }
 }

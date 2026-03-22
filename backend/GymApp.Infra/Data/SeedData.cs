@@ -38,6 +38,15 @@ public static class SeedData
             db.Tenants.Add(tenant);
             await db.SaveChangesAsync();
 
+            // Location for tenant
+            var matriz = new Location
+            {
+                TenantId = tenant.Id,
+                Name = "Matriz",
+                IsMain = true
+            };
+            db.Locations.Add(matriz);
+
             // Admin da academia
             var admin = new User
             {
@@ -60,13 +69,13 @@ public static class SeedData
             // Grade semanal (segunda a sábado, 7h e 19h para grupo)
             var schedules = new List<Schedule>
             {
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 1, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Segunda 7h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 1, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Segunda 19h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 3, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Quarta 7h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 3, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Quarta 19h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 5, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Sexta 7h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 5, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Sexta 19h
-                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, Weekday = 6, StartTime = new TimeOnly(9,0), Capacity = 25 },   // Sábado 9h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 1, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Segunda 7h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 1, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Segunda 19h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 3, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Quarta 7h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 3, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Quarta 19h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 5, StartTime = new TimeOnly(7,0), Capacity = 20 },   // Sexta 7h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 5, StartTime = new TimeOnly(19,0), Capacity = 20 },  // Sexta 19h
+                new() { TenantId = tenant.Id, ClassTypeId = grupoClass.Id, LocationId = matriz.Id, Weekday = 6, StartTime = new TimeOnly(9,0), Capacity = 25 },   // Sábado 9h
             };
             db.Schedules.AddRange(schedules);
 

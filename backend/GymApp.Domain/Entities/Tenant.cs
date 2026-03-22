@@ -72,4 +72,5 @@ public class Tenant
     public ICollection<Package> Packages { get; set; } = [];
     public ICollection<Instructor> Instructors { get; set; } = [];
     public ICollection<PackageTemplate> PackageTemplates { get; set; } = [];
+    public ICollection<Location> Locations { get; set; } = [];
 }

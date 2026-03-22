@@ -1,4 +1,4 @@
-import { api } from '../api.js';
+import { api, getLocationId, setLocationId } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js';
 import { getUser } from '../auth.js';
 import { t, getWeekdays } from '../i18n.js';
@@ -8,6 +8,8 @@ import { tenantType } from '../tenant.js';
 let currentDate = new Date();
 let sessions = [];
 let packages = [];
+let locations = [];
+let selectedLocationId = null;
 const user = getUser();
 
 function toDateStr(d) {
@@ -16,19 +18,57 @@ function toDateStr(d) {
 
 export async function renderSchedule(container) {
   container.innerHTML = `
+    <div id="locationFilter" style="padding:0.5rem 1rem;border-bottom:1px solid var(--gray-100)"></div>
     <div class="day-selector" id="daySelector"></div>
     <div id="scheduleList" class="sessions-list"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
+  await loadLocations();
   if (tenantType !== 'BeautySalon') await loadPackages();
+  renderLocationFilter();
   renderDaySelector();
   await loadSessions();
+}
+
+async function loadLocations() {
+  try {
+    locations = await api.get('/locations');
+  } catch (e) { 
+    locations = []; 
+  }
 }
 
 async function loadPackages() {
   try {
     packages = await api.get(`/students/${user.id}/packages`);
   } catch (e) { packages = []; }
+}
+
+function renderLocationFilter() {
+  const container = document.getElementById('locationFilter');
+  
+  if (locations.length <= 1) {
+    container.style.display = 'none';
+    return;
+  }
+
+  selectedLocationId = getLocationId();
+  
+  container.innerHTML = `
+    <select class="form-control" id="locationSelect" style="font-size:var(--font-size-sm)">
+      <option value="">📍 Todos os locais</option>
+      ${locations.map(l => `
+        <option value="${l.id}" ${selectedLocationId === l.id ? 'selected' : ''}>📍 ${l.name}</option>
+      `).join('')}
+    </select>
+  `;
+
+  document.getElementById('locationSelect').addEventListener('change', async (e) => {
+    const newLocationId = e.target.value || null;
+    selectedLocationId = newLocationId;
+    setLocationId(newLocationId);
+    await loadSessions();
+  });
 }
 
 function renderDaySelector() {
@@ -91,6 +131,7 @@ async function loadSessions() {
       const bookingId = bookingBySession[s.id] ?? null;
       const isFull = s.slotsAvailable <= 0;
       const isCancelled = s.status === 'Cancelled';
+      const loc = locations.find(l => l.id === s.locationId);
       return `
         <div class="session-item ${isFull && !isBooked ? 'full' : ''} ${isBooked ? 'booked' : ''} ${isCancelled ? 'cancelled' : ''}"
              onclick="window._openSession('${s.id}', ${isBooked}, ${isFull}, '${bookingId}')">
@@ -104,6 +145,7 @@ async function loadSessions() {
             <div class="session-meta">
               ${s.instructorName ? `<span>👤 ${s.instructorName}</span>` : ''}
               <span>${modalityLabels[s.modalityType] ?? ''}</span>
+              ${loc ? `<span>📍 ${loc.name}</span>` : ''}
             </div>
           </div>
           <div class="session-slots">
@@ -130,6 +172,7 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   trackEvent('view_class', { class_type: session.classTypeName });
 
   const isBeautySalon = tenantType === 'BeautySalon';
+  const loc = locations.find(l => l.id === session.locationId);
 
   // Get available package items for this class type (gym only)
   const items = isBeautySalon ? [] :
@@ -172,6 +215,11 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
           🕐 ${formatTime(session.startTime?.toString())} · ${session.durationMinutes}${t('schedule.duration')}
           ${session.instructorName ? `· 👤 ${session.instructorName}` : ''}
         </div>
+        ${loc ? `
+        <div style="font-size:var(--font-size-sm);color:var(--gray-500);margin-top:0.25rem">
+          📍 ${loc.name}${loc.address ? ` — ${loc.address}` : ''}
+        </div>
+        ` : ''}
         <div style="font-size:var(--font-size-sm);color:var(--gray-500);margin-top:0.25rem">
           ${session.slotsAvailable} ${t('schedule.slotsAvailable')}
         </div>

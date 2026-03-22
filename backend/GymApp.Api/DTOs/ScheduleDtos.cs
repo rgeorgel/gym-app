@@ -3,6 +3,7 @@ namespace GymApp.Api.DTOs;
 public record CreateScheduleRequest(
     Guid ClassTypeId,
     Guid? InstructorId,
+    Guid LocationId,
     int Weekday,
     TimeOnly StartTime,
     int DurationMinutes,
@@ -12,6 +13,7 @@ public record CreateScheduleRequest(
 public record UpdateScheduleRequest(
     Guid ClassTypeId,
     Guid? InstructorId,
+    Guid LocationId,
     int Weekday,
     TimeOnly StartTime,
     int DurationMinutes,
@@ -26,6 +28,7 @@ public record ScheduleResponse(
     string ClassTypeColor,
     Guid? InstructorId,
     string? InstructorName,
+    Guid LocationId,
     int Weekday,
     TimeOnly StartTime,
     int DurationMinutes,

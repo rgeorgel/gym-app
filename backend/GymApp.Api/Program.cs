@@ -154,6 +154,7 @@ app.MapBillingEndpoints();
 app.MapAbacatePayWebhook();
 app.MapSuperAdminEndpoints();
 app.MapAiAssistantEndpoints();
+app.MapLocationEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

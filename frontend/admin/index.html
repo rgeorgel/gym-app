@@ -65,6 +65,9 @@
         </div>
 
         <div class="nav-section-label" data-i18n="nav.config">Configurações</div>
+        <div class="nav-item" data-page="locations">
+          <span class="nav-icon">📍</span> <span>Locais</span>
+        </div>
         <div class="nav-item" data-page="admins">
           <span class="nav-icon">🔑</span> <span data-i18n="nav.admins">Administradores</span>
         </div>
@@ -94,6 +97,7 @@
       <header class="topbar">
         <h1 class="page-title" id="pageTitle">Dashboard</h1>
         <div style="display:flex;align-items:center;gap:0.75rem">
+          <div id="locationSelectorContainer"></div>
           <button class="btn btn-secondary btn-sm" id="btnRefresh" data-i18n="btn.refresh">↻ Atualizar</button>
         </div>
       </header>
@@ -126,12 +130,23 @@
     import { renderReferral } from '/js/admin/referral.js';
     import { trackPageView } from '/js/analytics.js';
     import { initAiAssistant } from '/js/admin/ai-assistant.js';
+    import { renderLocations, loadLocationsForSelector } from '/js/admin/locations.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
 
     const config = await loadTenantTheme();
     const isBeautySalon = config?.tenantType === 'BeautySalon';
+
+    // Load locations for the location selector
+    const { getLocationId } = await import('/js/api.js');
+    const { renderLocationSelector } = await import('/js/admin/locations.js');
+    const locations = await loadLocationsForSelector();
+    renderLocationSelector(
+      document.getElementById('locationSelectorContainer'),
+      getLocationId(),
+      () => navigateTo(currentPage)
+    );
 
     // Apply i18n to static elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -182,6 +197,7 @@
       availability: { titleKey: 'nav.availability', render: renderAvailability },
       'package-templates': { titleKey: 'nav.packageTemplates', render: renderPackageTemplates },
       instructors: { titleKey: 'nav.instructors', render: renderInstructors },
+      locations: { titleKey: 'nav.locations', render: renderLocations },
       admins: { titleKey: 'nav.admins', render: renderAdmins },
       settings: { titleKey: 'nav.settings', render: renderSettings },
       billing: { titleKey: 'nav.billing', render: renderBilling },

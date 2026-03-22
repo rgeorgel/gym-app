@@ -6,4 +6,5 @@ public interface ITenantContext
     string Slug { get; }
     bool IsResolved { get; }
     bool HasStudentAccess { get; }
+    Guid? LocationId { get; set; }
 }

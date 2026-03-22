@@ -20,5 +20,6 @@ public record BookingResponse(
     string StudentName,
     BookingStatus Status,
     DateTime? CheckedInAt,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid LocationId
 );

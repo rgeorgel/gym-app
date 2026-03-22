@@ -9,13 +9,27 @@ function getTenantSlug() {
   return parts.length >= 3 ? parts[0] : localStorage.getItem('tenant_slug');
 }
 
+function getLocationId() {
+  return localStorage.getItem('location_id') || null;
+}
+
+function setLocationId(locationId) {
+  if (locationId) {
+    localStorage.setItem('location_id', locationId);
+  } else {
+    localStorage.removeItem('location_id');
+  }
+}
+
 async function request(path, options = {}) {
   const token = getToken();
   const slug = getTenantSlug();
+  const locationId = getLocationId();
 
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   if (slug) headers['X-Tenant-Slug'] = slug;
+  if (locationId) headers['X-Location-Id'] = locationId;
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
@@ -78,4 +92,4 @@ export const api = {
   patch: (path, body) => request(path, { method: 'PATCH', body: JSON.stringify(body) }),
 };
 
-export { logout, getToken, getTenantSlug };
+export { logout, getToken, getTenantSlug, getLocationId, setLocationId };

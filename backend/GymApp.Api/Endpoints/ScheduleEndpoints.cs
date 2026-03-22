@@ -18,6 +18,7 @@ public static class ScheduleEndpoints
                 .Include(s => s.ClassType)
                 .Include(s => s.Instructor).ThenInclude(i => i!.User)
                 .Where(s => s.TenantId == tenant.TenantId && s.IsActive)
+                .Where(s => tenant.LocationId == null || s.LocationId == tenant.LocationId)
                 .OrderBy(s => s.Weekday).ThenBy(s => s.StartTime)
                 .Select(s => ToResponse(s))
                 .ToListAsync();
@@ -30,6 +31,7 @@ public static class ScheduleEndpoints
                 .Include(s => s.ClassType)
                 .Include(s => s.Instructor).ThenInclude(i => i!.User)
                 .Where(s => s.TenantId == tenant.TenantId && s.IsActive)
+                .Where(s => tenant.LocationId == null || s.LocationId == tenant.LocationId)
                 .OrderBy(s => s.Weekday).ThenBy(s => s.StartTime)
                 .ToListAsync();
 
@@ -52,11 +54,15 @@ public static class ScheduleEndpoints
 
         group.MapPost("/", async (CreateScheduleRequest req, AppDbContext db, TenantContext tenant) =>
         {
+            if (req.LocationId == Guid.Empty)
+                return Results.BadRequest("Local é obrigatório.");
+
             var schedule = new Schedule
             {
                 TenantId = tenant.TenantId,
                 ClassTypeId = req.ClassTypeId,
                 InstructorId = req.InstructorId,
+                LocationId = req.LocationId,
                 Weekday = req.Weekday,
                 StartTime = req.StartTime,
                 DurationMinutes = req.DurationMinutes,
@@ -79,6 +85,7 @@ public static class ScheduleEndpoints
 
             schedule.ClassTypeId = req.ClassTypeId;
             schedule.InstructorId = req.InstructorId;
+            schedule.LocationId = req.LocationId;
             schedule.Weekday = req.Weekday;
             schedule.StartTime = req.StartTime;
             schedule.DurationMinutes = req.DurationMinutes;
@@ -106,6 +113,7 @@ public static class ScheduleEndpoints
     private static ScheduleResponse ToResponse(Schedule s) => new(
         s.Id, s.ClassTypeId, s.ClassType.Name, s.ClassType.Color,
         s.InstructorId, s.Instructor?.User.Name,
+        s.LocationId,
         s.Weekday, s.StartTime, s.DurationMinutes, s.Capacity, s.IsActive
     );
 }

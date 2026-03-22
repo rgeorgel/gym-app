@@ -17,7 +17,8 @@ public record SessionResponse(
     int Capacity,
     int SlotsAvailable,
     SessionStatus Status,
-    int BookingsCount
+    int BookingsCount,
+    Guid LocationId
 );
 
 public record CancelSessionRequest(string? Reason);

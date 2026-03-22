@@ -38,9 +38,14 @@ public static class DashboardEndpoints
                 p.ExpiresAt <= DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
 
             // Average occupancy — last 30 days (gym sessions only, since salon sessions have capacity=1)
-            var sessionStats = await db.Sessions.AsNoTracking()
+            var sessionQuery = db.Sessions.AsNoTracking()
                 .Include(s => s.Schedule)
-                .Where(s => s.TenantId == tenant.TenantId && s.Date >= thirtyDaysAgo && s.Date < today)
+                .Where(s => s.TenantId == tenant.TenantId && s.Date >= thirtyDaysAgo && s.Date < today);
+
+            if (tenant.LocationId.HasValue)
+                sessionQuery = sessionQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var sessionStats = await sessionQuery
                 .Select(s => new
                 {
                     Capacity = s.Schedule != null ? s.Schedule.Capacity : 1,
@@ -103,11 +108,16 @@ public static class DashboardEndpoints
         group.MapGet("/today", async (AppDbContext db, TenantContext tenant) =>
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
-            var sessions = await db.Sessions.AsNoTracking()
+            var sessionsQuery = db.Sessions.AsNoTracking()
                 .Include(s => s.ClassType)
                 .Include(s => s.Schedule)
                 .Include(s => s.Bookings)
-                .Where(s => s.TenantId == tenant.TenantId && s.Date == today)
+                .Where(s => s.TenantId == tenant.TenantId && s.Date == today);
+
+            if (tenant.LocationId.HasValue)
+                sessionsQuery = sessionsQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var sessions = await sessionsQuery
                 .OrderBy(s => s.StartTime)
                 .ToListAsync();
 
@@ -133,13 +143,18 @@ public static class DashboardEndpoints
             var today = DateOnly.FromDateTime(DateTime.Today);
             var nextWeek = today.AddDays(7);
 
-            var sessions = await db.Sessions.AsNoTracking()
+            var sessionsQuery = db.Sessions.AsNoTracking()
                 .Include(s => s.ClassType)
                 .Include(s => s.Schedule)
                 .Include(s => s.Bookings)
                 .Where(s => s.TenantId == tenant.TenantId
                     && s.Date >= today && s.Date <= nextWeek
-                    && s.Status == SessionStatus.Scheduled)
+                    && s.Status == SessionStatus.Scheduled);
+
+            if (tenant.LocationId.HasValue)
+                sessionsQuery = sessionsQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var sessions = await sessionsQuery
                 .OrderBy(s => s.Date).ThenBy(s => s.StartTime)
                 .ToListAsync();
 
