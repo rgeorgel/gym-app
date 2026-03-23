@@ -299,6 +299,25 @@ footer a:hover { color: var(--brand); }
 <section class="timeline-section">
   <div class="container">
 
+    <!-- 23 Mar 2026 — Fix login loop -->
+    <div class="release">
+      <div class="release-date">
+        <div class="release-date-label">23 Mar 2026</div>
+      </div>
+      <div class="release-dot"></div>
+      <div class="release-content">
+        <div class="release-version">Correção</div>
+        <div class="release-title">Login sem loops de redirecionamento</div>
+        <div class="changes">
+          <div class="change">
+            <span class="change-badge badge-fix">Fix</span>
+            <div class="change-text"><strong>Sessão apagada ao abrir o login</strong> — ao acessar a página de login, qualquer sessão anterior é encerrada automaticamente. Isso resolve o loop que ocorria quando um admin tentava acessar o catálogo e era redirecionado de volta ao painel em vez de ver o formulário de login.</div>
+            <span class="change-audience audience-all">Todos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 22 Mar 2026 — AI Assistant -->
     <div class="release">
       <div class="release-date">
