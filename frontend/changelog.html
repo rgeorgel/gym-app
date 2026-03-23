@@ -169,9 +169,7 @@ nav {
 
 .release {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 0 40px;
-  margin-bottom: 56px;
+  grid-template-columns: 140px 40px 1fr;
   position: relative;
 }
 
@@ -179,12 +177,11 @@ nav {
 .release::before {
   content: '';
   position: absolute;
-  left: 140px; top: 10px; bottom: -56px;
+  left: 140px; top: 16px; bottom: 48px;
   width: 1px;
-  background: linear-gradient(to bottom, var(--border), transparent);
+  background: linear-gradient(to bottom, var(--border) 85%, transparent);
   transform: translateX(19px);
 }
-.release:last-child::before { display: none; }
 
 /* date column */
 .release-date {
@@ -196,19 +193,20 @@ nav {
   white-space: nowrap;
 }
 
-/* dot */
+/* dot — grid item, not absolute */
 .release-dot {
-  position: absolute;
-  left: 140px; top: 6px;
   width: 10px; height: 10px; border-radius: 50%;
   background: var(--brand);
   box-shadow: 0 0 0 3px var(--brand-light), 0 0 0 4px rgba(217,70,239,0.2);
-  transform: translateX(15px);
+  margin-top: 6px;
+  justify-self: center;
+  align-self: start;
   z-index: 1;
 }
 
 /* content column */
-.release-content { padding-left: 20px; }
+.release-content { padding-left: 20px; padding-bottom: 48px; }
+.release-content:last-child { padding-bottom: 0; }
 
 .release-version {
   display: inline-block;
@@ -298,9 +296,9 @@ footer a:hover { color: var(--brand); }
 <!-- TIMELINE -->
 <section class="timeline-section">
   <div class="container">
-
-    <!-- 23 Mar 2026 — Fix login loop -->
     <div class="release">
+
+      <!-- 23 Mar 2026 — Fix login loop -->
       <div class="release-date">
         <div class="release-date-label">23 Mar 2026</div>
       </div>
@@ -316,10 +314,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 22 Mar 2026 — AI Assistant -->
-    <div class="release">
+      <!-- 22 Mar 2026 — AI Assistant -->
       <div class="release-date">
         <div class="release-date-label">22 Mar 2026</div>
       </div>
@@ -355,10 +351,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 22 Mar 2026 — Multi-location -->
-    <div class="release">
+      <!-- 22 Mar 2026 — Multi-location -->
       <div class="release-date">
         <div class="release-date-label">22 Mar 2026</div>
       </div>
@@ -379,10 +373,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 21 Mar 2026 — Referral -->
-    <div class="release">
+      <!-- 21 Mar 2026 — Referral -->
       <div class="release-date">
         <div class="release-date-label">21 Mar 2026</div>
       </div>
@@ -408,10 +400,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 21 Mar 2026 -->
-    <div class="release">
+      <!-- 21 Mar 2026 — Category + no-shows -->
       <div class="release-date">
         <div class="release-date-label">21 Mar 2026</div>
       </div>
@@ -437,10 +427,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 20 Mar 2026 -->
-    <div class="release">
+      <!-- 20 Mar 2026 -->
       <div class="release-date">
         <div class="release-date-label">20 Mar 2026</div>
       </div>
@@ -471,10 +459,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 18 Mar 2026 -->
-    <div class="release">
+      <!-- 18 Mar 2026 -->
       <div class="release-date">
         <div class="release-date-label">18 Mar 2026</div>
       </div>
@@ -500,10 +486,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 17 Mar 2026 -->
-    <div class="release">
+      <!-- 17 Mar 2026 -->
       <div class="release-date">
         <div class="release-date-label">17 Mar 2026</div>
       </div>
@@ -519,8 +503,8 @@ footer a:hover { color: var(--brand); }
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 </section>
 
