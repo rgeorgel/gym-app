@@ -4,6 +4,7 @@
   <!-- Main landing (choice page) -->
   <url>
     <loc>https://www.agendofy.com/</loc>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,6 +12,7 @@
   <!-- Gym landing -->
   <url>
     <loc>https://www.agendofy.com/landing.html</loc>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -18,8 +20,17 @@
   <!-- Salon landing -->
   <url>
     <loc>https://www.agendofy.com/landing-salao.html</loc>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+
+  <!-- Changelog / product updates -->
+  <url>
+    <loc>https://www.agendofy.com/changelog.html</loc>
+    <lastmod>2026-03-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
 </urlset>

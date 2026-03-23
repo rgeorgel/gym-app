@@ -1,7 +1,7 @@
 {
   "name": "Agendofy",
-  "short_name": "GymApp",
-  "description": "Sistema de agendamento para academias",
+  "short_name": "Agendofy",
+  "description": "Agendamento inteligente para academias e salões de beleza",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a2e",
