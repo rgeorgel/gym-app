@@ -27,40 +27,32 @@ async function loadLocations() {
       return;
     }
     card.innerHTML = `
-      <div class="table-wrapper">
-        <table>
-          <thead><tr>
-            <th>Nome</th>
-            <th>Endereço</th>
-            <th>Telefone</th>
-            <th>Tipo</th>
-            <th></th>
-          </tr></thead>
-          <tbody>
-            ${locations.map(loc => `
-              <tr>
-                <td class="font-medium">${loc.name}</td>
-                <td style="color:var(--text-muted)">${loc.address ?? '—'}</td>
-                <td>${loc.phone ?? '—'}</td>
-                <td>
-                  ${loc.isMain 
-                    ? '<span class="badge badge-success">Matriz</span>' 
-                    : '<span class="badge badge-gray">Filial</span>'}
-                </td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="window._editLocation('${loc.id}')">Editar</button>
-                  ${locations.length > 1 ? `
-                    <button class="btn btn-danger btn-sm" style="margin-left:0.25rem" onclick="window._deleteLocation('${loc.id}')">Excluir</button>
-                  ` : ''}
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+      <div class="simple-list">
+        ${locations.map(loc => `
+          <div class="simple-list-item">
+            <div class="simple-list-info">
+              <div class="simple-list-name">
+                ${loc.name}
+                ${loc.isMain ? '<span class="badge badge-success" style="margin-left:0.375rem">Matriz</span>' : '<span class="badge badge-gray" style="margin-left:0.375rem">Filial</span>'}
+              </div>
+              <div class="simple-list-sub">
+                ${[loc.address, loc.phone].filter(Boolean).join(' · ') || '—'}
+              </div>
+            </div>
+            <div class="simple-list-actions">
+              <button class="btn btn-secondary btn-sm btn-edit-loc" data-id="${loc.id}">Editar</button>
+              ${locations.length > 1 ? `<button class="btn btn-danger btn-sm btn-del-loc" data-id="${loc.id}">Excluir</button>` : ''}
+            </div>
+          </div>
+        `).join('')}
       </div>
     `;
-    window._editLocation = (id) => openLocationModal(locations.find(l => l.id === id));
-    window._deleteLocation = (id) => deleteLocation(id);
+    card.querySelectorAll('.btn-edit-loc').forEach(btn => {
+      btn.addEventListener('click', () => openLocationModal(locations.find(l => l.id === btn.dataset.id)));
+    });
+    card.querySelectorAll('.btn-del-loc').forEach(btn => {
+      btn.addEventListener('click', () => deleteLocation(btn.dataset.id));
+    });
   } catch (e) {
     showToast('Erro: ' + e.message, 'error');
   }

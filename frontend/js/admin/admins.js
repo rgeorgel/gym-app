@@ -12,22 +12,7 @@ export async function renderAdmins(container) {
       <span style="color:var(--gray-500);font-size:var(--font-size-sm);flex:1">${t('admins.none')}</span>
       <button class="btn btn-primary" id="btnNewAdmin">${t('admins.new')}</button>
     </div>
-    <div class="card">
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>${t('field.name')}</th>
-              <th>${t('field.email')}</th>
-              <th>${t('field.status')}</th>
-              <th>${t('admins.col.createdAt')}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="adminsTbody"><tr><td colspan="5"><div class="loading-center"><span class="spinner"></span></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
+    <div id="adminsListContainer"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
   await loadAdmins();
@@ -37,38 +22,44 @@ export async function renderAdmins(container) {
 async function loadAdmins() {
   try {
     allAdmins = await api.get('/admins');
-    renderTable(allAdmins);
+    renderList(allAdmins);
   } catch (e) {
     showToast(t('error.prefix') + e.message, 'error');
   }
 }
 
-function renderTable(admins) {
-  const tbody = document.getElementById('adminsTbody');
-  if (!tbody) return;
+function renderList(admins) {
+  const container = document.getElementById('adminsListContainer');
+  if (!container) return;
   if (!admins.length) {
-    tbody.innerHTML = `<tr><td colspan="5">${emptyState('👤', t('admins.none'))}</td></tr>`;
+    container.innerHTML = `<div class="card card-body">${emptyState('👤', t('admins.none'))}</div>`;
     return;
   }
-  tbody.innerHTML = admins.map(a => {
-    const isSelf = a.id === currentUser?.id;
-    return `
-      <tr>
-        <td>
-          <div class="font-medium">${a.name}</div>
-          ${isSelf ? `<span class="badge badge-gray" style="font-size:0.7rem">você</span>` : ''}
-        </td>
-        <td class="text-sm text-muted">${a.email}</td>
-        <td>${statusBadge(a.status)}</td>
-        <td class="text-sm text-muted">${formatDate(a.createdAt)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick="window._editAdmin('${a.id}')">${t('btn.edit')}</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-
-  window._editAdmin = (id) => openAdminModal(allAdmins.find(a => a.id === id));
+  container.innerHTML = `
+    <div class="simple-list">
+      ${admins.map(a => {
+        const isSelf = a.id === currentUser?.id;
+        return `
+          <div class="simple-list-item">
+            <div class="simple-list-info">
+              <div class="simple-list-name">
+                ${a.name}
+                ${isSelf ? `<span class="badge badge-gray" style="font-size:0.7rem;margin-left:0.375rem">você</span>` : ''}
+              </div>
+              <div class="simple-list-sub">${a.email} · ${formatDate(a.createdAt)}</div>
+            </div>
+            <div class="simple-list-actions">
+              ${statusBadge(a.status)}
+              <button class="btn btn-secondary btn-sm btn-edit-admin" data-id="${a.id}">${t('btn.edit')}</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  container.querySelectorAll('.btn-edit-admin').forEach(btn => {
+    btn.addEventListener('click', () => openAdminModal(allAdmins.find(a => a.id === btn.dataset.id)));
+  });
 }
 
 function openAdminModal(admin = null) {

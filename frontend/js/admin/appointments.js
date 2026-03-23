@@ -10,20 +10,25 @@ export async function renderAppointments(container) {
   let currentDate = new Date();
 
   container.innerHTML = `
-    <div class="filters-bar">
-      <div class="view-toggle" style="display:flex;gap:0;margin-right:1rem">
-        <button class="btn btn-sm btn-toggle-view active" data-view="day">${t('appointments.view.day')}</button>
-        <button class="btn btn-sm btn-toggle-view" data-view="week">${t('appointments.view.week')}</button>
-        <button class="btn btn-sm btn-toggle-view" data-view="month">${t('appointments.view.month')}</button>
+    <div class="appts-toolbar">
+      <div class="appts-toolbar-row appts-toolbar-row--nav">
+        <div class="view-toggle">
+          <button class="btn btn-sm btn-toggle-view active" data-view="day">${t('appointments.view.day')}</button>
+          <button class="btn btn-sm btn-toggle-view" data-view="week">${t('appointments.view.week')}</button>
+          <button class="btn btn-sm btn-toggle-view" data-view="month">${t('appointments.view.month')}</button>
+        </div>
+        <div class="appts-nav">
+          <button class="btn btn-sm btn-secondary" id="btnToday">${t('appointments.today')}</button>
+          <button class="btn btn-sm btn-secondary appts-nav-arrow" id="btnPrev">‹</button>
+          <span id="currentPeriod" class="appts-period"></span>
+          <button class="btn btn-sm btn-secondary appts-nav-arrow" id="btnNext">›</button>
+        </div>
       </div>
-      <button class="btn btn-sm btn-secondary" id="btnToday" style="margin-right:0.5rem">${t('appointments.today')}</button>
-      <button class="btn btn-sm btn-secondary" id="btnPrev" style="padding:0.25rem 0.5rem">‹</button>
-      <span id="currentPeriod" style="min-width:160px;text-align:center;font-weight:500;padding:0 0.5rem;align-self:center"></span>
-      <button class="btn btn-sm btn-secondary" id="btnNext" style="padding:0.25rem 0.5rem">›</button>
-      <label class="form-label" style="margin:0 0 0 1rem">${t('appointments.date')}</label>
-      <input class="form-control" id="apptDate" type="date" value="${today}" style="width:160px">
-      <button class="btn btn-secondary" id="btnLoadAppts" style="margin-left:0.5rem">${t('btn.load')}</button>
-      <button class="btn btn-primary" id="btnNewAppt" style="margin-left:auto">＋ Novo Agendamento</button>
+      <div class="appts-toolbar-row appts-toolbar-row--date" id="dateRow">
+        <input class="form-control appts-date-input" id="apptDate" type="date" value="${today}">
+        <button class="btn btn-secondary btn-sm" id="btnLoadAppts">${t('btn.load')}</button>
+        <button class="btn btn-primary btn-new-appt" id="btnNewAppt">＋ ${t('appointments.new') || 'Novo Agendamento'}</button>
+      </div>
     </div>
     <div id="apptsContent"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
@@ -33,18 +38,18 @@ export async function renderAppointments(container) {
     const m = currentDate.getMonth();
     const y = currentDate.getFullYear();
     const d = currentDate.getDate();
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    
+    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
     if (currentView === 'day') {
       const dow = dayNames[currentDate.getDay()];
-      periodEl.textContent = `${dow}, ${monthNames[m]} ${d}, ${y}`;
+      periodEl.textContent = `${dow}, ${d} ${monthNames[m]}`;
     } else if (currentView === 'week') {
       const startOfWeek = new Date(currentDate);
       startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
-      periodEl.textContent = `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}, ${y}`;
+      periodEl.textContent = `${startOfWeek.getDate()} ${monthNames[startOfWeek.getMonth()]} – ${endOfWeek.getDate()} ${monthNames[endOfWeek.getMonth()]}`;
     } else {
       periodEl.textContent = `${monthNames[m]} ${y}`;
     }
@@ -89,40 +94,44 @@ export async function renderAppointments(container) {
       container.innerHTML = emptyState(t('appointments.none'));
       return;
     }
-    container.innerHTML = `
-      <table class="data-table">
-        <thead><tr>
-          <th>${t('appointments.col.time')}</th>
-          <th>${t('appointments.col.service')}</th>
-          <th>${t('appointments.col.client')}</th>
-          <th>${t('appointments.col.phone')}</th>
-          <th>${t('appointments.col.price')}</th>
-          <th>${t('appointments.col.status')}</th>
-          <th></th>
-        </tr></thead>
-        <tbody id="apptsBody"></tbody>
-      </table>
-    `;
-    const tbody = document.getElementById('apptsBody');
+
+    container.innerHTML = `<div class="appt-list"></div>`;
+    const list = container.querySelector('.appt-list');
+
     appts.forEach(a => {
       const priceStr = a.servicePrice != null
         ? `R$ ${Number(a.servicePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-        : '—';
+        : null;
       const canCheckin = a.status === 'Confirmed';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${formatTime(a.startTime)} <small style="color:var(--text-muted)">${a.durationMinutes}min</small></td>
-        <td><span class="color-dot" style="background:${a.serviceColor}"></span> ${a.serviceName}</td>
-        <td>${a.clientName}</td>
-        <td>${a.clientPhone ? `<a href="tel:${a.clientPhone}">${a.clientPhone}</a>` : '—'}</td>
-        <td>${priceStr}</td>
-        <td>${statusBadge(a.status)}</td>
-        <td>${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}</td>
+
+      const card = document.createElement('div');
+      card.className = 'appt-card';
+      card.innerHTML = `
+        <div class="appt-card-time">
+          <div class="appt-card-hour">${formatTime(a.startTime)}</div>
+          <div class="appt-card-duration">${a.durationMinutes}min</div>
+        </div>
+        <div class="appt-card-body">
+          <div class="appt-card-client">${a.clientName}</div>
+          <div class="appt-card-service">
+            <span class="color-dot" style="background:${a.serviceColor ?? '#888'}"></span>
+            ${a.serviceName}
+          </div>
+          ${a.clientPhone || priceStr ? `
+          <div class="appt-card-meta">
+            ${a.clientPhone ? `<a class="appt-card-phone" href="tel:${a.clientPhone}">📞 ${a.clientPhone}</a>` : ''}
+            ${priceStr ? `<span class="appt-card-price">${priceStr}</span>` : ''}
+          </div>` : ''}
+        </div>
+        <div class="appt-card-actions">
+          ${statusBadge(a.status)}
+          ${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}
+        </div>
       `;
-      tbody.appendChild(tr);
+      list.appendChild(card);
     });
 
-    tbody.querySelectorAll('.btn-checkin').forEach(btn => {
+    container.querySelectorAll('.btn-checkin').forEach(btn => {
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try {
@@ -138,7 +147,7 @@ export async function renderAppointments(container) {
   };
 
   const renderWeekView = (container, appts, weekStart) => {
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     const hours = [];
     for (let h = 6; h <= 21; h++) hours.push(h);
 
@@ -150,20 +159,17 @@ export async function renderAppointments(container) {
     }
 
     appts.forEach(a => {
-      const sessionDate = a.date;
-      if (apptsByDay[sessionDate]) {
-        apptsByDay[sessionDate].push(a);
-      }
+      if (apptsByDay[a.date]) apptsByDay[a.date].push(a);
     });
 
     const todayStr = toDateStr(new Date());
 
     container.innerHTML = `
       <div class="calendar-week" style="overflow-x:auto">
-        <table class="calendar-week-table" style="min-width:700px;width:100%;border-collapse:collapse;font-size:0.85rem">
+        <table class="calendar-week-table" style="min-width:600px;width:100%;border-collapse:collapse;font-size:0.85rem">
           <thead>
             <tr>
-              <th style="width:50px;background:var(--gray-50)"></th>
+              <th style="width:48px;background:var(--gray-50)"></th>
               ${dayNames.map((d, i) => {
                 const dayDate = new Date(weekStart);
                 dayDate.setDate(weekStart.getDate() + i);
@@ -180,13 +186,10 @@ export async function renderAppointments(container) {
                   const dayDate = new Date(weekStart);
                   dayDate.setDate(weekStart.getDate() + dayIdx);
                   const dateStr = toDateStr(dayDate);
-                  const dayAppts = (apptsByDay[dateStr] || []).filter(a => {
-                    const hour = parseInt(a.startTime.substring(0, 2));
-                    return hour === h;
-                  });
-                  return `<td style="padding:0.25rem;vertical-align:top;min-height:40px;border:1px solid var(--gray-100);background:var(--gray-50)">
+                  const dayAppts = (apptsByDay[dateStr] || []).filter(a => parseInt(a.startTime) === h);
+                  return `<td style="padding:0.25rem;vertical-align:top;min-height:40px;border:1px solid var(--gray-100);background:var(--gray-50)" data-date="${dateStr}">
                     ${dayAppts.map(a => `
-                      <div class="calendar-event" style="background:${a.serviceColor};color:white;padding:2px 4px;border-radius:3px;font-size:0.7rem;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${a.serviceName} - ${a.clientName}">
+                      <div class="calendar-event" style="background:${a.serviceColor};color:white;padding:2px 4px;border-radius:3px;font-size:0.7rem;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" data-date="${dateStr}" title="${a.serviceName} - ${a.clientName}">
                         ${formatTime(a.startTime)} ${a.clientName}
                       </div>
                     `).join('')}
@@ -201,10 +204,11 @@ export async function renderAppointments(container) {
 
     container.querySelectorAll('.calendar-event').forEach(el => {
       el.addEventListener('click', () => {
-        const dateInput = document.getElementById('apptDate');
-        const dateStr = el.closest('td').cellIndex > 0 ? toDateStr(new Date(weekStart.getTime() + (el.closest('td').cellIndex - 1) * 86400000)) : toDateStr(weekStart);
-        dateInput.value = dateStr;
-        currentDate = new Date(weekStart.getTime() + (el.closest('td').cellIndex - 1) * 86400000);
+        const dateStr = el.dataset.date;
+        if (!dateStr) return;
+        document.getElementById('apptDate').value = dateStr;
+        const [y, m, d] = dateStr.split('-').map(Number);
+        currentDate = new Date(y, m - 1, d);
         currentView = 'day';
         updateViewButtons();
         load();
@@ -222,12 +226,11 @@ export async function renderAppointments(container) {
 
     const apptsByDay = {};
     appts.forEach(a => {
-      const sessionDate = a.date;
-      if (!apptsByDay[sessionDate]) apptsByDay[sessionDate] = [];
-      apptsByDay[sessionDate].push(a);
+      if (!apptsByDay[a.date]) apptsByDay[a.date] = [];
+      apptsByDay[a.date].push(a);
     });
 
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     const todayStr = toDateStr(new Date());
 
     let cells = '';
@@ -242,32 +245,29 @@ export async function renderAppointments(container) {
           const currentDateStr = toDateStr(new Date(year, month, day));
           const isToday = currentDateStr === todayStr;
           const dayAppts = apptsByDay[currentDateStr] || [];
-          const isCurrentMonth = true;
           cells += `
-            <td class="calendar-month-cell ${isToday ? 'today' : ''}" style="vertical-align:top;min-height:80px;padding:0.25rem;border:1px solid var(--gray-200);cursor:pointer;background:${isToday ? 'rgba(var(--brand-primary-rgb),0.1)' : 'white'}">
-              <div style="font-weight:500;font-size:0.85rem;margin-bottom:0.25rem;color:${isCurrentMonth ? 'inherit' : 'var(--gray-400)'}">${day}</div>
+            <td class="calendar-month-cell ${isToday ? 'today' : ''}" data-date="${currentDateStr}" style="vertical-align:top;min-height:80px;padding:0.25rem;border:1px solid var(--gray-200);cursor:pointer;background:${isToday ? 'rgba(0,123,255,0.08)' : 'white'}">
+              <div style="font-weight:500;font-size:0.85rem;margin-bottom:0.25rem">${day}</div>
               ${dayAppts.slice(0, 3).map(a => `
                 <div class="calendar-event" style="background:${a.serviceColor};color:white;padding:1px 3px;border-radius:2px;font-size:0.65rem;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   ${formatTime(a.startTime)} ${a.clientName}
                 </div>
               `).join('')}
-              ${dayAppts.length > 3 ? `<div style="font-size:0.65rem;color:var(--gray-500)">+${dayAppts.length - 3} ${t('appointments.appointments')}</div>` : ''}
+              ${dayAppts.length > 3 ? `<div style="font-size:0.65rem;color:var(--gray-500)">+${dayAppts.length - 3} mais</div>` : ''}
             </td>
           `;
           day++;
         }
       }
       cells += '</tr>';
-      if (day > daysInMonth && week >= Math.ceil((startDayOfWeek + daysInMonth) / 7) - 1) break;
+      if (day > daysInMonth) break;
     }
 
     container.innerHTML = `
       <div class="calendar-month" style="overflow-x:auto">
         <table class="calendar-month-table" style="width:100%;border-collapse:collapse;font-size:0.85rem">
           <thead>
-            <tr>
-              ${dayNames.map(d => `<th style="padding:0.5rem;text-align:center;background:var(--gray-50);font-weight:500">${d}</th>`).join('')}
-            </tr>
+            <tr>${dayNames.map(d => `<th style="padding:0.5rem;text-align:center;background:var(--gray-50);font-weight:500">${d}</th>`).join('')}</tr>
           </thead>
           <tbody>${cells}</tbody>
         </table>
@@ -276,15 +276,14 @@ export async function renderAppointments(container) {
 
     container.querySelectorAll('.calendar-month-cell').forEach(cell => {
       cell.addEventListener('click', () => {
-        const dayNum = cell.querySelector('div')?.textContent;
-        if (dayNum && cell.children.length > 1) {
-          const dateStr = toDateStr(new Date(year, month, parseInt(dayNum)));
-          document.getElementById('apptDate').value = dateStr;
-          currentDate = new Date(year, month, parseInt(dayNum));
-          currentView = 'day';
-          updateViewButtons();
-          load();
-        }
+        const dateStr = cell.dataset.date;
+        if (!dateStr) return;
+        document.getElementById('apptDate').value = dateStr;
+        const [y, m, d] = dateStr.split('-').map(Number);
+        currentDate = new Date(y, m - 1, d);
+        currentView = 'day';
+        updateViewButtons();
+        load();
       });
     });
   };
@@ -293,18 +292,8 @@ export async function renderAppointments(container) {
     container.querySelectorAll('.btn-toggle-view').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === currentView);
     });
-    const dateInput = document.getElementById('apptDate');
-    const dateNav = document.getElementById('btnLoadAppts');
-    const label = container.querySelector('.form-label');
-    if (currentView === 'day') {
-      dateInput.style.display = '';
-      dateNav.style.display = '';
-      label.style.display = '';
-    } else {
-      dateInput.style.display = 'none';
-      dateNav.style.display = 'none';
-      label.style.display = 'none';
-    }
+    const dateRow = document.getElementById('dateRow');
+    if (dateRow) dateRow.style.display = currentView === 'day' ? '' : 'none';
     renderPeriodLabel();
   };
 
@@ -318,6 +307,7 @@ export async function renderAppointments(container) {
 
   document.getElementById('btnToday').addEventListener('click', () => {
     currentDate = new Date();
+    document.getElementById('apptDate').value = today;
     updateViewButtons();
     load();
   });
@@ -325,8 +315,7 @@ export async function renderAppointments(container) {
   document.getElementById('btnPrev').addEventListener('click', () => {
     if (currentView === 'day') {
       currentDate.setDate(currentDate.getDate() - 1);
-      const dateStr = toDateStr(currentDate);
-      document.getElementById('apptDate').value = dateStr;
+      document.getElementById('apptDate').value = toDateStr(currentDate);
     } else if (currentView === 'week') {
       currentDate.setDate(currentDate.getDate() - 7);
     } else {
@@ -339,8 +328,7 @@ export async function renderAppointments(container) {
   document.getElementById('btnNext').addEventListener('click', () => {
     if (currentView === 'day') {
       currentDate.setDate(currentDate.getDate() + 1);
-      const dateStr = toDateStr(currentDate);
-      document.getElementById('apptDate').value = dateStr;
+      document.getElementById('apptDate').value = toDateStr(currentDate);
     } else if (currentView === 'week') {
       currentDate.setDate(currentDate.getDate() + 7);
     } else {
@@ -498,7 +486,7 @@ function openNewApptModal(onSuccess) {
       `).join('');
       slotsContainer.querySelectorAll('.btn-slot-pick').forEach(btn => {
         btn.addEventListener('click', () => {
-          slotsContainer.querySelectorAll('.btn-slot-pick').forEach(b => b.classList.remove('btn-primary'));
+          slotsContainer.querySelectorAll('.btn-slot-pick').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
           btn.classList.add('btn-primary');
           btn.classList.remove('btn-secondary');
           selectedSlot.value = btn.dataset.slot;
@@ -534,7 +522,6 @@ function openNewApptModal(onSuccess) {
       });
       showToast('Agendamento criado com sucesso!', 'success');
       close();
-      // Atualiza a data do filtro para a data agendada e recarrega
       const apptDate = document.getElementById('apptDate');
       if (apptDate) apptDate.value = overlay.querySelector('#apptDateNew').value;
       await onSuccess();

@@ -45,30 +45,19 @@ async function loadBlocks() {
       byDay[b.weekday].push(b);
     });
 
-    content.innerHTML = `<div class="card"><div class="table-wrapper">
-      <table class="data-table">
-        <thead><tr>
-          <th>${t('availability.weekday')}</th>
-          <th>${t('availability.from')}</th>
-          <th>${t('availability.to')}</th>
-          <th>${t('availability.instructor')}</th>
-          <th></th>
-        </tr></thead>
-        <tbody>
-          ${blocks.map(b => `
-            <tr>
-              <td class="font-medium">${weekdays[b.weekday] ?? b.weekday}</td>
-              <td>${b.startTime?.substring(0,5)}</td>
-              <td>${b.endTime?.substring(0,5)}</td>
-              <td>${b.instructorName ?? '—'}</td>
-              <td>
-                <button class="btn btn-sm btn-danger btn-del" data-id="${b.id}">${t('btn.delete')}</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div></div>`;
+    content.innerHTML = `
+      <div class="avail-list">
+        ${blocks.map(b => `
+          <div class="avail-card">
+            <div class="avail-card-day">${weekdays[b.weekday] ?? b.weekday}</div>
+            <div class="avail-card-time">
+              <span class="avail-time-range">⏰ ${b.startTime?.substring(0,5)} – ${b.endTime?.substring(0,5)}</span>
+              ${b.instructorName ? `<span class="avail-instructor">👤 ${b.instructorName}</span>` : ''}
+            </div>
+            <button class="btn btn-sm btn-danger btn-del" data-id="${b.id}">${t('btn.delete')}</button>
+          </div>
+        `).join('')}
+      </div>`;
 
     content.querySelectorAll('.btn-del').forEach(btn => {
       btn.addEventListener('click', async () => {

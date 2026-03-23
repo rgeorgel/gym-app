@@ -17,7 +17,7 @@ export async function renderSalonDashboard(container) {
     container.innerHTML = `
       ${renderTodayCard(today)}
       ${renderKpis(stats)}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+      <div class="dashboard-2col">
         ${renderWeeklyChart(weekly)}
         ${renderTopServices(topServices)}
       </div>

@@ -34,34 +34,36 @@ async function loadClassTypes() {
       return;
     }
     card.innerHTML = `
-      <div class="table-wrapper">
-        <table>
-          <thead><tr>
-            <th>${t('field.color')}</th>
-            <th>${isSalon ? 'Serviço' : t('field.name')}</th>
-            ${isSalon ? '<th>Categoria</th>' : `<th>${t('classTypes.col.modality')}</th>`}
-            <th>${t('classTypes.col.price')}</th>
-            <th>${t('field.status')}</th>
-            <th></th>
-          </tr></thead>
-          <tbody>
-            ${types.map(ct => `
-              <tr>
-                <td><div style="width:20px;height:20px;background:${ct.color};border-radius:4px"></div></td>
-                <td class="font-medium">${ct.name}</td>
-                ${isSalon
-                  ? `<td style="color:var(--text-muted);font-size:0.85rem">${ct.categoryName ?? '—'}</td>`
-                  : `<td>${{ Group: t('classTypes.type.group'), Individual: t('classTypes.type.individual'), Pair: t('classTypes.type.pair') }[ct.modalityType] ?? ct.modalityType}</td>`}
-                <td>${ct.price != null ? `R$ ${Number(ct.price).toFixed(2).replace('.', ',')}` : '—'}</td>
-                <td><span class="badge ${ct.isActive ? 'badge-success' : 'badge-gray'}">${ct.isActive ? t('status.active') : t('status.inactive')}</span></td>
-                <td><button class="btn btn-secondary btn-sm" onclick="window._editClassType('${ct.id}')">${t('btn.edit')}</button></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+      <div class="ct-list">
+        ${types.map(ct => {
+          const modalityMap = { Group: t('classTypes.type.group'), Individual: t('classTypes.type.individual'), Pair: t('classTypes.type.pair') };
+          const subtitle = isSalon
+            ? (ct.categoryName ?? '—')
+            : modalityMap[ct.modalityType] ?? ct.modalityType;
+          const priceStr = ct.price != null
+            ? `R$ ${Number(ct.price).toFixed(2).replace('.', ',')}`
+            : '—';
+          const duration = ct.durationMinutes ? ` · ${ct.durationMinutes}min` : '';
+          return `
+            <div class="ct-card">
+              <div class="ct-card-color" style="background:${ct.color}"></div>
+              <div class="ct-card-body">
+                <div class="ct-card-name">${ct.name}</div>
+                <div class="ct-card-sub">${subtitle}${duration}</div>
+              </div>
+              <div class="ct-card-right">
+                <span class="badge ${ct.isActive ? 'badge-success' : 'badge-gray'}">${ct.isActive ? t('status.active') : t('status.inactive')}</span>
+                <span class="ct-card-price">${priceStr}</span>
+                <button class="btn btn-secondary btn-sm btn-edit-ct" data-id="${ct.id}">${t('btn.edit')}</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
       </div>
     `;
-    window._editClassType = (id) => openClassTypeModal(types.find(ct => ct.id === id));
+    card.querySelectorAll('.btn-edit-ct').forEach(btn => {
+      btn.addEventListener('click', () => openClassTypeModal(types.find(ct => ct.id === btn.dataset.id)));
+    });
   } catch (e) {
     showToast('Erro: ' + e.message, 'error');
   }
@@ -194,36 +196,36 @@ async function loadCategoriesInModal() {
       return;
     }
     body.innerHTML = `
-      <div class="table-wrapper">
-        <table>
-          <thead><tr><th>Nome</th><th>Ordem</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            ${cats.map(c => `
-              <tr>
-                <td class="font-medium">${c.name}</td>
-                <td style="color:var(--text-muted)">${c.sortOrder}</td>
-                <td><span class="badge ${c.isActive ? 'badge-success' : 'badge-gray'}">${c.isActive ? 'Ativa' : 'Inativa'}</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="window._editCategory('${c.id}')">Editar</button>
-                  <button class="btn btn-danger btn-sm" style="margin-left:0.25rem" onclick="window._deleteCategory('${c.id}')">Excluir</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+      <div class="cat-list">
+        ${cats.map(c => `
+          <div class="cat-item">
+            <div class="cat-item-info">
+              <span class="cat-item-name">${c.name}</span>
+              <span class="badge ${c.isActive ? 'badge-success' : 'badge-gray'}">${c.isActive ? 'Ativa' : 'Inativa'}</span>
+            </div>
+            <div class="cat-item-actions">
+              <button class="btn btn-secondary btn-sm btn-edit-cat" data-id="${c.id}">Editar</button>
+              <button class="btn btn-danger btn-sm btn-del-cat" data-id="${c.id}">Excluir</button>
+            </div>
+          </div>
+        `).join('')}
       </div>
     `;
-    window._editCategory = (id) => openCategoryForm(cats.find(c => c.id === id));
-    window._deleteCategory = async (id) => {
-      if (!confirm('Excluir esta categoria? Os serviços vinculados ficarão sem categoria.')) return;
-      try {
-        await api.delete(`/service-categories/${id}`);
-        showToast('Categoria excluída', 'success');
-        await loadCategoriesInModal();
-      } catch (e) {
-        showToast('Erro: ' + e.message, 'error');
-      }
-    };
+    body.querySelectorAll('.btn-edit-cat').forEach(btn => {
+      btn.addEventListener('click', () => openCategoryForm(cats.find(c => c.id === btn.dataset.id)));
+    });
+    body.querySelectorAll('.btn-del-cat').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Excluir esta categoria? Os serviços vinculados ficarão sem categoria.')) return;
+        try {
+          await api.delete(`/service-categories/${btn.dataset.id}`);
+          showToast('Categoria excluída', 'success');
+          await loadCategoriesInModal();
+        } catch (e) {
+          showToast('Erro: ' + e.message, 'error');
+        }
+      });
+    });
   } catch (e) {
     body.innerHTML = `<p style="color:var(--text-danger)">${e.message}</p>`;
   }

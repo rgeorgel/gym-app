@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
   <div class="admin-layout">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
@@ -98,8 +99,13 @@
     <!-- Main -->
     <div class="main-content">
       <header class="topbar">
-        <h1 class="page-title" id="pageTitle">Dashboard</h1>
-        <div style="display:flex;align-items:center;gap:0.75rem">
+        <div class="topbar-left">
+          <button class="btn-hamburger" id="btnMenuToggle" aria-label="Abrir menu">
+            <span></span><span></span><span></span>
+          </button>
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="topbar-right">
           <div id="locationSelectorContainer"></div>
           <button class="btn btn-secondary btn-sm" id="btnRefresh" data-i18n="btn.refresh">↻ Atualizar</button>
         </div>
@@ -182,7 +188,7 @@
         availNav.dataset.page = 'availability';
         availNav.innerHTML = `<span class="nav-icon">🗓️</span> <span>${t('nav.availability')}</span>`;
         sessNav.insertAdjacentElement('afterend', availNav);
-        availNav.addEventListener('click', () => navigateTo('availability'));
+        availNav.addEventListener('click', () => { navigateTo('availability'); document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('visible'); });
       }
     }
 
@@ -230,8 +236,17 @@
       }
     }
 
+    // Sidebar mobile toggle
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('btnMenuToggle');
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('visible'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('visible'); }
+    hamburger.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+    overlay.addEventListener('click', closeSidebar);
+
     document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', () => navigateTo(item.dataset.page));
+      item.addEventListener('click', () => { navigateTo(item.dataset.page); closeSidebar(); });
     });
 
     document.getElementById('btnLogout').addEventListener('click', () => logout());

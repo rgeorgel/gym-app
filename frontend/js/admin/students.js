@@ -9,7 +9,7 @@ let activeQuickFilter = 'all';
 
 export async function renderStudents(container) {
   container.innerHTML = `
-    <div class="filters-bar" style="flex-wrap:wrap;gap:0.5rem">
+    <div class="filters-bar">
       <input type="text" id="studentSearch" class="search-input" placeholder="${t('students.search')}">
       <select id="studentStatus" class="form-control" style="width:auto">
         <option value="">${t('students.status.all')}</option>
@@ -27,38 +27,18 @@ export async function renderStudents(container) {
         <option value="neverBooked">${t('students.filter.neverBooked')}</option>
         <option value="suspended">${t('students.filter.suspended')}</option>
       </select>
+      <select id="studentSort" class="form-control" style="width:auto">
+        <option value="name-asc">${t('field.name')} A→Z</option>
+        <option value="name-desc">${t('field.name')} Z→A</option>
+        <option value="credits-desc">${t('students.col.credits')} ↓</option>
+        <option value="credits-asc">${t('students.col.credits')} ↑</option>
+        <option value="lastBooking-desc">${t('students.col.lastBooking')} ↓</option>
+        <option value="createdAt-desc">${t('students.col.registered')} ↓</option>
+      </select>
       <button class="btn btn-primary" id="btnNewStudent">${t('students.new')}</button>
     </div>
-    <div class="card">
-      <div class="table-wrapper">
-        <table id="studentsTable">
-          <thead>
-            <tr>
-              <th class="sortable" data-sort="name">${t('field.name')}</th>
-              <th class="sortable" data-sort="email">${t('field.email')}</th>
-              <th>${t('field.phone')}</th>
-              <th class="sortable" data-sort="status">${t('field.status')}</th>
-              <th class="sortable" data-sort="credits">${t('students.col.credits')}</th>
-              <th class="sortable" data-sort="lastBooking">${t('students.col.lastBooking')}</th>
-              <th class="sortable" data-sort="createdAt">${t('students.col.registered')}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="studentsTbody"><tr><td colspan="8"><div class="loading-center"><span class="spinner"></span></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
+    <div id="studentsListContainer"></div>
   `;
-
-  // Add sortable header styles
-  const style = document.getElementById('students-sort-style') || document.createElement('style');
-  style.id = 'students-sort-style';
-  style.textContent = `
-    #studentsTable th.sortable { cursor:pointer; user-select:none; white-space:nowrap }
-    #studentsTable th.sortable:hover { background:var(--gray-100) }
-    #studentsTable th.sort-active { color:var(--brand-primary) }
-  `;
-  document.head.appendChild(style);
 
   await loadStudents();
 
@@ -69,17 +49,10 @@ export async function renderStudents(container) {
     activeQuickFilter = e.target.value;
     applyFilters();
   });
-
-  document.getElementById('studentsTable').addEventListener('click', (e) => {
-    const th = e.target.closest('th[data-sort]');
-    if (!th) return;
-    const field = th.dataset.sort;
-    if (sortField === field) {
-      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortField = field;
-      sortDir = 'asc';
-    }
+  document.getElementById('studentSort').addEventListener('change', (e) => {
+    const [field, dir] = e.target.value.split('-');
+    sortField = field;
+    sortDir = dir;
     applyFilters();
   });
 }
@@ -104,27 +77,19 @@ function applyFilters() {
     if (status && s.status !== status) return false;
 
     switch (activeQuickFilter) {
-      case 'noCredits':
-        return s.totalRemainingCredits === 0;
-      case 'noBooking7':
-        return daysSinceLastBooking(s) >= 7;
-      case 'noBooking15':
-        return daysSinceLastBooking(s) >= 15;
-      case 'noBooking30':
-        return daysSinceLastBooking(s) >= 30;
-      case 'noBooking60':
-        return daysSinceLastBooking(s) >= 60;
-      case 'neverBooked':
-        return !s.lastBookingDate;
-      case 'suspended':
-        return s.status === 'Suspended';
+      case 'noCredits':   return s.totalRemainingCredits === 0;
+      case 'noBooking7':  return daysSinceLastBooking(s) >= 7;
+      case 'noBooking15': return daysSinceLastBooking(s) >= 15;
+      case 'noBooking30': return daysSinceLastBooking(s) >= 30;
+      case 'noBooking60': return daysSinceLastBooking(s) >= 60;
+      case 'neverBooked': return !s.lastBookingDate;
+      case 'suspended':   return s.status === 'Suspended';
     }
     return true;
   });
 
   filtered = sortStudents(filtered);
-  renderTable(filtered);
-  updateSortHeaders();
+  renderList(filtered);
 }
 
 function daysSinceLastBooking(s) {
@@ -159,56 +124,56 @@ function sortStudents(list) {
   });
 }
 
-function updateSortHeaders() {
-  document.querySelectorAll('#studentsTable th[data-sort]').forEach(th => {
-    th.classList.remove('sort-active');
-    th.textContent = th.textContent.replace(/ [↑↓]$/, '');
-    if (th.dataset.sort === sortField) {
-      th.classList.add('sort-active');
-      th.textContent += ' ' + (sortDir === 'asc' ? '↑' : '↓');
-    }
+function renderList(students) {
+  const container = document.getElementById('studentsListContainer');
+  if (!container) return;
+
+  if (!students.length) {
+    container.innerHTML = `<div class="card card-body">${emptyState('👤', t('students.none'))}</div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="student-list">${students.map(s => {
+    const creditsHtml = s.totalRemainingCredits > 0
+      ? `<span class="badge badge-success">${s.totalRemainingCredits} cred.</span>`
+      : `<span class="badge badge-gray">0 cred.</span>`;
+    const lastBooking = s.lastBookingDate
+      ? formatDate(s.lastBookingDate)
+      : t('students.lastBooking.never');
+
+    return `
+      <div class="student-card">
+        <div class="student-card-main">
+          <div class="student-card-info">
+            <div class="student-card-name">${s.name}</div>
+            <div class="student-card-contact">${s.email}${s.phone ? ` · ${s.phone}` : ''}</div>
+          </div>
+          <div class="student-card-badges">
+            ${statusBadge(s.status)}
+            ${creditsHtml}
+          </div>
+        </div>
+        <div class="student-card-footer">
+          <span class="student-card-lastbooking">📅 ${lastBooking}</span>
+          <div class="student-card-actions">
+            <button class="btn btn-secondary btn-sm btn-edit-student" data-id="${s.id}">${t('btn.edit')}</button>
+            <button class="btn btn-secondary btn-sm btn-view-packages" data-id="${s.id}" data-name="${s.name}">${t('packages.label')}</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+
+  container.querySelectorAll('.btn-edit-student').forEach(btn => {
+    btn.addEventListener('click', () => openStudentModal(allStudents.find(s => s.id === btn.dataset.id)));
+  });
+  container.querySelectorAll('.btn-view-packages').forEach(btn => {
+    btn.addEventListener('click', () => openPackagesModal(btn.dataset.id, btn.dataset.name));
   });
 }
 
-function renderTable(students) {
-  const tbody = document.getElementById('studentsTbody');
-  if (!tbody) return;
-  if (!students.length) {
-    tbody.innerHTML = `<tr><td colspan="8">${emptyState('👤', t('students.none'))}</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = students.map(s => {
-    const creditsHtml = s.totalRemainingCredits > 0
-      ? `<span class="badge badge-success">${s.totalRemainingCredits}</span>`
-      : `<span class="badge badge-gray">0</span>`;
-    const lastBookingHtml = s.lastBookingDate
-      ? formatDate(s.lastBookingDate)
-      : `<span class="text-muted">${t('students.lastBooking.never')}</span>`;
-    return `
-      <tr>
-        <td><div class="font-medium">${s.name}</div></td>
-        <td class="text-sm text-muted">${s.email}</td>
-        <td class="text-sm">${s.phone ?? '—'}</td>
-        <td>${statusBadge(s.status)}</td>
-        <td style="text-align:center">${creditsHtml}</td>
-        <td class="text-sm text-muted">${lastBookingHtml}</td>
-        <td class="text-sm text-muted">${formatDate(s.createdAt)}</td>
-        <td>
-          <div class="flex gap-2">
-            <button class="btn btn-secondary btn-sm" onclick="window._editStudent('${s.id}')">${t('btn.edit')}</button>
-            <button class="btn btn-secondary btn-sm" onclick="window._viewPackages('${s.id}', '${s.name}')">${t('packages.label')}</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join('');
-
-  window._editStudent = (id) => openStudentModal(allStudents.find(s => s.id === id));
-  window._viewPackages = (id, name) => openPackagesModal(id, name);
-}
-
 function openStudentModal(student = null) {
-  const modal = createModal({
+  createModal({
     id: 'studentModal',
     title: student ? t('students.title.edit') : t('students.title.new'),
     body: `
