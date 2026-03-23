@@ -5,6 +5,7 @@ namespace GymApp.Api.DTOs;
 public record AppointmentResponse(
     Guid BookingId,
     Guid SessionId,
+    DateOnly Date,
     TimeOnly StartTime,
     int DurationMinutes,
     string ServiceName,

@@ -492,6 +492,12 @@ export default {
   'appointments.col.price': 'Price',
   'appointments.checkin': 'Check-in',
   'appointments.checkin.success': 'Checked in!',
+  'appointments.view.day': 'Day',
+  'appointments.view.week': 'Week',
+  'appointments.view.month': 'Month',
+  'appointments.today': 'Today',
+  'appointments.noAppointments': 'No appointments',
+  'appointments.appointments': 'appointments',
 
   // Catalog (public page)
   'catalog.book': 'Book',

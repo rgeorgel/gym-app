@@ -13,11 +13,45 @@ public static class AppointmentEndpoints
         var group = app.MapGroup("/api/appointments").RequireAuthorization("AdminOrAbove");
 
         // List all bookings for a given date (appointments view for BeautySalon admin)
-        group.MapGet("/", async (DateOnly? date, AppDbContext db, TenantContext tenant) =>
+        group.MapGet("/", async (DateOnly? date, DateOnly? from, DateOnly? to, AppDbContext db, TenantContext tenant) =>
         {
+            // If 'from' and 'to' are provided, return range; otherwise use single date
+            if (from.HasValue && to.HasValue)
+            {
+                var bookings = await db.Bookings.AsNoTracking()
+                    .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                    .Include(b => b.Student)
+                    .Where(b =>
+                        b.Session.Date >= from.Value &&
+                        b.Session.Date <= to.Value &&
+                        b.Session.TenantId == tenant.TenantId &&
+                        b.Status != BookingStatus.Cancelled)
+                    .OrderBy(b => b.Session.Date)
+                    .ThenBy(b => b.Session.StartTime)
+                    .ThenBy(b => b.Student.Name)
+                    .Select(b => new AppointmentResponse(
+                        b.Id,
+                        b.SessionId,
+                        b.Session.Date,
+                        b.Session.StartTime,
+                        b.Session.DurationMinutes,
+                        b.Session.ClassType != null ? b.Session.ClassType.Name : "",
+                        b.Session.ClassType != null ? b.Session.ClassType.Color : "#ccc",
+                        b.Session.ClassType != null ? b.Session.ClassType.Price : null,
+                        b.StudentId,
+                        b.Student.Name,
+                        b.Student.Phone,
+                        b.Status,
+                        b.CheckedInAt,
+                        b.CreatedAt))
+                    .ToListAsync();
+
+                return Results.Ok(bookings);
+            }
+
             var day = date ?? DateOnly.FromDateTime(DateTime.Today);
 
-            var bookings = await db.Bookings.AsNoTracking()
+            var bookingsForDay = await db.Bookings.AsNoTracking()
                 .Include(b => b.Session).ThenInclude(s => s.ClassType)
                 .Include(b => b.Student)
                 .Where(b =>
@@ -29,6 +63,7 @@ public static class AppointmentEndpoints
                 .Select(b => new AppointmentResponse(
                     b.Id,
                     b.SessionId,
+                    b.Session.Date,
                     b.Session.StartTime,
                     b.Session.DurationMinutes,
                     b.Session.ClassType != null ? b.Session.ClassType.Name : "",
@@ -42,7 +77,7 @@ public static class AppointmentEndpoints
                     b.CreatedAt))
                 .ToListAsync();
 
-            return Results.Ok(bookings);
+            return Results.Ok(bookingsForDay);
         });
     }
 }

@@ -177,6 +177,50 @@
   .week-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* ─── View Toggle Buttons ─── */
+.view-toggle {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+.btn-toggle-view {
+  background: white;
+  border: none;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-toggle-view:not(:last-child) {
+  border-right: 1px solid var(--gray-300);
+}
+.btn-toggle-view:hover {
+  background: var(--gray-50);
+}
+.btn-toggle-view.active {
+  background: var(--brand-primary);
+  color: white;
+}
+
+/* ─── Calendar Views ─── */
+.calendar-week-table th,
+.calendar-week-table td {
+  border: 1px solid var(--gray-200);
+}
+.calendar-month-table th,
+.calendar-month-table td {
+  border: 1px solid var(--gray-200);
+}
+.calendar-month-cell.today {
+  background: rgba(0, 123, 255, 0.08) !important;
+}
+.calendar-event {
+  cursor: pointer;
+}
+.calendar-event:hover {
+  opacity: 0.85;
+}
+
 /* ─── AI Assistant Widget ─── */
 #ai-widget { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; }
 

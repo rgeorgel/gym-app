@@ -492,6 +492,12 @@ export default {
   'appointments.col.price': 'Valor',
   'appointments.checkin': 'Check-in',
   'appointments.checkin.success': 'Check-in realizado!',
+  'appointments.view.day': 'Dia',
+  'appointments.view.week': 'Semana',
+  'appointments.view.month': 'Mês',
+  'appointments.today': 'Hoje',
+  'appointments.noAppointments': 'Sem agendamentos',
+  'appointments.appointments': 'agendamentos',
 
   // Catalog (public page)
   'catalog.book': 'Agendar',

@@ -6,79 +6,364 @@ export async function renderAppointments(container) {
   const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const today = toDateStr(new Date());
 
+  let currentView = 'day';
+  let currentDate = new Date();
+
   container.innerHTML = `
     <div class="filters-bar">
-      <label class="form-label" style="margin:0">${t('appointments.date')}</label>
+      <div class="view-toggle" style="display:flex;gap:0;margin-right:1rem">
+        <button class="btn btn-sm btn-toggle-view active" data-view="day">${t('appointments.view.day')}</button>
+        <button class="btn btn-sm btn-toggle-view" data-view="week">${t('appointments.view.week')}</button>
+        <button class="btn btn-sm btn-toggle-view" data-view="month">${t('appointments.view.month')}</button>
+      </div>
+      <button class="btn btn-sm btn-secondary" id="btnToday" style="margin-right:0.5rem">${t('appointments.today')}</button>
+      <button class="btn btn-sm btn-secondary" id="btnPrev" style="padding:0.25rem 0.5rem">‹</button>
+      <span id="currentPeriod" style="min-width:160px;text-align:center;font-weight:500;padding:0 0.5rem;align-self:center"></span>
+      <button class="btn btn-sm btn-secondary" id="btnNext" style="padding:0.25rem 0.5rem">›</button>
+      <label class="form-label" style="margin:0 0 0 1rem">${t('appointments.date')}</label>
       <input class="form-control" id="apptDate" type="date" value="${today}" style="width:160px">
-      <button class="btn btn-secondary" id="btnLoadAppts">${t('btn.load')}</button>
+      <button class="btn btn-secondary" id="btnLoadAppts" style="margin-left:0.5rem">${t('btn.load')}</button>
       <button class="btn btn-primary" id="btnNewAppt" style="margin-left:auto">＋ Novo Agendamento</button>
     </div>
     <div id="apptsContent"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
+  const renderPeriodLabel = () => {
+    const periodEl = document.getElementById('currentPeriod');
+    const m = currentDate.getMonth();
+    const y = currentDate.getFullYear();
+    const d = currentDate.getDate();
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    
+    if (currentView === 'day') {
+      const dow = dayNames[currentDate.getDay()];
+      periodEl.textContent = `${dow}, ${monthNames[m]} ${d}, ${y}`;
+    } else if (currentView === 'week') {
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      periodEl.textContent = `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}, ${y}`;
+    } else {
+      periodEl.textContent = `${monthNames[m]} ${y}`;
+    }
+  };
+
   const load = async () => {
-    const date = document.getElementById('apptDate').value;
     const content = document.getElementById('apptsContent');
     content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
-    try {
-      const appts = await api.get(`/appointments?date=${date}`);
-      if (!appts.length) {
-        content.innerHTML = emptyState(t('appointments.none'));
-        return;
-      }
-      content.innerHTML = `
-        <table class="data-table">
-          <thead><tr>
-            <th>${t('appointments.col.time')}</th>
-            <th>${t('appointments.col.service')}</th>
-            <th>${t('appointments.col.client')}</th>
-            <th>${t('appointments.col.phone')}</th>
-            <th>${t('appointments.col.price')}</th>
-            <th>${t('appointments.col.status')}</th>
-            <th></th>
-          </tr></thead>
-          <tbody id="apptsBody"></tbody>
-        </table>
-      `;
-      const tbody = document.getElementById('apptsBody');
-      appts.forEach(a => {
-        const priceStr = a.servicePrice != null
-          ? `R$ ${Number(a.servicePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-          : '—';
-        const canCheckin = a.status === 'Confirmed';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${formatTime(a.startTime)} <small style="color:var(--text-muted)">${a.durationMinutes}min</small></td>
-          <td><span class="color-dot" style="background:${a.serviceColor}"></span> ${a.serviceName}</td>
-          <td>${a.clientName}</td>
-          <td>${a.clientPhone ? `<a href="tel:${a.clientPhone}">${a.clientPhone}</a>` : '—'}</td>
-          <td>${priceStr}</td>
-          <td>${statusBadge(a.status)}</td>
-          <td>${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}</td>
-        `;
-        tbody.appendChild(tr);
-      });
 
-      tbody.querySelectorAll('.btn-checkin').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          btn.disabled = true;
-          try {
-            await api.post(`/bookings/${btn.dataset.id}/checkin`, {});
-            showToast(t('appointments.checkin.success'));
-            await load();
-          } catch (e) {
-            showToast(e.message, 'error');
-            btn.disabled = false;
-          }
-        });
-      });
+    try {
+      let appts;
+      if (currentView === 'day') {
+        const date = document.getElementById('apptDate').value;
+        appts = await api.get(`/appointments?date=${date}`);
+        renderDayView(content, appts, date);
+      } else if (currentView === 'week') {
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+        const from = toDateStr(startOfWeek);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        const to = toDateStr(endOfWeek);
+        appts = await api.get(`/appointments?from=${from}&to=${to}`);
+        renderWeekView(content, appts, startOfWeek);
+      } else {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const from = toDateStr(firstDay);
+        const to = toDateStr(lastDay);
+        appts = await api.get(`/appointments?from=${from}&to=${to}`);
+        renderMonthView(content, appts, currentDate);
+      }
     } catch (e) {
       content.innerHTML = `<div class="empty-state"><div class="empty-state-text">${e.message}</div></div>`;
     }
   };
 
-  document.getElementById('btnLoadAppts').addEventListener('click', load);
+  const renderDayView = (container, appts, date) => {
+    if (!appts.length) {
+      container.innerHTML = emptyState(t('appointments.none'));
+      return;
+    }
+    container.innerHTML = `
+      <table class="data-table">
+        <thead><tr>
+          <th>${t('appointments.col.time')}</th>
+          <th>${t('appointments.col.service')}</th>
+          <th>${t('appointments.col.client')}</th>
+          <th>${t('appointments.col.phone')}</th>
+          <th>${t('appointments.col.price')}</th>
+          <th>${t('appointments.col.status')}</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="apptsBody"></tbody>
+      </table>
+    `;
+    const tbody = document.getElementById('apptsBody');
+    appts.forEach(a => {
+      const priceStr = a.servicePrice != null
+        ? `R$ ${Number(a.servicePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+        : '—';
+      const canCheckin = a.status === 'Confirmed';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${formatTime(a.startTime)} <small style="color:var(--text-muted)">${a.durationMinutes}min</small></td>
+        <td><span class="color-dot" style="background:${a.serviceColor}"></span> ${a.serviceName}</td>
+        <td>${a.clientName}</td>
+        <td>${a.clientPhone ? `<a href="tel:${a.clientPhone}">${a.clientPhone}</a>` : '—'}</td>
+        <td>${priceStr}</td>
+        <td>${statusBadge(a.status)}</td>
+        <td>${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('.btn-checkin').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await api.post(`/bookings/${btn.dataset.id}/checkin`, {});
+          showToast(t('appointments.checkin.success'));
+          await load();
+        } catch (e) {
+          showToast(e.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+  };
+
+  const renderWeekView = (container, appts, weekStart) => {
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const hours = [];
+    for (let h = 6; h <= 21; h++) hours.push(h);
+
+    const apptsByDay = {};
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      apptsByDay[toDateStr(d)] = [];
+    }
+
+    appts.forEach(a => {
+      const sessionDate = a.date;
+      if (apptsByDay[sessionDate]) {
+        apptsByDay[sessionDate].push(a);
+      }
+    });
+
+    const todayStr = toDateStr(new Date());
+
+    container.innerHTML = `
+      <div class="calendar-week" style="overflow-x:auto">
+        <table class="calendar-week-table" style="min-width:700px;width:100%;border-collapse:collapse;font-size:0.85rem">
+          <thead>
+            <tr>
+              <th style="width:50px;background:var(--gray-50)"></th>
+              ${dayNames.map((d, i) => {
+                const dayDate = new Date(weekStart);
+                dayDate.setDate(weekStart.getDate() + i);
+                const isToday = toDateStr(dayDate) === todayStr;
+                return `<th style="padding:0.5rem;text-align:center;background:${isToday ? 'var(--brand-primary)' : 'var(--gray-50)'};color:${isToday ? 'white' : 'inherit'};font-weight:500">${d}<br><small>${dayDate.getDate()}</small></th>`;
+              }).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${hours.map(h => `
+              <tr>
+                <td style="padding:0.25rem;text-align:center;color:var(--gray-400);font-size:0.75rem;background:var(--gray-50);border-right:1px solid var(--gray-100)">${String(h).padStart(2,'0')}:00</td>
+                ${Array(7).fill(0).map((_, dayIdx) => {
+                  const dayDate = new Date(weekStart);
+                  dayDate.setDate(weekStart.getDate() + dayIdx);
+                  const dateStr = toDateStr(dayDate);
+                  const dayAppts = (apptsByDay[dateStr] || []).filter(a => {
+                    const hour = parseInt(a.startTime.substring(0, 2));
+                    return hour === h;
+                  });
+                  return `<td style="padding:0.25rem;vertical-align:top;min-height:40px;border:1px solid var(--gray-100);background:var(--gray-50)">
+                    ${dayAppts.map(a => `
+                      <div class="calendar-event" style="background:${a.serviceColor};color:white;padding:2px 4px;border-radius:3px;font-size:0.7rem;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${a.serviceName} - ${a.clientName}">
+                        ${formatTime(a.startTime)} ${a.clientName}
+                      </div>
+                    `).join('')}
+                  </td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    container.querySelectorAll('.calendar-event').forEach(el => {
+      el.addEventListener('click', () => {
+        const dateInput = document.getElementById('apptDate');
+        const dateStr = el.closest('td').cellIndex > 0 ? toDateStr(new Date(weekStart.getTime() + (el.closest('td').cellIndex - 1) * 86400000)) : toDateStr(weekStart);
+        dateInput.value = dateStr;
+        currentDate = new Date(weekStart.getTime() + (el.closest('td').cellIndex - 1) * 86400000);
+        currentView = 'day';
+        updateViewButtons();
+        load();
+      });
+    });
+  };
+
+  const renderMonthView = (container, appts, monthDate) => {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDayOfWeek = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+
+    const apptsByDay = {};
+    appts.forEach(a => {
+      const sessionDate = a.date;
+      if (!apptsByDay[sessionDate]) apptsByDay[sessionDate] = [];
+      apptsByDay[sessionDate].push(a);
+    });
+
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const todayStr = toDateStr(new Date());
+
+    let cells = '';
+    let day = 1;
+    for (let week = 0; week < 6; week++) {
+      cells += '<tr>';
+      for (let dow = 0; dow < 7; dow++) {
+        const cellIdx = week * 7 + dow;
+        if (cellIdx < startDayOfWeek || day > daysInMonth) {
+          cells += '<td style="background:var(--gray-50)"></td>';
+        } else {
+          const currentDateStr = toDateStr(new Date(year, month, day));
+          const isToday = currentDateStr === todayStr;
+          const dayAppts = apptsByDay[currentDateStr] || [];
+          const isCurrentMonth = true;
+          cells += `
+            <td class="calendar-month-cell ${isToday ? 'today' : ''}" style="vertical-align:top;min-height:80px;padding:0.25rem;border:1px solid var(--gray-200);cursor:pointer;background:${isToday ? 'rgba(var(--brand-primary-rgb),0.1)' : 'white'}">
+              <div style="font-weight:500;font-size:0.85rem;margin-bottom:0.25rem;color:${isCurrentMonth ? 'inherit' : 'var(--gray-400)'}">${day}</div>
+              ${dayAppts.slice(0, 3).map(a => `
+                <div class="calendar-event" style="background:${a.serviceColor};color:white;padding:1px 3px;border-radius:2px;font-size:0.65rem;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  ${formatTime(a.startTime)} ${a.clientName}
+                </div>
+              `).join('')}
+              ${dayAppts.length > 3 ? `<div style="font-size:0.65rem;color:var(--gray-500)">+${dayAppts.length - 3} ${t('appointments.appointments')}</div>` : ''}
+            </td>
+          `;
+          day++;
+        }
+      }
+      cells += '</tr>';
+      if (day > daysInMonth && week >= Math.ceil((startDayOfWeek + daysInMonth) / 7) - 1) break;
+    }
+
+    container.innerHTML = `
+      <div class="calendar-month" style="overflow-x:auto">
+        <table class="calendar-month-table" style="width:100%;border-collapse:collapse;font-size:0.85rem">
+          <thead>
+            <tr>
+              ${dayNames.map(d => `<th style="padding:0.5rem;text-align:center;background:var(--gray-50);font-weight:500">${d}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>${cells}</tbody>
+        </table>
+      </div>
+    `;
+
+    container.querySelectorAll('.calendar-month-cell').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const dayNum = cell.querySelector('div')?.textContent;
+        if (dayNum && cell.children.length > 1) {
+          const dateStr = toDateStr(new Date(year, month, parseInt(dayNum)));
+          document.getElementById('apptDate').value = dateStr;
+          currentDate = new Date(year, month, parseInt(dayNum));
+          currentView = 'day';
+          updateViewButtons();
+          load();
+        }
+      });
+    });
+  };
+
+  const updateViewButtons = () => {
+    container.querySelectorAll('.btn-toggle-view').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === currentView);
+    });
+    const dateInput = document.getElementById('apptDate');
+    const dateNav = document.getElementById('btnLoadAppts');
+    const label = container.querySelector('.form-label');
+    if (currentView === 'day') {
+      dateInput.style.display = '';
+      dateNav.style.display = '';
+      label.style.display = '';
+    } else {
+      dateInput.style.display = 'none';
+      dateNav.style.display = 'none';
+      label.style.display = 'none';
+    }
+    renderPeriodLabel();
+  };
+
+  container.querySelectorAll('.btn-toggle-view').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentView = btn.dataset.view;
+      updateViewButtons();
+      load();
+    });
+  });
+
+  document.getElementById('btnToday').addEventListener('click', () => {
+    currentDate = new Date();
+    updateViewButtons();
+    load();
+  });
+
+  document.getElementById('btnPrev').addEventListener('click', () => {
+    if (currentView === 'day') {
+      currentDate.setDate(currentDate.getDate() - 1);
+      const dateStr = toDateStr(currentDate);
+      document.getElementById('apptDate').value = dateStr;
+    } else if (currentView === 'week') {
+      currentDate.setDate(currentDate.getDate() - 7);
+    } else {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+    }
+    updateViewButtons();
+    load();
+  });
+
+  document.getElementById('btnNext').addEventListener('click', () => {
+    if (currentView === 'day') {
+      currentDate.setDate(currentDate.getDate() + 1);
+      const dateStr = toDateStr(currentDate);
+      document.getElementById('apptDate').value = dateStr;
+    } else if (currentView === 'week') {
+      currentDate.setDate(currentDate.getDate() + 7);
+    } else {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+    updateViewButtons();
+    load();
+  });
+
+  document.getElementById('btnLoadAppts').addEventListener('click', () => {
+    const dateVal = document.getElementById('apptDate').value;
+    if (dateVal) {
+      const [y, m, d] = dateVal.split('-').map(Number);
+      currentDate = new Date(y, m - 1, d);
+    }
+    currentView = 'day';
+    updateViewButtons();
+    load();
+  });
+
   document.getElementById('btnNewAppt').addEventListener('click', () => openNewApptModal(load));
+
+  updateViewButtons();
   await load();
 }
 
