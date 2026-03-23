@@ -523,7 +523,7 @@ export default {
   'heatmap.insights': 'Insights',
   'heatmap.insight.busiestDay': 'Dia mais movimentado',
   'heatmap.insight.peakHour': 'Horário de pico',
-  'heatmap.insight.totalSessions': 'Total de aulas',
+  'heatmap.insight.totalSessions': 'Total de Agendamentos',
   'heatmap.insight.topSlots': 'Horários mais populares',
   'heatmap.insight.bookings': 'agendamentos',
   'heatmap.insight.occupancy': 'ocupação',
