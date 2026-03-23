@@ -422,5 +422,49 @@ public static class DashboardEndpoints
 
             return Results.Ok(result);
         });
+
+        group.MapGet("/heatmap/weekday-timeslot", async (AppDbContext db, TenantContext tenant, int? days) =>
+        {
+            var period = days ?? 90;
+            var since = DateOnly.FromDateTime(DateTime.Today.AddDays(-period));
+
+            var sessionsQuery = db.Sessions.AsNoTracking()
+                .Include(s => s.Schedule)
+                .Include(s => s.Bookings)
+                .Where(s =>
+                    s.TenantId == tenant.TenantId &&
+                    s.Date >= since &&
+                    s.Status == SessionStatus.Scheduled);
+
+            if (tenant.LocationId.HasValue)
+                sessionsQuery = sessionsQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var sessions = await sessionsQuery.ToListAsync();
+
+            var heatmapData = sessions
+                .GroupBy(s => new { Weekday = s.Date.DayOfWeek, Hour = s.StartTime.Hour })
+                .Select(g => new
+                {
+                    Weekday = (int)g.Key.Weekday,
+                    Hour = g.Key.Hour,
+                    SessionCount = g.Count(),
+                    TotalBookings = g.Sum(s => s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)),
+                    TotalCapacity = g.Sum(s => s.Schedule?.Capacity ?? 1),
+                    AvgOccupancyPct = g.Average(s =>
+                    {
+                        var capacity = s.Schedule?.Capacity ?? 1;
+                        var bookings = s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn);
+                        return capacity > 0 ? (double)bookings / capacity * 100 : 0;
+                    })
+                })
+                .ToList();
+
+            return Results.Ok(new
+            {
+                Data = heatmapData,
+                Period = period,
+                Since = since
+            });
+        });
     }
 }
