@@ -32,13 +32,14 @@ export async function initLoginPage() {
 
   if (tenantSlug) localStorage.setItem('tenant_slug', tenantSlug);
 
+  // Clear any existing session so the login page always starts fresh.
+  // This prevents loops when an admin/student is redirected here from another route.
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('user');
+
   const config = await loadTenantTheme();
   const hasTenant = !!config;
-
-  if (isLoggedIn()) {
-    redirectByRole(getUser()?.role);
-    return;
-  }
 
   // Toggle login/register — only show register link when tenant is resolved
   const toRegister = document.getElementById('toRegister');
