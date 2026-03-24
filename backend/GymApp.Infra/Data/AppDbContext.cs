@@ -23,6 +23,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AiConversation> AiConversations => Set<AiConversation>();
     public DbSet<AiMessage> AiMessages => Set<AiMessage>();
     public DbSet<Location> Locations => Set<Location>();
+    public DbSet<TimeBlock> TimeBlocks => Set<TimeBlock>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -233,6 +234,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Instructor>(e =>
         {
             e.HasOne(x => x.PrimaryLocation).WithMany(l => l.Instructors).HasForeignKey(x => x.PrimaryLocationId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // TimeBlock
+        modelBuilder.Entity<TimeBlock>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.Date });
+            e.Property(x => x.Reason).HasMaxLength(500);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 
