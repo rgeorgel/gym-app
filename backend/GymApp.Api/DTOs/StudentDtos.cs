@@ -19,6 +19,8 @@ public record UpdateStudentRequest(
     StudentStatus Status
 );
 
+public record UpdateStudentNotesRequest(string? Notes);
+
 public record StudentResponse(
     Guid Id,
     string Name,

@@ -64,11 +64,6 @@ function render(container, student, bookings, packages, classTypes, templates, i
               ${student.phone ? infoRow('📱', student.phone) : ''}
               ${infoRow('🎂', birthDate)}
               ${infoRow('📅', 'Cadastro: ' + formatDate(student.createdAt))}
-              ${student.healthNotes ? `
-              <div style="margin-top:0.25rem;padding:0.625rem 0.75rem;background:var(--gray-50);border-radius:var(--border-radius);border:1px solid var(--gray-200)">
-                <div style="font-size:var(--font-size-xs);color:var(--gray-500);margin-bottom:0.25rem">Observações de saúde</div>
-                <div style="font-size:var(--font-size-sm)">${student.healthNotes}</div>
-              </div>` : ''}
             </div>
           </div>
         </div>
@@ -89,6 +84,29 @@ function render(container, student, bookings, packages, classTypes, templates, i
           </div>
         </div>
 
+      </div>
+
+      <!-- Notes section -->
+      <div class="card" style="margin-bottom:1.25rem" id="notesCard">
+        <div class="card-body" style="padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+            <h3 style="margin:0;font-size:1rem">📝 Observações</h3>
+            <button class="btn btn-secondary btn-sm" id="btnEditNotes">Editar</button>
+          </div>
+          <div id="notesDisplay">
+            ${student.healthNotes
+              ? `<div style="font-size:var(--font-size-sm);color:var(--gray-700);white-space:pre-wrap;line-height:1.5">${student.healthNotes}</div>`
+              : `<div style="font-size:var(--font-size-sm);color:var(--gray-400);font-style:italic">Nenhuma observação. Ex: alérgica a amônia, prefere franja curta…</div>`
+            }
+          </div>
+          <div id="notesEdit" style="display:none">
+            <textarea class="form-control" id="notesTextarea" rows="4" placeholder="Ex: alérgica a amônia, prefere franja curta…" style="resize:vertical">${student.healthNotes ?? ''}</textarea>
+            <div style="display:flex;gap:0.5rem;margin-top:0.625rem;justify-content:flex-end">
+              <button class="btn btn-secondary btn-sm" id="btnCancelNotes">Cancelar</button>
+              <button class="btn btn-primary btn-sm" id="btnSaveNotes">Salvar</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Packages section (gym only) -->
@@ -117,6 +135,39 @@ function render(container, student, bookings, packages, classTypes, templates, i
   `;
 
   document.getElementById('btnBack').addEventListener('click', onBack);
+
+  // Notes inline edit
+  const notesDisplay = document.getElementById('notesDisplay');
+  const notesEdit    = document.getElementById('notesEdit');
+  document.getElementById('btnEditNotes').addEventListener('click', () => {
+    notesDisplay.style.display = 'none';
+    notesEdit.style.display = 'block';
+    document.getElementById('notesTextarea').focus();
+  });
+  document.getElementById('btnCancelNotes').addEventListener('click', () => {
+    document.getElementById('notesTextarea').value = student.healthNotes ?? '';
+    notesEdit.style.display = 'none';
+    notesDisplay.style.display = 'block';
+  });
+  document.getElementById('btnSaveNotes').addEventListener('click', async () => {
+    const notes = document.getElementById('notesTextarea').value.trim() || null;
+    const btn = document.getElementById('btnSaveNotes');
+    btn.disabled = true;
+    try {
+      await api.patch(`/students/${student.id}/notes`, { notes });
+      student.healthNotes = notes;
+      notesDisplay.innerHTML = notes
+        ? `<div style="font-size:var(--font-size-sm);color:var(--gray-700);white-space:pre-wrap;line-height:1.5">${notes}</div>`
+        : `<div style="font-size:var(--font-size-sm);color:var(--gray-400);font-style:italic">Nenhuma observação. Ex: alérgica a amônia, prefere franja curta…</div>`;
+      notesEdit.style.display = 'none';
+      notesDisplay.style.display = 'block';
+      showToast('Observações salvas.', 'success');
+    } catch (e) {
+      showToast('Erro ao salvar: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
 
   document.getElementById('btnEditStudent').addEventListener('click', () =>
     openEditModal(student, async (updated) => {

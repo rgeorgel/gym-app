@@ -120,6 +120,18 @@ public static class StudentEndpoints
             return Results.Ok(bookings);
         });
 
+        group.MapPatch("/{id:guid}/notes", async (Guid id, UpdateStudentNotesRequest req, AppDbContext db, TenantContext tenant) =>
+        {
+            var user = await db.Users
+                .FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
+            if (user is null) return Results.NotFound();
+
+            user.HealthNotes = string.IsNullOrWhiteSpace(req.Notes) ? null : req.Notes.Trim();
+            await db.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
+
         group.MapPost("/{id:guid}/reset-link", async (Guid id, AppDbContext db, TenantContext tenant) =>
         {
             var user = await db.Users.FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenant.TenantId && u.Role == UserRole.Student);
