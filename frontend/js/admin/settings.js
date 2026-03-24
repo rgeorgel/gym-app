@@ -36,8 +36,11 @@ export async function renderSettings(container) {
     ? `${location.protocol}//${host}/catalog/`
     : `${location.protocol}//${host}/catalog/?slug=${slug}`;
 
+  const isSalon = settings.tenantType === 'BeautySalon';
+
   container.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:1.25rem;align-items:start">
+      ${!isSalon ? `
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.defaultPkg.title')}</h3>
@@ -56,6 +59,7 @@ export async function renderSettings(container) {
           </div>
         </div>
       </div>
+      ` : ''}
 
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
@@ -77,6 +81,7 @@ export async function renderSettings(container) {
         </div>
       </div>
 
+      ${!isSalon ? `
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.payments.title')}</h3>
@@ -95,6 +100,7 @@ export async function renderSettings(container) {
           }
         </div>
       </div>
+      ` : ''}
 
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
@@ -174,6 +180,7 @@ export async function renderSettings(container) {
         </div>
       </div>` : ''}
 
+      ${!isSalon ? `
       <div class="card" style="grid-column:1/-1">
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.abacatepay.title')}</h3>
@@ -199,6 +206,7 @@ export async function renderSettings(container) {
           </div>
         </div>
       </div>
+      ` : ''}
     </div>
 
   `;
@@ -254,7 +262,7 @@ export async function renderSettings(container) {
     }
   });
 
-  document.getElementById('btnSaveDefaultPkg').addEventListener('click', async () => {
+  document.getElementById('btnSaveDefaultPkg')?.addEventListener('click', async () => {
     const val = document.getElementById('selectDefaultTemplate').value;
     const btn = document.getElementById('btnSaveDefaultPkg');
     btn.disabled = true;
@@ -268,7 +276,7 @@ export async function renderSettings(container) {
     }
   });
 
-  document.getElementById('btnSaveAbacatePay').addEventListener('click', async () => {
+  document.getElementById('btnSaveAbacatePay')?.addEventListener('click', async () => {
     const val = document.getElementById('inputAbacatePayKey').value.trim();
     if (!val) { showToast(t('error.prefix') + t('settings.abacatepay.required'), 'error'); return; }
     const btn = document.getElementById('btnSaveAbacatePay');
@@ -284,7 +292,7 @@ export async function renderSettings(container) {
     }
   });
 
-  document.getElementById('btnSaveAbacatePayWebhook').addEventListener('click', async () => {
+  document.getElementById('btnSaveAbacatePayWebhook')?.addEventListener('click', async () => {
     const val = document.getElementById('inputAbacatePayWebhookSecret').value.trim();
     if (!val) { showToast(t('error.prefix') + t('settings.abacatepay.required'), 'error'); return; }
     const btn = document.getElementById('btnSaveAbacatePayWebhook');

@@ -27,7 +27,8 @@
       "Bash(wc:*)",
       "Bash(infsh --version)",
       "Bash(ls /c/code/personal/gym-app/.env*)",
-      "Bash(find /c/code/personal/gym-app -name nginx* -o -name *.conf)"
+      "Bash(find /c/code/personal/gym-app -name nginx* -o -name *.conf)",
+      "Skill(update-config)"
     ]
   }
 }
