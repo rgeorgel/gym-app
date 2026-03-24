@@ -425,6 +425,87 @@ public static class DashboardEndpoints
             return Results.Ok(result);
         });
 
+        group.MapGet("/salon-billing", async (AppDbContext db, TenantContext tenant, int? year, int? month) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var y = year ?? today.Year;
+            var m = month ?? today.Month;
+
+            var startOfMonth = new DateOnly(y, m, 1);
+            var endOfMonth   = startOfMonth.AddMonths(1).AddDays(-1);
+
+            var bookings = await db.Bookings.AsNoTracking()
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= startOfMonth &&
+                    b.Session.Date <= endOfMonth)
+                .Select(b => new
+                {
+                    b.Status,
+                    ServiceName  = b.Session.ClassType != null ? b.Session.ClassType.Name  : "Sem serviço",
+                    ServiceColor = b.Session.ClassType != null ? b.Session.ClassType.Color : "#ccc",
+                    Price        = b.Session.ClassType != null ? (b.Session.ClassType.Price ?? 0m) : 0m,
+                    b.Session.Date,
+                })
+                .ToListAsync();
+
+            var nonCancelled = bookings.Where(b => b.Status != BookingStatus.Cancelled).ToList();
+
+            var totalRevenue       = nonCancelled.Sum(b => b.Price);
+            var totalAppointments  = nonCancelled.Count;
+            var averageTicket      = totalAppointments > 0 ? Math.Round(totalRevenue / totalAppointments, 2) : 0m;
+            var cancelledCount     = bookings.Count(b => b.Status == BookingStatus.Cancelled);
+
+            var byService = nonCancelled
+                .GroupBy(b => new { b.ServiceName, b.ServiceColor })
+                .Select(g => new
+                {
+                    Name    = g.Key.ServiceName,
+                    Color   = g.Key.ServiceColor,
+                    Count   = g.Count(),
+                    Revenue = g.Sum(b => b.Price),
+                })
+                .OrderByDescending(x => x.Revenue)
+                .ToList();
+
+            // Last 12 months history
+            var histStart = startOfMonth.AddMonths(-11);
+            var histBookings = await db.Bookings.AsNoTracking()
+                .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Where(b =>
+                    b.Session.TenantId == tenant.TenantId &&
+                    b.Session.Date >= histStart &&
+                    b.Session.Date <= endOfMonth &&
+                    b.Status != BookingStatus.Cancelled)
+                .Select(b => new
+                {
+                    b.Session.Date,
+                    Price = b.Session.ClassType != null ? (b.Session.ClassType.Price ?? 0m) : 0m,
+                })
+                .ToListAsync();
+
+            var monthlyHistory = Enumerable.Range(0, 12).Select(i =>
+            {
+                var ms = startOfMonth.AddMonths(-11 + i);
+                var me = ms.AddMonths(1).AddDays(-1);
+                var mb = histBookings.Where(b => b.Date >= ms && b.Date <= me).ToList();
+                return new { Year = ms.Year, Month = ms.Month, Revenue = mb.Sum(b => b.Price), Appointments = mb.Count };
+            }).ToList();
+
+            return Results.Ok(new
+            {
+                Year = y,
+                Month = m,
+                TotalRevenue      = totalRevenue,
+                TotalAppointments = totalAppointments,
+                CancelledAppointments = cancelledCount,
+                AverageTicket     = averageTicket,
+                ByService         = byService,
+                MonthlyHistory    = monthlyHistory,
+            });
+        });
+
         group.MapGet("/heatmap/weekday-timeslot", async (AppDbContext db, TenantContext tenant, int? days) =>
         {
             var period = days ?? 90;

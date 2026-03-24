@@ -58,6 +58,7 @@ export default {
   'nav.settings': 'Configuración',
   'nav.admins': 'Administradores',
   'nav.billing': 'Suscripción',
+  'nav.salonBilling': 'Facturación',
   'nav.revenue': 'Facturación',
   'nav.superAdmins': 'Super Admins',
   'admins.title.new': 'Nuevo Administrador',

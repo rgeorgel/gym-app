@@ -141,6 +141,7 @@
     import { initAiAssistant } from '/js/admin/ai-assistant.js';
     import { renderLocations, loadLocationsForSelector } from '/js/admin/locations.js';
     import { renderHeatmap } from '/js/admin/heatmap.js';
+    import { renderSalonBilling } from '/js/admin/salon-billing.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
@@ -192,6 +193,17 @@
         sessNav.insertAdjacentElement('afterend', availNav);
         availNav.addEventListener('click', () => { navigateTo('availability'); document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('visible'); });
       }
+
+      // Inject billing report nav item in Crescimento section
+      const heatmapNav = document.querySelector('[data-page="heatmap"]');
+      if (heatmapNav) {
+        const billingNav = document.createElement('div');
+        billingNav.className = 'nav-item';
+        billingNav.dataset.page = 'salon-billing';
+        billingNav.innerHTML = `<span class="nav-icon">💰</span> <span>Faturamento</span>`;
+        heatmapNav.insertAdjacentElement('afterend', billingNav);
+        billingNav.addEventListener('click', () => { navigateTo('salon-billing'); document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('visible'); });
+      }
     }
 
     const user = getUser();
@@ -211,6 +223,7 @@
       instructors: { titleKey: 'nav.instructors', render: renderInstructors },
       locations: { titleKey: 'nav.locations', render: renderLocations },
       heatmap: { titleKey: 'heatmap.title', render: renderHeatmap },
+      'salon-billing': { titleKey: 'nav.salonBilling', render: renderSalonBilling },
       admins: { titleKey: 'nav.admins', render: renderAdmins },
       settings: { titleKey: 'nav.settings', render: renderSettings },
       billing: { titleKey: 'nav.billing', render: renderBilling },
