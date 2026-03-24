@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { formatDate, formatCurrency, getWeekdays } from '../ui.js';
 import { t, getLocale } from '../i18n.js';
+import { renderStudentDetail } from './student-detail.js';
 
 export async function renderDashboard(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -29,6 +30,13 @@ export async function renderDashboard(container) {
       </div>
       ${renderInactiveStudents(inactiveStudents)}
     `;
+
+    container._dashClick && container.removeEventListener('click', container._dashClick);
+    container._dashClick = e => {
+      const el = e.target.closest('[data-student-id]');
+      if (el) renderStudentDetail(container, el.dataset.studentId, () => renderDashboard(container));
+    };
+    container.addEventListener('click', container._dashClick);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
@@ -164,7 +172,7 @@ function renderExpiringPackages(packages) {
 
 function renderPkgRow(p, isExpired) {
   return `
-    <div style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100)">
+    <div data-student-id="${p.studentId}" style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);cursor:pointer" onmouseenter="this.style.background='var(--gray-50)'" onmouseleave="this.style.background=''">
       <div class="font-medium text-sm">${p.studentName}</div>
       <div class="text-xs text-muted">
         ${p.name} ·
@@ -224,7 +232,7 @@ function renderTopStudents(students) {
         ${students.length === 0
           ? `<div class="empty-state"><div class="empty-state-text">${t('dash.top5.none')}</div></div>`
           : students.map((s, i) => `
-            <div style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:0.75rem">
+            <div data-student-id="${s.studentId}" style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:0.75rem;cursor:pointer" onmouseenter="this.style.background='var(--gray-50)'" onmouseleave="this.style.background=''">
               <div style="width:22px;height:22px;border-radius:50%;background:${medals[i] ?? 'var(--gray-200)'};display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:${i < 3 ? 'white' : 'var(--gray-600)'};flex-shrink:0">
                 ${i + 1}
               </div>
@@ -252,7 +260,7 @@ function renderInactiveStudents(students) {
             <thead><tr><th>${t('field.name')}</th><th>${t('field.email')}</th><th>${t('field.phone')}</th></tr></thead>
             <tbody>
               ${students.map(s => `
-                <tr>
+                <tr data-student-id="${s.id}" style="cursor:pointer" onmouseenter="this.style.background='var(--gray-50)'" onmouseleave="this.style.background=''">
                   <td class="font-medium text-sm">${s.name}</td>
                   <td class="text-sm text-muted">${s.email}</td>
                   <td class="text-sm">${s.phone ?? '—'}</td>

@@ -196,6 +196,7 @@ public static class DashboardEndpoints
                 p.Name,
                 p.ExpiresAt,
                 IsExpired = p.ExpiresAt < today,
+                StudentId = p.StudentId,
                 StudentName = p.Student.Name,
                 StudentEmail = p.Student.Email,
                 RemainingCredits = p.Items.Sum(i => i.TotalCredits - i.UsedCredits)
@@ -348,6 +349,7 @@ public static class DashboardEndpoints
                     ServiceName = b.Session.ClassType != null ? b.Session.ClassType.Name : "",
                     ServiceColor = b.Session.ClassType != null ? b.Session.ClassType.Color : "#ccc",
                     ServicePrice = b.Session.ClassType != null ? b.Session.ClassType.Price : null,
+                    ClientId = b.StudentId,
                     ClientName = b.Student.Name,
                     ClientPhone = b.Student.Phone,
                     b.Status,
@@ -390,7 +392,7 @@ public static class DashboardEndpoints
                     b.Session.Date >= since &&
                     b.Status != BookingStatus.Cancelled)
                 .GroupBy(b => new { b.StudentId, b.Student.Name, b.Student.Phone })
-                .Select(g => new { ClientName = g.Key.Name, ClientPhone = g.Key.Phone, Count = g.Count() })
+                .Select(g => new { ClientId = g.Key.StudentId, ClientName = g.Key.Name, ClientPhone = g.Key.Phone, Count = g.Count() })
                 .OrderByDescending(x => x.Count)
                 .Take(5)
                 .ToListAsync();

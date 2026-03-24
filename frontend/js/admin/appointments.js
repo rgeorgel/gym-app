@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { showToast, formatTime, emptyState, statusBadge } from '../ui.js';
 import { t } from '../i18n.js';
+import { renderStudentDetail } from './student-detail.js';
 
 export async function renderAppointments(container) {
   const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -126,6 +127,7 @@ export async function renderAppointments(container) {
         <div class="appt-card-actions">
           ${statusBadge(a.status)}
           ${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}
+          <button class="btn btn-sm btn-secondary btn-client-detail" data-id="${a.clientId}" title="Ver detalhes do cliente">👤</button>
         </div>
       `;
       list.appendChild(card);
@@ -143,6 +145,13 @@ export async function renderAppointments(container) {
           btn.disabled = false;
         }
       });
+    });
+
+    const outerEl = container.closest('#contentArea') ?? container.parentElement;
+    container.querySelectorAll('.btn-client-detail').forEach(btn => {
+      btn.addEventListener('click', () =>
+        renderStudentDetail(outerEl, btn.dataset.id, () => renderAppointments(outerEl))
+      );
     });
   };
 

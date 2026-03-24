@@ -35,7 +35,8 @@ public static class StudentEndpoints
                         .Where(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn)
                         .OrderByDescending(b => b.Session.Date)
                         .Select(b => (DateOnly?)b.Session.Date)
-                        .FirstOrDefault()))
+                        .FirstOrDefault(),
+                    u.HealthNotes))
                 .ToListAsync();
 
             return Results.Ok(students);
@@ -167,7 +168,7 @@ public static class StudentEndpoints
             .OrderByDescending(b => b.Session.Date)
             .Select(b => (DateOnly?)b.Session.Date)
             .FirstOrDefault();
-        return new StudentResponse(u.Id, u.Name, u.Email, u.Phone, u.BirthDate, u.Status, u.PhotoUrl, u.CreatedAt, remaining, lastBooking);
+        return new StudentResponse(u.Id, u.Name, u.Email, u.Phone, u.BirthDate, u.Status, u.PhotoUrl, u.CreatedAt, remaining, lastBooking, u.HealthNotes);
     }
 
     private static string GenerateTempPassword()

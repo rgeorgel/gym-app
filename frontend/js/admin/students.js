@@ -1,13 +1,20 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js';
 import { t } from '../i18n.js';
+import { renderStudentDetail } from './student-detail.js';
+import { tenantType } from '../tenant.js';
 
 let allStudents = [];
 let sortField = 'name';
 let sortDir = 'asc';
 let activeQuickFilter = 'all';
 
+let studentsContainer = null;
+
 export async function renderStudents(container) {
+  studentsContainer = container;
+  const isGym = tenantType !== 'BeautySalon';
+
   container.innerHTML = `
     <div class="filters-bar">
       <input type="text" id="studentSearch" class="search-input" placeholder="${t('students.search')}">
@@ -19,7 +26,7 @@ export async function renderStudents(container) {
       </select>
       <select id="studentQuickFilter" class="form-control" style="width:auto">
         <option value="all">${t('students.filter.all')}</option>
-        <option value="noCredits">${t('students.filter.noCredits')}</option>
+        ${isGym ? `<option value="noCredits">${t('students.filter.noCredits')}</option>` : ''}
         <option value="noBooking7">${t('students.filter.noBooking7')}</option>
         <option value="noBooking15">${t('students.filter.noBooking15')}</option>
         <option value="noBooking30">${t('students.filter.noBooking30')}</option>
@@ -30,8 +37,10 @@ export async function renderStudents(container) {
       <select id="studentSort" class="form-control" style="width:auto">
         <option value="name-asc">${t('field.name')} A→Z</option>
         <option value="name-desc">${t('field.name')} Z→A</option>
+        ${isGym ? `
         <option value="credits-desc">${t('students.col.credits')} ↓</option>
         <option value="credits-asc">${t('students.col.credits')} ↑</option>
+        ` : ''}
         <option value="lastBooking-desc">${t('students.col.lastBooking')} ↓</option>
         <option value="createdAt-desc">${t('students.col.registered')} ↓</option>
       </select>
@@ -128,15 +137,19 @@ function renderList(students) {
   const container = document.getElementById('studentsListContainer');
   if (!container) return;
 
+  const isGym = tenantType !== 'BeautySalon';
+
   if (!students.length) {
     container.innerHTML = `<div class="card card-body">${emptyState('👤', t('students.none'))}</div>`;
     return;
   }
 
   container.innerHTML = `<div class="student-list">${students.map(s => {
-    const creditsHtml = s.totalRemainingCredits > 0
-      ? `<span class="badge badge-success">${s.totalRemainingCredits} cred.</span>`
-      : `<span class="badge badge-gray">0 cred.</span>`;
+    const creditsHtml = isGym
+      ? (s.totalRemainingCredits > 0
+          ? `<span class="badge badge-success">${s.totalRemainingCredits} cred.</span>`
+          : `<span class="badge badge-gray">0 cred.</span>`)
+      : '';
     const lastBooking = s.lastBookingDate
       ? formatDate(s.lastBookingDate)
       : t('students.lastBooking.never');
@@ -157,7 +170,8 @@ function renderList(students) {
           <span class="student-card-lastbooking">📅 ${lastBooking}</span>
           <div class="student-card-actions">
             <button class="btn btn-secondary btn-sm btn-edit-student" data-id="${s.id}">${t('btn.edit')}</button>
-            <button class="btn btn-secondary btn-sm btn-view-packages" data-id="${s.id}" data-name="${s.name}">${t('packages.label')}</button>
+            ${isGym ? `<button class="btn btn-secondary btn-sm btn-view-packages" data-id="${s.id}" data-name="${s.name}">${t('packages.label')}</button>` : ''}
+            <button class="btn btn-primary btn-sm btn-view-detail" data-id="${s.id}">Ver detalhes →</button>
           </div>
         </div>
       </div>
@@ -169,6 +183,11 @@ function renderList(students) {
   });
   container.querySelectorAll('.btn-view-packages').forEach(btn => {
     btn.addEventListener('click', () => openPackagesModal(btn.dataset.id, btn.dataset.name));
+  });
+  container.querySelectorAll('.btn-view-detail').forEach(btn => {
+    btn.addEventListener('click', () =>
+      renderStudentDetail(studentsContainer, btn.dataset.id, () => renderStudents(studentsContainer))
+    );
   });
 }
 

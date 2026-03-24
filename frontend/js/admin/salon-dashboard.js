@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { formatCurrency, formatTime, getWeekdays } from '../ui.js';
 import { t } from '../i18n.js';
+import { renderStudentDetail } from './student-detail.js';
 
 export async function renderSalonDashboard(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -23,6 +24,13 @@ export async function renderSalonDashboard(container) {
       </div>
       ${renderTopClients(topClients)}
     `;
+
+    container._dashClick && container.removeEventListener('click', container._dashClick);
+    container._dashClick = e => {
+      const el = e.target.closest('[data-student-id]');
+      if (el) renderStudentDetail(container, el.dataset.studentId, () => renderSalonDashboard(container));
+    };
+    container.addEventListener('click', container._dashClick);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">${t('error.prefix')}${e.message}</div></div>`;
   }
@@ -53,7 +61,7 @@ function renderTodayCard(appointments) {
                             : isDone ? 'var(--gray-300)'
                             : 'var(--brand-primary)';
                return `
-                 <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-left:3px solid ${a.serviceColor};border-radius:var(--border-radius);padding:0.625rem 0.875rem;min-width:150px;opacity:${isDone && a.status !== 'CheckedIn' ? 0.55 : 1}">
+                 <div data-student-id="${a.clientId}" style="background:var(--gray-50);border:1px solid var(--gray-200);border-left:3px solid ${a.serviceColor};border-radius:var(--border-radius);padding:0.625rem 0.875rem;min-width:150px;opacity:${isDone && a.status !== 'CheckedIn' ? 0.55 : 1};cursor:pointer" onmouseenter="this.style.background='var(--gray-100)'" onmouseleave="this.style.background='var(--gray-50)'">
                    <div style="font-weight:700;font-size:var(--font-size-sm)">${a.startTime?.slice(0,5)}</div>
                    <div style="font-size:var(--font-size-xs);color:var(--gray-600);margin:0.1rem 0">${a.serviceName}</div>
                    <div style="font-size:var(--font-size-xs);font-weight:500;color:${accent}">
@@ -163,7 +171,7 @@ function renderTopClients(clients) {
       </div>
       <div class="card-body" style="padding:0">
         ${clients.map((c, i) => `
-          <div style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:0.75rem">
+          <div data-student-id="${c.clientId}" style="padding:0.625rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:0.75rem;cursor:pointer" onmouseenter="this.style.background='var(--gray-50)'" onmouseleave="this.style.background=''">
             <div style="width:22px;height:22px;border-radius:50%;background:${medals[i] ?? 'var(--gray-200)'};display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:${i < 3 ? 'white' : 'var(--gray-600)'};flex-shrink:0">
               ${i + 1}
             </div>
