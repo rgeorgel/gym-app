@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { formatCurrency, formatTime, getWeekdays } from '../ui.js';
 import { t } from '../i18n.js';
 import { renderStudentDetail } from './student-detail.js';
+import { renderOnboardingWizard } from './onboarding.js';
 
 export async function renderSalonDashboard(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -24,6 +25,8 @@ export async function renderSalonDashboard(container) {
       </div>
       ${renderTopClients(topClients)}
     `;
+
+    await renderOnboardingWizard(container);
 
     container._dashClick && container.removeEventListener('click', container._dashClick);
     container._dashClick = e => {
