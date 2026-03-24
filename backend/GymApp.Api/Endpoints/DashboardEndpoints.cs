@@ -291,10 +291,12 @@ public static class DashboardEndpoints
                 b.Session.Date >= startOfMonth &&
                 b.Status != BookingStatus.Cancelled);
 
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
             var revenueThisMonth = await db.Bookings
                 .Where(b =>
                     b.Session.TenantId == tenant.TenantId &&
                     b.Session.Date >= startOfMonth &&
+                    b.Session.Date <= endOfMonth &&
                     b.Status != BookingStatus.Cancelled)
                 .Include(b => b.Session).ThenInclude(s => s.ClassType)
                 .SumAsync(b => b.Session.ClassType != null ? (b.Session.ClassType.Price ?? 0) : 0);
