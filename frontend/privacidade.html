@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade — Agendofy</title>
+<meta name="description" content="Política de Privacidade do Agendofy — Saiba como coletamos, usamos e protegemos seus dados pessoais.">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #3563E9;
+  --brand-dark: #2348C4;
+  --brand-light: #EEF3FF;
+  --dark: #060A14;
+  --dark2: #0D1525;
+  --dark3: #141E33;
+  --mid: #64748B;
+  --muted: #94A3B8;
+  --light: #F8FAFF;
+  --border-dark: rgba(255,255,255,0.08);
+  --white: #ffffff;
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+}
+
+body {
+  background: var(--dark);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,10,20,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-dark);
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--brand); }
+.nav-back {
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--white); }
+
+/* CONTENT */
+.page-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+}
+.page-header {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-dark);
+}
+.page-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+.page-header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 40px 0 12px;
+}
+h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 24px 0 8px;
+}
+p {
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+ul, ol {
+  color: var(--muted);
+  padding-left: 20px;
+  margin-bottom: 14px;
+}
+li { margin-bottom: 6px; }
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { color: var(--white); font-weight: 600; }
+
+.highlight-box {
+  background: rgba(53, 99, 233, 0.08);
+  border: 1px solid rgba(53, 99, 233, 0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+.highlight-box p { margin-bottom: 0; }
+
+/* FOOTER */
+footer {
+  background: var(--dark2);
+  border-top: 1px solid var(--border-dark);
+  padding: 32px 24px;
+  text-align: center;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.footer-logo span { color: var(--brand); }
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-copy {
+  color: var(--mid);
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="landing-choice.html" class="nav-logo">agendo<span>fy</span></a>
+    <a href="javascript:history.back()" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar
+    </a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Política de Privacidade</h1>
+    <p>Última atualização: março de 2026</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>O Agendofy respeita sua privacidade e está comprometido com a proteção dos seus dados pessoais, em conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)</strong>.</p>
+  </div>
+
+  <h2>1. Quem Somos</h2>
+  <p>O Agendofy é uma plataforma de agendamento online para academias, estúdios e salões de beleza. Para questões relacionadas à privacidade, entre em contato: <a href="mailto:contato@agendofy.com">contato@agendofy.com</a></p>
+
+  <h2>2. Dados que Coletamos</h2>
+
+  <h3>2.1 Dados fornecidos por você</h3>
+  <ul>
+    <li><strong>Dados de cadastro:</strong> nome, e-mail, telefone, nome do negócio;</li>
+    <li><strong>Dados de acesso:</strong> e-mail e senha (armazenada com hash seguro);</li>
+    <li><strong>Dados de pagamento:</strong> processados diretamente pelo nosso gateway de pagamento; não armazenamos dados de cartão.</li>
+  </ul>
+
+  <h3>2.2 Dados coletados automaticamente</h3>
+  <ul>
+    <li><strong>Dados de uso:</strong> páginas acessadas, funcionalidades utilizadas, horários de acesso;</li>
+    <li><strong>Dados técnicos:</strong> endereço IP, tipo de navegador, sistema operacional, referenciador;</li>
+    <li><strong>Cookies e tecnologias similares:</strong> conforme descrito na Seção 7.</li>
+  </ul>
+
+  <h3>2.3 Dados dos clientes finais (seus clientes)</h3>
+  <p>Quando você cadastra seus clientes (alunos, clientes do salão) na plataforma, você é o <strong>controlador</strong> desses dados e o Agendofy atua como <strong>operador</strong>. Você é responsável por obter os consentimentos necessários e cumprir a LGPD em relação a esses dados.</p>
+
+  <h2>3. Como Usamos seus Dados</h2>
+  <p>Utilizamos seus dados para:</p>
+  <ul>
+    <li>Criar e gerenciar sua conta na plataforma;</li>
+    <li>Prestar os serviços contratados e oferecer suporte;</li>
+    <li>Processar pagamentos e emitir cobranças;</li>
+    <li>Enviar comunicações sobre sua conta, atualizações e novidades (com possibilidade de cancelamento);</li>
+    <li>Melhorar e desenvolver novas funcionalidades da plataforma;</li>
+    <li>Cumprir obrigações legais e regulatórias;</li>
+    <li>Prevenir fraudes e garantir a segurança da plataforma.</li>
+  </ul>
+
+  <h2>4. Bases Legais para o Tratamento (LGPD)</h2>
+  <p>O tratamento dos seus dados é realizado com base nas seguintes hipóteses legais previstas na LGPD:</p>
+  <ul>
+    <li><strong>Execução de contrato:</strong> para fornecer o serviço que você contratou;</li>
+    <li><strong>Legítimo interesse:</strong> para melhorar a plataforma, prevenir fraudes e garantir segurança;</li>
+    <li><strong>Cumprimento de obrigação legal:</strong> quando exigido por lei;</li>
+    <li><strong>Consentimento:</strong> para comunicações de marketing (você pode revogar a qualquer momento).</li>
+  </ul>
+
+  <h2>5. Compartilhamento de Dados</h2>
+  <p>Não vendemos seus dados pessoais. Podemos compartilhá-los com:</p>
+  <ul>
+    <li><strong>Provedores de serviço:</strong> infraestrutura de nuvem (hospedagem, banco de dados), gateway de pagamento, serviço de e-mail transacional — todos sob obrigações contratuais de confidencialidade;</li>
+    <li><strong>Autoridades:</strong> quando exigido por lei, ordem judicial ou para exercício regular de direitos;</li>
+    <li><strong>Sucessores:</strong> em caso de fusão, aquisição ou venda de ativos, com manutenção das mesmas proteções de privacidade.</li>
+  </ul>
+
+  <h2>6. Retenção de Dados</h2>
+  <p>Mantemos seus dados pelo tempo necessário para fornecer os serviços e cumprir obrigações legais. Após o cancelamento da conta:</p>
+  <ul>
+    <li>Dados operacionais são mantidos por até <strong>90 dias</strong> para eventual reativação;</li>
+    <li>Dados fiscais e de cobrança são mantidos pelo prazo legal exigido (tipicamente 5 anos);</li>
+    <li>Demais dados são excluídos ou anonimizados após os 90 dias.</li>
+  </ul>
+  <p>Você pode solicitar a exclusão antecipada dos seus dados entrando em contato conosco.</p>
+
+  <h2>7. Cookies</h2>
+  <p>Utilizamos cookies e tecnologias similares para:</p>
+  <ul>
+    <li><strong>Cookies essenciais:</strong> necessários para o funcionamento da plataforma (sessão, autenticação);</li>
+    <li><strong>Cookies analíticos:</strong> Google Analytics e Microsoft Clarity para entender como a plataforma é utilizada e melhorar a experiência — coletam dados de forma agregada e anonimizada.</li>
+  </ul>
+  <p>Você pode configurar seu navegador para recusar cookies, mas isso pode afetar o funcionamento de algumas funcionalidades.</p>
+
+  <h2>8. Segurança</h2>
+  <p>Adotamos medidas técnicas e organizacionais para proteger seus dados, incluindo:</p>
+  <ul>
+    <li>Criptografia em trânsito (TLS/HTTPS);</li>
+    <li>Senhas armazenadas com hash seguro (BCrypt);</li>
+    <li>Acesso restrito a dados por princípio de menor privilégio;</li>
+    <li>Monitoramento e auditoria de acessos.</li>
+  </ul>
+  <p>Nenhum sistema é 100% seguro. Em caso de incidente que envolva seus dados, notificaremos conforme exigido pela LGPD.</p>
+
+  <h2>9. Seus Direitos (LGPD)</h2>
+  <p>Como titular dos dados, você tem direito a:</p>
+  <ul>
+    <li><strong>Confirmação e acesso:</strong> saber se tratamos seus dados e obter uma cópia;</li>
+    <li><strong>Correção:</strong> corrigir dados incompletos, inexatos ou desatualizados;</li>
+    <li><strong>Anonimização, bloqueio ou eliminação:</strong> de dados desnecessários ou tratados em desconformidade;</li>
+    <li><strong>Portabilidade:</strong> receber seus dados em formato estruturado;</li>
+    <li><strong>Revogação do consentimento:</strong> a qualquer momento para tratamentos baseados em consentimento;</li>
+    <li><strong>Oposição:</strong> opor-se a tratamento realizado com base em legítimo interesse;</li>
+    <li><strong>Informação:</strong> sobre com quem compartilhamos seus dados.</li>
+  </ul>
+  <p>Para exercer seus direitos, entre em contato: <a href="mailto:contato@agendofy.com">contato@agendofy.com</a>. Responderemos em até 15 dias úteis.</p>
+
+  <h2>10. Transferência Internacional de Dados</h2>
+  <p>Seus dados podem ser processados em servidores localizados fora do Brasil (ex.: provedores de nuvem). Garantimos que essas transferências ocorram com as devidas salvaguardas previstas na LGPD, como cláusulas contratuais padrão ou certificações de adequação.</p>
+
+  <h2>11. Menores de Idade</h2>
+  <p>Nossa plataforma é destinada a empresários e profissionais adultos. Não coletamos intencionalmente dados de menores de 18 anos. Se você identificar que coletamos dados de um menor sem consentimento parental adequado, entre em contato para que possamos excluí-los.</p>
+
+  <h2>12. Alterações nesta Política</h2>
+  <p>Podemos atualizar esta Política periodicamente. Notificaremos sobre mudanças significativas por e-mail ou via aviso na plataforma. A data de "última atualização" no topo desta página sempre refletirá a versão mais recente.</p>
+
+  <h2>13. Contato e DPO</h2>
+  <p>Para questões sobre privacidade e proteção de dados, entre em contato:</p>
+  <ul>
+    <li><strong>E-mail:</strong> <a href="mailto:contato@agendofy.com">contato@agendofy.com</a></li>
+  </ul>
+  <p>Você também pode registrar uma reclamação junto à <strong>Autoridade Nacional de Proteção de Dados (ANPD)</strong>: <a href="https://www.gov.br/anpd" target="_blank" rel="noopener">www.gov.br/anpd</a></p>
+</div>
+
+<footer>
+  <a href="landing-choice.html" class="footer-logo">agendo<span>fy</span></a>
+  <ul class="footer-links">
+    <li><a href="termos.html">Termos de Uso</a></li>
+    <li><a href="privacidade.html">Privacidade</a></li>
+    <li><a href="mailto:contato@agendofy.com">contato@agendofy.com</a></li>
+  </ul>
+  <p class="footer-copy">© 2026 Agendofy. Todos os direitos reservados.</p>
+</footer>
+
+</body>
+</html>
