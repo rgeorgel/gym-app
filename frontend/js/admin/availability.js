@@ -61,7 +61,7 @@ async function loadBlocks() {
             <div class="avail-card-day">${weekdays[b.weekday] ?? b.weekday}</div>
             <div class="avail-card-time">
               <span class="avail-time-range">⏰ ${b.startTime?.substring(0,5)} – ${b.endTime?.substring(0,5)}</span>
-              ${b.instructorName ? `<span class="avail-instructor">👤 ${b.instructorName}</span>` : ''}
+              ${b.instructorName ? `<span class="avail-instructor">✂️ ${b.instructorName}</span>` : ''}
             </div>
             <button class="btn btn-sm btn-danger btn-del" data-id="${b.id}">${t('btn.delete')}</button>
           </div>
@@ -115,7 +115,7 @@ function openBlockModal() {
       <div class="form-group">
         <label class="form-label">${t('availability.instructor')}</label>
         <select class="form-control" id="availInstructor">
-          <option value="">${t('field.noInstructor')}</option>
+          <option value="">Sem preferência</option>
           ${instructors.map(i => `<option value="${i.id}">${i.name}</option>`).join('')}
         </select>
       </div>` : ''}

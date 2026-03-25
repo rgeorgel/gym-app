@@ -51,6 +51,8 @@ public static class InstructorEndpoints
                 db.Users.Add(user);
             }
 
+            if (req.PhotoUrl is not null) user.PhotoUrl = req.PhotoUrl.Trim();
+
             var instructor = new Instructor
             {
                 TenantId = tenant.TenantId,
@@ -76,6 +78,7 @@ public static class InstructorEndpoints
             instructor.Specialties = req.Specialties;
             instructor.User.Name = req.Name;
             instructor.User.Phone = req.Phone;
+            if (req.PhotoUrl is not null) instructor.User.PhotoUrl = req.PhotoUrl.Trim();
             await db.SaveChangesAsync();
 
             return Results.Ok(new InstructorResponse(instructor.Id, instructor.User.Name, instructor.User.Email,

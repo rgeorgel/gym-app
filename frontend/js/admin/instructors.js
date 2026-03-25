@@ -1,11 +1,26 @@
 import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js';
 import { t } from '../i18n.js';
+import { tenantType } from '../tenant.js';
+
+const isSalon = () => tenantType === 'BeautySalon';
+
+const lbl = {
+  new:            () => isSalon() ? '+ Novo Profissional'    : t('instructors.new'),
+  none:           () => isSalon() ? 'Nenhum profissional cadastrado' : t('instructors.none'),
+  titleNew:       () => isSalon() ? 'Novo Profissional'      : t('instructors.title.new'),
+  titleEdit:      () => isSalon() ? 'Editar Profissional'    : t('instructors.title.edit'),
+  removed:        () => isSalon() ? 'Profissional removido'  : t('instructors.removed'),
+  removeConfirm:  () => isSalon() ? 'Remover este profissional?' : t('instructors.remove.confirm'),
+  saved:          () => isSalon() ? 'Profissional atualizado': t('instructors.saved'),
+  created:        () => isSalon() ? 'Profissional cadastrado': t('instructors.created'),
+  specialtiesPlaceholder: () => isSalon() ? 'ex: Coloração, Corte' : t('instructors.field.specialtiesPlaceholder'),
+};
 
 export async function renderInstructors(container) {
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-      <button class="btn btn-primary" id="btnNewInstructor">${t('instructors.new')}</button>
+      <button class="btn btn-primary" id="btnNewInstructor">${lbl.new()}</button>
     </div>
     <div id="instructorsList"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
@@ -21,7 +36,7 @@ async function loadInstructors() {
     const instructors = await api.get('/instructors');
 
     if (!instructors.length) {
-      list.innerHTML = emptyState('👤', t('instructors.none'));
+      list.innerHTML = emptyState('👤', lbl.none());
       return;
     }
 
@@ -42,8 +57,15 @@ async function loadInstructors() {
               ${instructors.map(i => `
                 <tr>
                   <td>
-                    <div class="font-medium">${i.name}</div>
-                    ${i.bio ? `<div class="text-sm text-muted">${i.bio}</div>` : ''}
+                    <div style="display:flex;align-items:center;gap:0.6rem">
+                      ${i.photoUrl
+                        ? `<img src="${i.photoUrl}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`
+                        : `<span style="width:32px;height:32px;border-radius:50%;background:var(--gray-200);display:inline-flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0">${isSalon() ? '✂️' : '👤'}</span>`}
+                      <div>
+                        <div class="font-medium">${i.name}</div>
+                        ${i.bio ? `<div class="text-sm text-muted">${i.bio}</div>` : ''}
+                      </div>
+                    </div>
                   </td>
                   <td class="text-sm text-muted">${i.email}</td>
                   <td class="text-sm">${i.phone ?? '—'}</td>
@@ -70,10 +92,10 @@ async function loadInstructors() {
 
     list.querySelectorAll('[data-delete]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (!await confirm(t('instructors.remove.confirm'))) return;
+        if (!await confirm(lbl.removeConfirm())) return;
         try {
           await api.delete(`/instructors/${btn.dataset.delete}`);
-          showToast(t('instructors.removed'), 'success');
+          showToast(lbl.removed(), 'success');
           await loadInstructors();
         } catch (e) {
           showToast(t('error.prefix') + e.message, 'error');
@@ -86,9 +108,10 @@ async function loadInstructors() {
 }
 
 function openInstructorModal(instructor = null) {
+  const salon = isSalon();
   createModal({
     id: 'instructorModal',
-    title: instructor ? t('instructors.title.edit') : t('instructors.title.new'),
+    title: instructor ? lbl.titleEdit() : lbl.titleNew(),
     body: `
       <div class="form-group">
         <label class="form-label">${t('field.name')} *</label>
@@ -103,12 +126,20 @@ function openInstructorModal(instructor = null) {
         <input class="form-control" id="iPhone" value="${instructor?.phone ?? ''}">
       </div>
       <div class="form-group">
+        <label class="form-label">${salon ? 'Foto (URL da imagem)' : t('instructors.field.bio')}</label>
+        ${salon
+          ? `<input class="form-control" id="iPhotoUrl" type="url" placeholder="https://..." value="${instructor?.photoUrl ?? ''}">
+             ${instructor?.photoUrl ? `<img src="${instructor.photoUrl}" id="iPhotoPreview" style="margin-top:0.5rem;width:56px;height:56px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">` : ''}`
+          : `<textarea class="form-control" id="iBio" rows="2">${instructor?.bio ?? ''}</textarea>`}
+      </div>
+      ${salon ? `
+      <div class="form-group">
         <label class="form-label">${t('instructors.field.bio')}</label>
         <textarea class="form-control" id="iBio" rows="2">${instructor?.bio ?? ''}</textarea>
-      </div>
+      </div>` : ''}
       <div class="form-group">
         <label class="form-label">${t('instructors.field.specialties')}</label>
-        <input class="form-control" id="iSpecialties" placeholder="${t('instructors.field.specialtiesPlaceholder')}" value="${instructor?.specialties ?? ''}">
+        <input class="form-control" id="iSpecialties" placeholder="${lbl.specialtiesPlaceholder()}" value="${instructor?.specialties ?? ''}">
       </div>
     `,
     footer: `
@@ -118,6 +149,20 @@ function openInstructorModal(instructor = null) {
   });
   openModal('instructorModal');
 
+  // Live preview of photo URL
+  document.getElementById('iPhotoUrl')?.addEventListener('input', e => {
+    const url = e.target.value.trim();
+    let preview = document.getElementById('iPhotoPreview');
+    if (!preview && url) {
+      preview = document.createElement('img');
+      preview.id = 'iPhotoPreview';
+      preview.style.cssText = 'margin-top:0.5rem;width:56px;height:56px;border-radius:50%;object-fit:cover';
+      preview.onerror = () => preview.style.display = 'none';
+      e.target.insertAdjacentElement('afterend', preview);
+    }
+    if (preview) { preview.src = url; preview.style.display = url ? '' : 'none'; }
+  });
+
   document.getElementById('btnSaveInstructor').addEventListener('click', async () => {
     const name = document.getElementById('iName').value.trim();
     const email = document.getElementById('iEmail').value.trim();
@@ -126,17 +171,18 @@ function openInstructorModal(instructor = null) {
     const body = {
       name,
       phone: document.getElementById('iPhone').value.trim() || null,
-      bio: document.getElementById('iBio').value.trim() || null,
+      bio: document.getElementById('iBio')?.value.trim() || null,
       specialties: document.getElementById('iSpecialties').value.trim() || null,
+      photoUrl: document.getElementById('iPhotoUrl')?.value.trim() || null,
     };
 
     try {
       if (instructor) {
         await api.put(`/instructors/${instructor.id}`, body);
-        showToast(t('instructors.saved'), 'success');
+        showToast(lbl.saved(), 'success');
       } else {
         await api.post('/instructors', { ...body, email });
-        showToast(t('instructors.created'), 'success');
+        showToast(lbl.created(), 'success');
       }
       closeModal('instructorModal');
       await loadInstructors();
