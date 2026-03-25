@@ -22,10 +22,7 @@ function formatTime(t) {
 export async function renderSalonBooking(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
   try {
-    const [services, professionals] = await Promise.all([
-      api.get('/class-types'),
-      api.get('/professionals').catch(() => []),
-    ]);
+    const services = await api.get('/class-types');
     const active = services.filter(s => s.isActive);
     if (!active.length) {
       container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💅</div><div class="empty-state-text">${t('services.none')}</div></div>`;
@@ -40,14 +37,14 @@ export async function renderSalonBooking(container) {
         const pending = JSON.parse(raw);
         const svc = active.find(s => s.id === pending.serviceId);
         if (svc && pending.date && pending.time) {
-          renderServiceList(container, active, professionals);
-          confirmBooking(container, svc, pending.date, pending.time, active, professionals, pending.professionalId ?? null);
+          renderServiceList(container, active);
+          confirmBooking(container, svc, pending.date, pending.time, active, [], pending.professionalId ?? null);
           return;
         }
       } catch { /* ignore malformed entry */ }
     }
 
-    renderServiceList(container, active, professionals);
+    renderServiceList(container, active);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${e.message}</div></div>`;
   }
@@ -73,7 +70,7 @@ function serviceCard(s) {
   `;
 }
 
-function renderServiceList(container, services, professionals) {
+function renderServiceList(container, services) {
   // Group by category; services without a category go last under null key
   const groups = new Map();
   for (const s of services) {
@@ -96,9 +93,10 @@ function renderServiceList(container, services, professionals) {
   container.innerHTML = html;
 
   container.querySelectorAll('.btn-book-service').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const svc = services.find(s => s.id === btn.dataset.id);
-      if (professionals && professionals.length > 0) {
+      const professionals = await api.get(`/professionals?serviceId=${svc.id}`).catch(() => []);
+      if (professionals.length > 0) {
         renderProfessionalPicker(container, svc, professionals, services);
       } else {
         renderDatePicker(container, svc, services, null);
@@ -131,7 +129,7 @@ function renderProfessionalPicker(container, service, professionals, services) {
   `;
 
   container.querySelector('#btnBackToServices').addEventListener('click', () =>
-    renderServiceList(container, services, professionals));
+    renderServiceList(container, services));
 
   container.querySelectorAll('.btn-pick-pro').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -169,7 +167,7 @@ function renderDatePicker(container, service, services, professionalId) {
     </div>
   `;
 
-  document.getElementById('btnBackToServices').addEventListener('click', () => renderServiceList(container, services, []));
+  document.getElementById('btnBackToServices').addEventListener('click', () => renderServiceList(container, services));
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -247,11 +245,8 @@ async function confirmBooking(container, service, date, startTime, services, pro
       });
       trackEvent('booking_created', { class_type: service.name, flow: 'salon' });
       showToast(t('salonBook.success'), 'success');
-      const [freshServices, freshPros] = await Promise.all([
-        api.get('/class-types').then(r => r.filter(s => s.isActive)),
-        api.get('/professionals').catch(() => []),
-      ]);
-      renderServiceList(container, freshServices, freshPros);
+      const freshServices = await api.get('/class-types').then(r => r.filter(s => s.isActive));
+      renderServiceList(container, freshServices);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
       btn.disabled = false;

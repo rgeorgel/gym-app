@@ -24,6 +24,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AiMessage> AiMessages => Set<AiMessage>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<TimeBlock> TimeBlocks => Set<TimeBlock>();
+    public DbSet<InstructorService> InstructorServices => Set<InstructorService>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -240,6 +241,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Session>(e =>
         {
             e.HasOne(x => x.Instructor).WithMany().HasForeignKey(x => x.InstructorId).OnDelete(DeleteBehavior.SetNull).IsRequired(false);
+        });
+
+        // InstructorService
+        modelBuilder.Entity<InstructorService>(e =>
+        {
+            e.HasKey(x => new { x.InstructorId, x.ClassTypeId });
+            e.HasOne(x => x.Instructor).WithMany(i => i.Services).HasForeignKey(x => x.InstructorId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.ClassType).WithMany().HasForeignKey(x => x.ClassTypeId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // TimeBlock

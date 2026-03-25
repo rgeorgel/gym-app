@@ -141,6 +141,11 @@ function openInstructorModal(instructor = null) {
         <label class="form-label">${t('instructors.field.specialties')}</label>
         <input class="form-control" id="iSpecialties" placeholder="${lbl.specialtiesPlaceholder()}" value="${instructor?.specialties ?? ''}">
       </div>
+      ${salon ? `
+      <div class="form-group" id="iServicesContainer">
+        <label class="form-label">Serviços que atende</label>
+        <div class="loading-center" style="justify-content:flex-start"><span class="spinner" style="width:16px;height:16px"></span></div>
+      </div>` : ''}
     `,
     footer: `
       <button class="btn btn-secondary" onclick="closeModal('instructorModal')">${t('btn.cancel')}</button>
@@ -163,6 +168,45 @@ function openInstructorModal(instructor = null) {
     if (preview) { preview.src = url; preview.style.display = url ? '' : 'none'; }
   });
 
+  // Load service checkboxes (salon only)
+  if (salon) {
+    api.get('/class-types').then(services => {
+      const el = document.getElementById('iServicesContainer');
+      if (!el) return;
+      const active = services.filter(s => s.isActive);
+      if (!active.length) { el.style.display = 'none'; return; }
+
+      const currentIds = new Set(instructor?.serviceIds ?? []);
+      const allChecked = currentIds.size === 0;
+
+      el.innerHTML = `
+        <label class="form-label">Serviços que atende</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;cursor:pointer;font-weight:500">
+          <input type="checkbox" id="iSvcAll" ${allChecked ? 'checked' : ''}>
+          <span>Todos os serviços (padrão)</span>
+        </label>
+        <div id="iSvcList" style="${allChecked ? 'display:none' : 'display:grid;gap:0.4rem'}">
+          ${active.map(s => `
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem">
+              <input type="checkbox" class="iSvcCheck" value="${s.id}" ${currentIds.has(s.id) ? 'checked' : ''}>
+              <span style="width:10px;height:10px;border-radius:50%;background:${s.color ?? '#888'};display:inline-block;flex-shrink:0"></span>
+              <span>${s.name}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+
+      document.getElementById('iSvcAll').addEventListener('change', e => {
+        document.getElementById('iSvcList').style.display = e.target.checked ? 'none' : 'grid';
+        if (e.target.checked)
+          document.querySelectorAll('.iSvcCheck').forEach(cb => cb.checked = false);
+      });
+    }).catch(() => {
+      const el = document.getElementById('iServicesContainer');
+      if (el) el.style.display = 'none';
+    });
+  }
+
   document.getElementById('btnSaveInstructor').addEventListener('click', async () => {
     const name = document.getElementById('iName').value.trim();
     const email = document.getElementById('iEmail').value.trim();
@@ -177,13 +221,26 @@ function openInstructorModal(instructor = null) {
     };
 
     try {
+      let savedId;
       if (instructor) {
         await api.put(`/instructors/${instructor.id}`, body);
+        savedId = instructor.id;
         showToast(lbl.saved(), 'success');
       } else {
-        await api.post('/instructors', { ...body, email });
+        const created = await api.post('/instructors', { ...body, email });
+        savedId = created.id;
         showToast(lbl.created(), 'success');
       }
+
+      // Save service associations (salon only)
+      if (salon && savedId) {
+        const allSvc = document.getElementById('iSvcAll')?.checked ?? true;
+        const serviceIds = allSvc
+          ? []
+          : [...document.querySelectorAll('.iSvcCheck:checked')].map(cb => cb.value);
+        await api.put(`/instructors/${savedId}/services`, { serviceIds }).catch(() => {});
+      }
+
       closeModal('instructorModal');
       await loadInstructors();
     } catch (e) {

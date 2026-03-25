@@ -14,4 +14,5 @@ public class Instructor
     public User User { get; set; } = null!;
     public Location? PrimaryLocation { get; set; }
     public ICollection<Schedule> Schedules { get; set; } = [];
+    public ICollection<InstructorService> Services { get; set; } = [];
 }

@@ -251,10 +251,9 @@
       const grid = document.getElementById('catalogGrid');
 
       try {
-        const [config, services, professionals] = await Promise.all([
+        const [config, services] = await Promise.all([
           fetchJSON('/tenant/config'),
           fetchJSON('/public/services'),
-          fetchJSON('/professionals').catch(() => []),
         ]);
 
         const primaryColor = config.primaryColor || '#6c63ff';
@@ -281,9 +280,7 @@
           return d;
         });
 
-        const hasPros = professionals.length > 0;
-
-        function buildProPicker() {
+        function buildProPicker(professionals) {
           const anyOpt = { id: null, name: 'Qualquer' };
           return [anyOpt, ...professionals].map(p => `
             <button class="pro-btn${p.id === null ? ' active' : ''}" data-proid="${p.id ?? ''}">
@@ -315,10 +312,7 @@
               <button class="btn btn-primary btn-agendar">Ver horários</button>
             </div>
             <div class="slot-panel" style="display:none">
-              ${hasPros ? `
-                <p style="font-size:0.8rem;font-weight:600;margin:0 0 0.5rem;color:var(--text-muted)">PROFISSIONAL</p>
-                <div class="pro-picker">${buildProPicker()}</div>
-              ` : ''}
+              <div class="pro-picker-area"></div>
               <p style="font-size:0.8rem;font-weight:600;margin:0 0 0.5rem;color:var(--text-muted)">SELECIONE UMA DATA</p>
               <div class="date-strip">${buildDateStrip(days)}</div>
               <div class="slots-area"></div>
@@ -326,13 +320,14 @@
           `;
 
           const panel = card.querySelector('.slot-panel');
+          const proPicker = card.querySelector('.pro-picker-area');
           const slotsArea = card.querySelector('.slots-area');
           const btnAgendar = card.querySelector('.btn-agendar');
           let selectedDate = null;
           let selectedProfessionalId = null; // null = any
+          let prosLoaded = false;
 
-          // Professional picker interaction
-          if (hasPros) {
+          const attachProEvents = () => {
             panel.querySelectorAll('.pro-btn').forEach(pb => {
               pb.addEventListener('click', () => {
                 panel.querySelectorAll('.pro-btn').forEach(b => b.classList.remove('active'));
@@ -341,9 +336,9 @@
                 if (selectedDate) loadSlots(svc.id, selectedDate, slotsArea, primaryColor, selectedProfessionalId);
               });
             });
-          }
+          };
 
-          btnAgendar.addEventListener('click', () => {
+          btnAgendar.addEventListener('click', async () => {
             const isOpen = panel.style.display !== 'none';
             document.querySelectorAll('.slot-panel').forEach(p => p.style.display = 'none');
             document.querySelectorAll('.btn-agendar').forEach(b => b.textContent = 'Ver horários');
@@ -351,6 +346,21 @@
 
             panel.style.display = 'block';
             btnAgendar.textContent = 'Fechar';
+
+            // Lazy-load professionals filtered by this service
+            if (!prosLoaded) {
+              prosLoaded = true;
+              try {
+                const pros = await fetchJSON(`/professionals?serviceId=${svc.id}`);
+                if (pros.length > 0) {
+                  proPicker.innerHTML = `
+                    <p style="font-size:0.8rem;font-weight:600;margin:0 0 0.5rem;color:var(--text-muted)">PROFISSIONAL</p>
+                    <div class="pro-picker">${buildProPicker(pros)}</div>
+                  `;
+                  attachProEvents();
+                }
+              } catch { /* no picker if fails */ }
+            }
 
             const firstBtn = panel.querySelector('.date-btn');
             if (firstBtn && !selectedDate) firstBtn.click();

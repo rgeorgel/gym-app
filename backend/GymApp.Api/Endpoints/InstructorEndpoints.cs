@@ -17,9 +17,10 @@ public static class InstructorEndpoints
         {
             var instructors = await db.Instructors.AsNoTracking()
                 .Include(i => i.User)
+                .Include(i => i.Services)
                 .Where(i => i.TenantId == tenant.TenantId)
                 .OrderBy(i => i.User.Name)
-                .Select(i => new InstructorResponse(i.Id, i.User.Name, i.User.Email, i.User.Phone, i.Bio, i.Specialties, i.User.PhotoUrl))
+                .Select(i => new InstructorResponse(i.Id, i.User.Name, i.User.Email, i.User.Phone, i.Bio, i.Specialties, i.User.PhotoUrl, i.Services.Select(s => s.ClassTypeId).ToList()))
                 .ToListAsync();
             return Results.Ok(instructors);
         });
@@ -28,9 +29,10 @@ public static class InstructorEndpoints
         {
             var i = await db.Instructors.AsNoTracking()
                 .Include(x => x.User)
+                .Include(x => x.Services)
                 .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == tenant.TenantId);
             return i is null ? Results.NotFound() :
-                Results.Ok(new InstructorResponse(i.Id, i.User.Name, i.User.Email, i.User.Phone, i.Bio, i.Specialties, i.User.PhotoUrl));
+                Results.Ok(new InstructorResponse(i.Id, i.User.Name, i.User.Email, i.User.Phone, i.Bio, i.Specialties, i.User.PhotoUrl, i.Services.Select(s => s.ClassTypeId).ToList()));
         });
 
         group.MapPost("/", async (CreateInstructorRequest req, AppDbContext db, TenantContext tenant) =>
@@ -64,13 +66,14 @@ public static class InstructorEndpoints
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/instructors/{instructor.Id}",
-                new InstructorResponse(instructor.Id, user.Name, user.Email, user.Phone, instructor.Bio, instructor.Specialties, user.PhotoUrl));
+                new InstructorResponse(instructor.Id, user.Name, user.Email, user.Phone, instructor.Bio, instructor.Specialties, user.PhotoUrl, new List<Guid>()));
         }).RequireAuthorization("AdminOrAbove");
 
         group.MapPut("/{id:guid}", async (Guid id, UpdateInstructorRequest req, AppDbContext db, TenantContext tenant) =>
         {
             var instructor = await db.Instructors
                 .Include(i => i.User)
+                .Include(i => i.Services)
                 .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == tenant.TenantId);
             if (instructor is null) return Results.NotFound();
 
@@ -82,7 +85,26 @@ public static class InstructorEndpoints
             await db.SaveChangesAsync();
 
             return Results.Ok(new InstructorResponse(instructor.Id, instructor.User.Name, instructor.User.Email,
-                instructor.User.Phone, instructor.Bio, instructor.Specialties, instructor.User.PhotoUrl));
+                instructor.User.Phone, instructor.Bio, instructor.Specialties, instructor.User.PhotoUrl,
+                instructor.Services.Select(s => s.ClassTypeId).ToList()));
+        }).RequireAuthorization("AdminOrAbove");
+
+        group.MapPut("/{id:guid}/services", async (Guid id, UpdateInstructorServicesRequest req, AppDbContext db, TenantContext tenant) =>
+        {
+            var instructor = await db.Instructors
+                .Include(i => i.Services)
+                .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == tenant.TenantId);
+            if (instructor is null) return Results.NotFound();
+
+            // Remove all current associations, add new ones
+            instructor.Services.Clear();
+            foreach (var svcId in req.ServiceIds.Distinct())
+            {
+                var exists = await db.ClassTypes.AnyAsync(ct => ct.Id == svcId && ct.TenantId == tenant.TenantId);
+                if (exists) instructor.Services.Add(new InstructorService { InstructorId = id, ClassTypeId = svcId });
+            }
+            await db.SaveChangesAsync();
+            return Results.Ok(instructor.Services.Select(s => s.ClassTypeId).ToList());
         }).RequireAuthorization("AdminOrAbove");
 
         group.MapDelete("/{id:guid}", async (Guid id, AppDbContext db, TenantContext tenant) =>

@@ -144,7 +144,7 @@ public static class AvailabilityEndpoints
         }).AllowAnonymous();
 
         // Get professionals (instructors with availability configured) — public endpoint
-        app.MapGet("/api/professionals", async (AppDbContext db, TenantContext tenant) =>
+        app.MapGet("/api/professionals", async (AppDbContext db, TenantContext tenant, Guid? serviceId) =>
         {
             var idsWithAvailability = await db.ProfessionalAvailability.AsNoTracking()
                 .Where(a => a.TenantId == tenant.TenantId && a.IsActive && a.InstructorId != null)
@@ -155,9 +155,16 @@ public static class AvailabilityEndpoints
             if (!idsWithAvailability.Any())
                 return Results.Ok(Array.Empty<ProfessionalResponse>());
 
-            var professionals = await db.Instructors.AsNoTracking()
+            var query = db.Instructors.AsNoTracking()
                 .Include(i => i.User)
-                .Where(i => i.TenantId == tenant.TenantId && idsWithAvailability.Contains(i.Id))
+                .Include(i => i.Services)
+                .Where(i => i.TenantId == tenant.TenantId && idsWithAvailability.Contains(i.Id));
+
+            // Filter by service: include professionals with no service restrictions OR those who have this service
+            if (serviceId.HasValue)
+                query = query.Where(i => !i.Services.Any() || i.Services.Any(s => s.ClassTypeId == serviceId.Value));
+
+            var professionals = await query
                 .OrderBy(i => i.User.Name)
                 .Select(i => new ProfessionalResponse(i.Id, i.User.Name, i.User.PhotoUrl, i.Bio, i.Specialties))
                 .ToListAsync();
