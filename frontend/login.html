@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NWZTF6F3M6');
+  </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vxxeenq2oz");
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendofy — Login</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+  <style>
+    #app-loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--brand-primary);
+      z-index: 9999;
+      transition: opacity 0.25s ease;
+    }
+    #app-loader.fade-out { opacity: 0; pointer-events: none; }
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="app-loader"><div class="loader-spinner"></div></div>
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="/assets/logo-placeholder.svg" alt="Agendofy" data-tenant-logo>
+        <span class="app-name" data-tenant-name>Agendofy</span>
+      </div>
+
+      <!-- Login form -->
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">E-mail</label>
+          <input class="form-control" id="email" type="email" autocomplete="email"
+            placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password" data-i18n="login.password"></label>
+          <input class="form-control" id="password" type="password" autocomplete="current-password"
+            placeholder="••••••••" required>
+        </div>
+
+        <div id="loginError" class="form-error hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem" data-i18n="login.submit"></button>
+        <div class="text-center text-sm" style="margin-top:0.75rem">
+          <a href="/reset-password.html" style="color:var(--text-muted)" data-i18n="login.forgotPassword"></a>
+        </div>
+      </form>
+
+      <!-- Register form (hidden by default) -->
+      <form id="registerForm" class="hidden" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="regName" data-i18n="register.name"></label>
+          <input class="form-control" id="regName" type="text" autocomplete="name" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regEmail">E-mail *</label>
+          <input class="form-control" id="regEmail" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div class="form-group">
+            <label class="form-label" for="regPhone" data-i18n="register.phone"></label>
+            <input class="form-control" id="regPhone" type="tel" autocomplete="tel" placeholder="(11) 99999-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="regBirth" data-i18n="register.birthDate"></label>
+            <input class="form-control" id="regBirth" type="date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword" data-i18n="field.password"></label>
+          <input class="form-control" id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPasswordConfirm" data-i18n="register.confirmPassword"></label>
+          <input class="form-control" id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="••••••••" required>
+        </div>
+
+        <div id="registerError" class="form-error hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem" data-i18n="register.submit"></button>
+      </form>
+
+      <!-- Toggle links -->
+      <div id="toRegister" class="text-center text-sm" style="margin-top:1.25rem">
+        <span data-i18n="login.noAccount"></span>
+        <a href="#" id="linkRegister" style="font-weight:600" data-i18n="login.registerLink"></a>
+      </div>
+      <div id="toLogin" class="hidden text-center text-sm" style="margin-top:1.25rem">
+        <span data-i18n="login.hasAccount"></span>
+        <a href="#" id="linkLogin" style="font-weight:600" data-i18n="login.loginLink"></a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initLoginPage } from '/js/auth.js';
+    initLoginPage();
+  </script>
+</body>
+</html>

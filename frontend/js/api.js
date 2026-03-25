@@ -73,7 +73,7 @@ function logout() {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
-  location.href = '/index.html';
+  location.href = '/login.html';
 }
 
 class ApiError extends Error {

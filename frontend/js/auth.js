@@ -12,10 +12,10 @@ export function getUser() {
 export function isLoggedIn() { return !!localStorage.getItem('access_token'); }
 
 export function requireAuth(allowedRoles = []) {
-  if (!isLoggedIn()) { location.href = '/index.html'; return false; }
+  if (!isLoggedIn()) { location.href = '/login.html'; return false; }
   const user = getUser();
   if (allowedRoles.length && !allowedRoles.includes(user?.role)) {
-    location.href = '/index.html';
+    location.href = '/login.html';
     return false;
   }
   return true;
