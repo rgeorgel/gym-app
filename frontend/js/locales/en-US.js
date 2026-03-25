@@ -54,6 +54,7 @@ export default {
   'nav.schedules': 'Schedule',
   'nav.classTypes': 'Class Types',
   'nav.instructors': 'Instructors',
+  'nav.professionals': 'Professionals',
   'nav.packageTemplates': 'Package Templates',
   'nav.settings': 'Settings',
   'nav.admins': 'Administrators',

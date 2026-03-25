@@ -179,10 +179,17 @@
       if (ctIcon) ctIcon.textContent = '✂️';
 
       // Hide gym-only pages from nav for beauty salons
-      ['package-templates', 'schedules', 'instructors'].forEach(pg => {
+      ['package-templates', 'schedules'].forEach(pg => {
         const el = document.querySelector(`[data-page="${pg}"]`);
         if (el) el.style.display = 'none';
       });
+
+      // Rename instructors nav item to "Profissionais" for salons
+      const instrNav = document.querySelector('[data-page="instructors"]');
+      if (instrNav) {
+        instrNav.querySelector('.nav-icon').textContent = '✂️';
+        instrNav.querySelector('span[data-i18n]').textContent = 'Profissionais';
+      }
 
       // Inject availability nav item after the appointments item
       if (sessNav) {
@@ -220,7 +227,7 @@
       appointments: { titleKey: 'nav.appointments', render: renderAppointments },
       availability: { titleKey: 'nav.availability', render: renderAvailability },
       'package-templates': { titleKey: 'nav.packageTemplates', render: renderPackageTemplates },
-      instructors: { titleKey: 'nav.instructors', render: renderInstructors },
+      instructors: { titleKey: isBeautySalon ? 'nav.professionals' : 'nav.instructors', render: renderInstructors },
       locations: { titleKey: 'nav.locations', render: renderLocations },
       heatmap: { titleKey: 'heatmap.title', render: renderHeatmap },
       'salon-billing': { titleKey: 'nav.salonBilling', render: renderSalonBilling },
