@@ -236,6 +236,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(x => x.PrimaryLocation).WithMany(l => l.Instructors).HasForeignKey(x => x.PrimaryLocationId).OnDelete(DeleteBehavior.SetNull);
         });
 
+        // Session → Instructor (salon: assigned professional)
+        modelBuilder.Entity<Session>(e =>
+        {
+            e.HasOne(x => x.Instructor).WithMany().HasForeignKey(x => x.InstructorId).OnDelete(DeleteBehavior.SetNull).IsRequired(false);
+        });
+
         // TimeBlock
         modelBuilder.Entity<TimeBlock>(e =>
         {

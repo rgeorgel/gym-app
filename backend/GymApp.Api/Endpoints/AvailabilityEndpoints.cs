@@ -63,8 +63,8 @@ public static class AvailabilityEndpoints
             return Results.NoContent();
         }).RequireAuthorization("AdminOrAbove");
 
-        // Get available time slots for a given date and service
-        app.MapGet("/api/slots", async (DateOnly date, Guid serviceId, AppDbContext db, TenantContext tenant) =>
+        // Get available time slots for a given date and service (optionally filtered by professional)
+        app.MapGet("/api/slots", async (DateOnly date, Guid serviceId, Guid? professionalId, AppDbContext db, TenantContext tenant) =>
         {
             var service = await db.ClassTypes.AsNoTracking()
                 .FirstOrDefaultAsync(ct => ct.Id == serviceId && ct.TenantId == tenant.TenantId && ct.IsActive);
@@ -74,19 +74,28 @@ public static class AvailabilityEndpoints
             int duration = service.DurationMinutes ?? 30;
             var weekday = (int)date.DayOfWeek;
 
-            var blocks = await db.ProfessionalAvailability.AsNoTracking()
-                .Where(a => a.TenantId == tenant.TenantId && a.Weekday == weekday && a.IsActive)
-                .ToListAsync();
+            // Get availability blocks — filter by professional if specified
+            var availQuery = db.ProfessionalAvailability.AsNoTracking()
+                .Where(a => a.TenantId == tenant.TenantId && a.Weekday == weekday && a.IsActive);
 
+            if (professionalId.HasValue)
+                availQuery = availQuery.Where(a => a.InstructorId == professionalId.Value);
+
+            var blocks = await availQuery.ToListAsync();
             if (!blocks.Any()) return Results.Ok(Array.Empty<TimeOnly>());
 
-            // Get existing salon sessions on that date that might conflict
-            var existingSessions = await db.Sessions.AsNoTracking()
+            // Get existing sessions — filter by professional if specified
+            var sessQuery = db.Sessions.AsNoTracking()
                 .Where(s =>
                     s.TenantId == tenant.TenantId &&
                     s.Date == date &&
                     s.ScheduleId == null &&
-                    s.Status != SessionStatus.Cancelled)
+                    s.Status != SessionStatus.Cancelled);
+
+            if (professionalId.HasValue)
+                sessQuery = sessQuery.Where(s => s.InstructorId == professionalId.Value);
+
+            var existingSessions = await sessQuery
                 .Select(s => new { s.StartTime, s.DurationMinutes })
                 .ToListAsync();
 
@@ -132,6 +141,28 @@ public static class AvailabilityEndpoints
             }).ToList();
 
             return Results.Ok(available);
+        }).AllowAnonymous();
+
+        // Get professionals (instructors with availability configured) — public endpoint
+        app.MapGet("/api/professionals", async (AppDbContext db, TenantContext tenant) =>
+        {
+            var idsWithAvailability = await db.ProfessionalAvailability.AsNoTracking()
+                .Where(a => a.TenantId == tenant.TenantId && a.IsActive && a.InstructorId != null)
+                .Select(a => a.InstructorId!.Value)
+                .Distinct()
+                .ToListAsync();
+
+            if (!idsWithAvailability.Any())
+                return Results.Ok(Array.Empty<ProfessionalResponse>());
+
+            var professionals = await db.Instructors.AsNoTracking()
+                .Include(i => i.User)
+                .Where(i => i.TenantId == tenant.TenantId && idsWithAvailability.Contains(i.Id))
+                .OrderBy(i => i.User.Name)
+                .Select(i => new ProfessionalResponse(i.Id, i.User.Name, i.User.PhotoUrl, i.Bio, i.Specialties))
+                .ToListAsync();
+
+            return Results.Ok(professionals);
         }).AllowAnonymous();
 
         // ── Time Blocks (admin-defined date-specific closures) ──────────────

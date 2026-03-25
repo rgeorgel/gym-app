@@ -16,5 +16,7 @@ public record AppointmentResponse(
     string? ClientPhone,
     BookingStatus Status,
     DateTime? CheckedInAt,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid? ProfessionalId,
+    string? ProfessionalName
 );

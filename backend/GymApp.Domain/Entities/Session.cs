@@ -9,6 +9,7 @@ public class Session
     public Guid TenantId { get; set; }            // denormalized for filtering without Schedule join
     public Guid? ClassTypeId { get; set; }        // denormalized — always set
     public Guid LocationId { get; set; }
+    public Guid? InstructorId { get; set; }    // salon: professional assigned to this appointment
     public TimeOnly StartTime { get; set; }       // denormalized — always set
     public int DurationMinutes { get; set; }      // denormalized — always set
     public DateOnly Date { get; set; }
@@ -21,6 +22,7 @@ public class Session
     public Tenant Tenant { get; set; } = null!;
     public ClassType? ClassType { get; set; }
     public Location Location { get; set; } = null!;
+    public Instructor? Instructor { get; set; }
     public ICollection<Booking> Bookings { get; set; } = [];
     public ICollection<WaitingListEntry> WaitingList { get; set; } = [];
 }

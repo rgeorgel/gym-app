@@ -337,6 +337,7 @@ public static class DashboardEndpoints
             var today = DateOnly.FromDateTime(DateTime.Today);
             var bookings = await db.Bookings.AsNoTracking()
                 .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Include(b => b.Session).ThenInclude(s => s.Instructor).ThenInclude(i => i!.User)
                 .Include(b => b.Student)
                 .Where(b =>
                     b.Session.TenantId == tenant.TenantId &&
@@ -356,6 +357,7 @@ public static class DashboardEndpoints
                     ClientPhone = b.Student.Phone,
                     b.Status,
                     b.CheckedInAt,
+                    ProfessionalName = b.Session.Instructor != null ? b.Session.Instructor.User.Name : null,
                 })
                 .ToListAsync();
 

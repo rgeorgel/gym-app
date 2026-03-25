@@ -118,6 +118,7 @@ export async function renderAppointments(container) {
             <span class="color-dot" style="background:${a.serviceColor ?? '#888'}"></span>
             ${a.serviceName}
           </div>
+          ${a.professionalName ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.15rem">✂️ ${a.professionalName}</div>` : ''}
           ${a.clientPhone || priceStr ? `
           <div class="appt-card-meta">
             ${a.clientPhone ? `<a class="appt-card-phone" href="tel:${a.clientPhone}">📞 ${a.clientPhone}</a>` : ''}
@@ -393,6 +394,11 @@ function openNewApptModal(onSuccess) {
           <select class="form-control" id="serviceSelect"><option value="">Carregando…</option></select>
         </div>
 
+        <div class="form-group" id="proGroup" style="display:none">
+          <label class="form-label">Profissional</label>
+          <select class="form-control" id="proSelect"></select>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Data</label>
           <input class="form-control" id="apptDateNew" type="date" value="${today}">
@@ -418,12 +424,23 @@ function openNewApptModal(onSuccess) {
   overlay.querySelector('#btnCancelModal').addEventListener('click', close);
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
-  // Load services
-  api.get('/class-types').then(services => {
+  // Load services and professionals in parallel
+  Promise.all([
+    api.get('/class-types'),
+    api.get('/professionals').catch(() => []),
+  ]).then(([services, professionals]) => {
     const sel = overlay.querySelector('#serviceSelect');
     const active = services.filter(s => s.isActive);
     sel.innerHTML = `<option value="">Selecionar serviço…</option>` +
       active.map(s => `<option value="${s.id}" data-duration="${s.durationMinutes ?? ''}">${s.name}${s.durationMinutes ? ` (${s.durationMinutes}min)` : ''}</option>`).join('');
+
+    if (professionals.length > 0) {
+      const proSel = overlay.querySelector('#proSelect');
+      proSel.innerHTML = `<option value="">Qualquer disponível</option>` +
+        professionals.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      overlay.querySelector('#proGroup').style.display = 'block';
+      proSel.addEventListener('change', loadSlots);
+    }
   });
 
   // Client search with debounce
@@ -483,7 +500,9 @@ function openNewApptModal(onSuccess) {
     slotsGroup.style.display = 'block';
     slotsContainer.innerHTML = `<span class="spinner"></span>`;
     try {
-      const slots = await api.get(`/slots?date=${date}&serviceId=${serviceId}`);
+      const professionalId = overlay.querySelector('#proSelect')?.value || null;
+      const query = `/slots?date=${date}&serviceId=${serviceId}${professionalId ? `&professionalId=${professionalId}` : ''}`;
+      const slots = await api.get(query);
       if (!slots.length) {
         slotsContainer.innerHTML = `<span style="font-size:0.85rem;color:var(--gray-400)">Sem horários disponíveis nesta data</span>`;
         return;
@@ -523,11 +542,13 @@ function openNewApptModal(onSuccess) {
     btn.disabled = true;
     btn.textContent = '…';
     try {
+      const professionalId = overlay.querySelector('#proSelect')?.value || undefined;
       await api.post('/bookings/salon', {
         studentId: overlay.querySelector('#clientId').value,
         serviceId: overlay.querySelector('#serviceSelect').value,
         date: overlay.querySelector('#apptDateNew').value,
         startTime: overlay.querySelector('#selectedSlot').value,
+        professionalId,
       });
       showToast('Agendamento criado com sucesso!', 'success');
       close();

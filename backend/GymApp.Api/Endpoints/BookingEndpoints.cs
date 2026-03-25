@@ -116,39 +116,78 @@ public static class BookingEndpoints
             if (service is null) return Results.NotFound("Service not found.");
 
             int duration = service.DurationMinutes ?? 30;
-
-            // Validate availability block covers this slot
             var weekday = (int)req.Date.DayOfWeek;
             var slotEnd = req.StartTime.Add(TimeSpan.FromMinutes(duration));
-            var blockExists = await db.ProfessionalAvailability
-                .AnyAsync(a =>
+
+            // Validate availability block covers this slot (professional-aware)
+            var blockQuery = db.ProfessionalAvailability
+                .Where(a =>
                     a.TenantId == tenant.TenantId &&
                     a.Weekday == weekday &&
                     a.IsActive &&
                     a.StartTime <= req.StartTime &&
                     a.EndTime >= slotEnd);
 
-            if (!blockExists) return Results.BadRequest("No availability configured for this time slot.");
+            if (req.ProfessionalId.HasValue)
+                blockQuery = blockQuery.Where(a => a.InstructorId == req.ProfessionalId.Value);
 
-            // Check for booking conflicts in memory (EF can't translate TimeOnly arithmetic to SQL)
+            if (!await blockQuery.AnyAsync())
+                return Results.BadRequest("No availability configured for this time slot.");
+
+            // Load all sessions for that day to check conflicts
             var daySessions = await db.Sessions
                 .Where(s =>
                     s.TenantId == tenant.TenantId &&
                     s.Date == req.Date &&
                     s.ScheduleId == null &&
                     s.Status != SessionStatus.Cancelled)
-                .Select(s => new { s.StartTime, s.DurationMinutes })
+                .Select(s => new { s.StartTime, s.DurationMinutes, s.InstructorId })
                 .ToListAsync();
 
             var newStart = req.StartTime.Hour * 60 + req.StartTime.Minute;
             var newEnd = newStart + duration;
-            bool hasConflict = daySessions.Any(s =>
-            {
-                var sStart = s.StartTime.Hour * 60 + s.StartTime.Minute;
-                var sEnd = sStart + s.DurationMinutes;
+
+            bool Overlaps(TimeOnly sTime, int sDur) {
+                var sStart = sTime.Hour * 60 + sTime.Minute;
+                var sEnd = sStart + sDur;
                 return newStart < sEnd && newEnd > sStart;
-            });
-            if (hasConflict) return Results.Conflict("This time slot is already booked.");
+            }
+
+            // Determine assigned professional
+            Guid? assignedProfessionalId = req.ProfessionalId;
+
+            if (req.ProfessionalId.HasValue)
+            {
+                // Specific professional chosen — check their conflicts
+                bool conflict = daySessions.Any(s =>
+                    s.InstructorId == req.ProfessionalId && Overlaps(s.StartTime, s.DurationMinutes));
+                if (conflict)
+                    return Results.Conflict("This professional is not available at this time slot.");
+            }
+            else
+            {
+                // Auto-assign: find first available professional
+                var professionalIds = await db.ProfessionalAvailability.AsNoTracking()
+                    .Where(a => a.TenantId == tenant.TenantId && a.IsActive && a.InstructorId != null)
+                    .Select(a => a.InstructorId!.Value)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (professionalIds.Any())
+                {
+                    assignedProfessionalId = professionalIds.FirstOrDefault(pid =>
+                        !daySessions.Any(s => s.InstructorId == pid && Overlaps(s.StartTime, s.DurationMinutes)));
+
+                    if (assignedProfessionalId == null)
+                        return Results.Conflict("No professional available at this time slot.");
+                }
+                else
+                {
+                    // No professionals configured — tenant-wide conflict check (backward compat)
+                    bool hasConflict = daySessions.Any(s => Overlaps(s.StartTime, s.DurationMinutes));
+                    if (hasConflict) return Results.Conflict("This time slot is already booked.");
+                }
+            }
 
             // Check if student already has a booking at this time
             var studentConflict = await db.Bookings
@@ -175,10 +214,11 @@ public static class BookingEndpoints
                 StartTime = req.StartTime,
                 DurationMinutes = duration,
                 Date = req.Date,
-                SlotsAvailable = 0 // will be set to 0 immediately after booking (capacity = 1)
+                InstructorId = assignedProfessionalId,
+                SlotsAvailable = 0
             };
             db.Sessions.Add(session);
-            await db.SaveChangesAsync(); // need session ID before creating booking
+            await db.SaveChangesAsync();
 
             var booking = new Booking
             {
@@ -201,7 +241,7 @@ public static class BookingEndpoints
                     _ = email.SendNewBookingNotificationAsync(admin.Email, admin.Name, student.Name, student.Phone, service.Name, sessionDateTime);
             }
 
-            return Results.Created($"/api/bookings/{booking.Id}", booking.Id);
+            return Results.Created($"/api/bookings/{booking.Id}", new { bookingId = booking.Id, sessionId = session.Id });
         });
 
         group.MapDelete("/{id:guid}", async (Guid id, string? reason, AppDbContext db, TenantContext tenant,

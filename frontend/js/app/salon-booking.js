@@ -22,7 +22,10 @@ function formatTime(t) {
 export async function renderSalonBooking(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
   try {
-    const services = await api.get('/class-types');
+    const [services, professionals] = await Promise.all([
+      api.get('/class-types'),
+      api.get('/professionals').catch(() => []),
+    ]);
     const active = services.filter(s => s.isActive);
     if (!active.length) {
       container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💅</div><div class="empty-state-text">${t('services.none')}</div></div>`;
@@ -37,14 +40,14 @@ export async function renderSalonBooking(container) {
         const pending = JSON.parse(raw);
         const svc = active.find(s => s.id === pending.serviceId);
         if (svc && pending.date && pending.time) {
-          renderServiceList(container, active);
-          confirmBooking(container, svc, pending.date, pending.time, active);
+          renderServiceList(container, active, professionals);
+          confirmBooking(container, svc, pending.date, pending.time, active, professionals, pending.professionalId ?? null);
           return;
         }
       } catch { /* ignore malformed entry */ }
     }
 
-    renderServiceList(container, active);
+    renderServiceList(container, active, professionals);
   } catch (e) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-text">${e.message}</div></div>`;
   }
@@ -70,7 +73,7 @@ function serviceCard(s) {
   `;
 }
 
-function renderServiceList(container, services) {
+function renderServiceList(container, services, professionals) {
   // Group by category; services without a category go last under null key
   const groups = new Map();
   for (const s of services) {
@@ -87,9 +90,6 @@ function renderServiceList(container, services) {
       html += `<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding-top:0.25rem">${catName}</div>`;
     }
     html += svcs.map(serviceCard).join('');
-    if (hasCategories && catName === null && groups.size > 1) {
-      // "Outros" label is omitted intentionally — they just appear without header
-    }
   }
   html += '</div>';
 
@@ -98,12 +98,50 @@ function renderServiceList(container, services) {
   container.querySelectorAll('.btn-book-service').forEach(btn => {
     btn.addEventListener('click', () => {
       const svc = services.find(s => s.id === btn.dataset.id);
-      renderDatePicker(container, svc, services);
+      if (professionals && professionals.length > 0) {
+        renderProfessionalPicker(container, svc, professionals, services);
+      } else {
+        renderDatePicker(container, svc, services, null);
+      }
     });
   });
 }
 
-function renderDatePicker(container, service, services) {
+function renderProfessionalPicker(container, service, professionals, services) {
+  const anyOption = { id: null, name: 'Qualquer disponível', photoUrl: null };
+  const options = [anyOption, ...professionals];
+
+  container.innerHTML = `
+    <div style="padding:1rem">
+      <button class="btn btn-secondary btn-sm" id="btnBackToServices">${t('salonBook.back')}</button>
+      <h3 style="margin:1rem 0 0.5rem">${service.name}</h3>
+      <p style="font-size:0.9rem;color:var(--text-muted);margin:0 0 1rem">Escolha o profissional</p>
+      <div style="display:grid;gap:0.75rem">
+        ${options.map(p => `
+          <button class="btn btn-secondary btn-pick-pro" data-id="${p.id ?? ''}"
+            style="display:flex;align-items:center;gap:0.75rem;text-align:left;padding:0.75rem 1rem">
+            ${p.photoUrl
+              ? `<img src="${p.photoUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+              : `<span style="width:36px;height:36px;border-radius:50%;background:var(--gray-200);display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${p.id ? '✂️' : '🔀'}</span>`}
+            <span style="font-weight:600">${p.name}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  container.querySelector('#btnBackToServices').addEventListener('click', () =>
+    renderServiceList(container, services, professionals));
+
+  container.querySelectorAll('.btn-pick-pro').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const professionalId = btn.dataset.id || null;
+      renderDatePicker(container, service, services, professionalId);
+    });
+  });
+}
+
+function renderDatePicker(container, service, services, professionalId) {
   // Build next 30 days as selectable dates
   const days = [];
   for (let i = 0; i < 30; i++) {
@@ -131,22 +169,23 @@ function renderDatePicker(container, service, services) {
     </div>
   `;
 
-  document.getElementById('btnBackToServices').addEventListener('click', () => renderServiceList(container, services));
+  document.getElementById('btnBackToServices').addEventListener('click', () => renderServiceList(container, services, []));
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      await renderSlots(container, service, btn.dataset.date, services);
+      await renderSlots(container, service, btn.dataset.date, services, professionalId);
     });
   });
 }
 
-async function renderSlots(container, service, date, services) {
+async function renderSlots(container, service, date, services, professionalId) {
   const area = document.getElementById('slotsArea');
   area.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
   try {
-    const slots = await api.get(`/slots?date=${date}&serviceId=${service.id}`);
+    const query = `/slots?date=${date}&serviceId=${service.id}${professionalId ? `&professionalId=${professionalId}` : ''}`;
+    const slots = await api.get(query);
     if (!slots.length) {
       area.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem">${t('salonBook.noSlots')}</p>`;
       return;
@@ -163,18 +202,18 @@ async function renderSlots(container, service, date, services) {
     `;
 
     area.querySelectorAll('.btn-slot').forEach(btn => {
-      btn.addEventListener('click', () => confirmBooking(container, service, date, btn.dataset.slot, services));
+      btn.addEventListener('click', () => confirmBooking(container, service, date, btn.dataset.slot, services, [], professionalId));
     });
   } catch (e) {
     area.innerHTML = `<p style="color:var(--text-danger)">${e.message}</p>`;
   }
 }
 
-async function confirmBooking(container, service, date, startTime, services) {
+async function confirmBooking(container, service, date, startTime, services, professionals, professionalId) {
   const dateObj = new Date(date + 'T12:00:00');
   const dateLabel = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  const slotArea = document.getElementById('slotsArea');
+  const slotArea = document.getElementById('slotsArea') ?? container;
   slotArea.innerHTML = `
     <div class="card" style="padding:1rem;border:2px solid var(--brand-primary)">
       <p style="font-weight:600;margin:0 0 0.5rem">${t('salonBook.confirm')}</p>
@@ -192,7 +231,7 @@ async function confirmBooking(container, service, date, startTime, services) {
   `;
 
   document.getElementById('btnCancelConfirm').addEventListener('click', () =>
-    renderSlots(container, service, date, services));
+    renderSlots(container, service, date, services, professionalId));
 
   document.getElementById('btnConfirmBook').addEventListener('click', async () => {
     const btn = document.getElementById('btnConfirmBook');
@@ -204,10 +243,15 @@ async function confirmBooking(container, service, date, startTime, services) {
         startTime: startTime,
         serviceId: service.id,
         studentId: user.id,
+        professionalId: professionalId ?? undefined,
       });
       trackEvent('booking_created', { class_type: service.name, flow: 'salon' });
       showToast(t('salonBook.success'), 'success');
-      renderServiceList(container, await api.get('/class-types').then(r => r.filter(s => s.isActive)));
+      const [freshServices, freshPros] = await Promise.all([
+        api.get('/class-types').then(r => r.filter(s => s.isActive)),
+        api.get('/professionals').catch(() => []),
+      ]);
+      renderServiceList(container, freshServices, freshPros);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
       btn.disabled = false;

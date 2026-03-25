@@ -6,7 +6,7 @@ namespace GymApp.Api.DTOs;
 public record CreateBookingRequest(Guid SessionId, Guid StudentId, Guid? PackageItemId);
 
 // BeautySalon booking: pick a date/time/service — session is created on demand
-public record CreateSalonBookingRequest(DateOnly Date, TimeOnly StartTime, Guid ServiceId, Guid StudentId);
+public record CreateSalonBookingRequest(DateOnly Date, TimeOnly StartTime, Guid ServiceId, Guid StudentId, Guid? ProfessionalId);
 
 public record CancelBookingRequest(string? Reason);
 

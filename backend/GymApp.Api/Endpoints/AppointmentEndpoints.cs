@@ -20,6 +20,7 @@ public static class AppointmentEndpoints
             {
                 var bookings = await db.Bookings.AsNoTracking()
                     .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                    .Include(b => b.Session).ThenInclude(s => s.Instructor).ThenInclude(i => i!.User)
                     .Include(b => b.Student)
                     .Where(b =>
                         b.Session.Date >= from.Value &&
@@ -43,7 +44,9 @@ public static class AppointmentEndpoints
                         b.Student.Phone,
                         b.Status,
                         b.CheckedInAt,
-                        b.CreatedAt))
+                        b.CreatedAt,
+                        b.Session.InstructorId,
+                        b.Session.Instructor != null ? b.Session.Instructor.User.Name : null))
                     .ToListAsync();
 
                 return Results.Ok(bookings);
@@ -53,6 +56,7 @@ public static class AppointmentEndpoints
 
             var bookingsForDay = await db.Bookings.AsNoTracking()
                 .Include(b => b.Session).ThenInclude(s => s.ClassType)
+                .Include(b => b.Session).ThenInclude(s => s.Instructor).ThenInclude(i => i!.User)
                 .Include(b => b.Student)
                 .Where(b =>
                     b.Session.Date == day &&
@@ -74,7 +78,9 @@ public static class AppointmentEndpoints
                     b.Student.Phone,
                     b.Status,
                     b.CheckedInAt,
-                    b.CreatedAt))
+                    b.CreatedAt,
+                    b.Session.InstructorId,
+                    b.Session.Instructor != null ? b.Session.Instructor.User.Name : null))
                 .ToListAsync();
 
             return Results.Ok(bookingsForDay);
