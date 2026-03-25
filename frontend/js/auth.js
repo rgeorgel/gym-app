@@ -39,6 +39,11 @@ export async function initLoginPage() {
   localStorage.removeItem('user');
 
   const config = await loadTenantTheme();
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('fade-out');
+    loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+  }
   const hasTenant = !!config;
 
   // Toggle login/register — only show register link when tenant is resolved
