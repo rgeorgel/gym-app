@@ -31,7 +31,8 @@ public static class BillingEndpoints
                 tenant.TrialDaysRemaining,
                 tenant.IsInTrial ? tenant.CreatedAt.AddDays(tenant.TrialDays) : null,
                 tenant.SubscriptionCurrentPeriodEnd,
-                BillingUrl: null   // URL is only returned during setup
+                BillingUrl: null,   // URL is only returned during setup
+                SubscriptionPriceCents: tenant.SubscriptionPriceCents
             ));
         });
 

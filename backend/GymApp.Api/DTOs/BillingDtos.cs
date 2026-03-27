@@ -14,7 +14,8 @@ public record SubscriptionStatusResponse(
     int TrialDaysRemaining,
     DateTime? TrialEndsAt,
     DateTime? CurrentPeriodEnd,
-    string? BillingUrl
+    string? BillingUrl,
+    int SubscriptionPriceCents
 );
 
 public record SetTrialDaysRequest(int Days);

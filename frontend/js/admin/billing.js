@@ -39,6 +39,10 @@ function buildPage(s) {
 
   let infoHtml = '';
 
+  const priceFormatted = s.subscriptionPriceCents
+    ? `R$ ${(s.subscriptionPriceCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês`
+    : '';
+
   if (isTrial) {
     const endsAt = s.trialEndsAt ? formatDate(s.trialEndsAt) : '—';
     infoHtml = `
@@ -49,13 +53,13 @@ function buildPage(s) {
   } else if (isPastDue) {
     infoHtml = `
       <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);border-radius:var(--border-radius);padding:1rem 1.25rem;margin-bottom:1.5rem">
-        <strong>Pagamento pendente</strong> — a assinatura está inadimplente. Configure o pagamento para reativar o acesso dos alunos.
+        <strong>Pagamento pendente</strong> — a assinatura está inadimplente. Configure o pagamento para reativar o acesso dos clientes.
       </div>`;
   } else if (isCanceled) {
     const until = s.currentPeriodEnd ? ` até ${formatDate(s.currentPeriodEnd)}` : '';
     infoHtml = `
       <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--border-radius);padding:1rem 1.25rem;margin-bottom:1.5rem">
-        <strong>Assinatura cancelada</strong> — acesso dos alunos mantido${until}. Configure um novo pagamento para reativar.
+        <strong>Assinatura cancelada</strong> — acesso dos clientes mantido${until}. Configure um novo pagamento para reativar.
       </div>`;
   }
 
@@ -82,11 +86,16 @@ function buildPage(s) {
               ${statusBadge(s.status)}
             </div>
             <div class="settings-row">
-              <span class="text-muted">Acesso dos alunos</span>
+              <span class="text-muted">Acesso dos clientes</span>
               ${s.hasStudentAccess
                 ? '<span class="badge badge-success">Liberado</span>'
                 : '<span class="badge badge-danger">Bloqueado</span>'}
             </div>
+            ${priceFormatted ? `
+            <div class="settings-row">
+              <span class="text-muted">Valor da assinatura</span>
+              <strong>${priceFormatted}</strong>
+            </div>` : ''}
             ${trialRow}
             ${periodEndRow}
           </div>
@@ -98,8 +107,8 @@ function buildPage(s) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">Configurar pagamento</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">
-            A assinatura é cobrada mensalmente via PIX recorrente (AbacatePay).
-            Após clicar em continuar, você será redirecionado para efetuar o primeiro pagamento.
+            A assinatura é cobrada mensalmente via PIX (AbacatePay).
+            Após clicar em continuar, você será redirecionado para efetuar o pagamento.
           </p>
           <button class="btn btn-primary" id="btnSetupBilling">Configurar pagamento →</button>
         </div>
@@ -121,7 +130,7 @@ function buildPage(s) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">Cancelar assinatura</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">
-            O acesso permanece ativo até o fim do período atual já pago. Após essa data os alunos não conseguirão acessar o sistema.
+            O acesso permanece ativo até o fim do período atual já pago. Após essa data os clientes não conseguirão acessar o sistema.
           </p>
           <button class="btn btn-danger btn-sm" id="btnCancelBilling">Cancelar assinatura</button>
         </div>
