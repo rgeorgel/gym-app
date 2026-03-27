@@ -44,12 +44,16 @@ function render(container, student, bookings, packages, classTypes, templates, i
     <div style="max-width:900px">
 
       <!-- Header -->
-      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
-        <button class="btn btn-secondary btn-sm" id="btnBack">← Voltar</button>
-        <h2 style="margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${student.name}</h2>
-        ${statusBadge(student.status)}
-        <button class="btn btn-secondary btn-sm" id="btnEditStudent">Editar</button>
-        <button class="btn btn-secondary btn-sm" id="btnResetLink">🔑 Link de acesso</button>
+      <div style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+          <button class="btn btn-secondary btn-sm" id="btnBack">← Voltar</button>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+            ${statusBadge(student.status)}
+            <button class="btn btn-secondary btn-sm" id="btnEditStudent">Editar</button>
+            <button class="btn btn-secondary btn-sm" id="btnResetLink">🔑 Link de acesso</button>
+          </div>
+        </div>
+        <h2 style="margin:0;word-break:break-word">${student.name}</h2>
       </div>
 
       <!-- Info + Stats grid -->
