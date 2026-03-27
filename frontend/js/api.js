@@ -52,7 +52,17 @@ async function request(path, options = {}) {
   return res.json();
 }
 
+// Singleton: if a refresh is already in-flight, all callers await the same promise
+// instead of starting concurrent refreshes that would invalidate each other.
+let _refreshPromise = null;
+
 async function tryRefresh() {
+  if (_refreshPromise) return _refreshPromise;
+  _refreshPromise = _doRefresh().finally(() => { _refreshPromise = null; });
+  return _refreshPromise;
+}
+
+async function _doRefresh() {
   const refreshToken = localStorage.getItem('refresh_token');
   if (!refreshToken) return false;
   try {
@@ -69,7 +79,12 @@ async function tryRefresh() {
   } catch { return false; }
 }
 
+// Guard: only the first logout() call redirects; concurrent 401s must not race.
+let _loggingOut = false;
+
 function logout() {
+  if (_loggingOut) return;
+  _loggingOut = true;
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
