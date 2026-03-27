@@ -90,16 +90,22 @@ export async function renderOnboardingWizard(container) {
             Tudo configurado! Seu salão está pronto para receber agendamentos.
           </div>
         ` : ''}
+        <div style="margin-top:1rem;text-align:right">
+          <button id="btnDismissOnboardingBottom" style="background:none;border:1px solid var(--gray-300);border-radius:var(--border-radius);cursor:pointer;color:var(--gray-500);font-size:var(--font-size-sm);padding:0.375rem 0.875rem" title="Fechar">Não mostrar mais</button>
+        </div>
       </div>
     </div>
   `;
 
   container.prepend(el);
 
-  document.getElementById('btnDismissOnboarding').addEventListener('click', () => {
+  function dismiss() {
     localStorage.setItem(DISMISSED_KEY, '1');
     el.remove();
-  });
+  }
+
+  document.getElementById('btnDismissOnboarding').addEventListener('click', dismiss);
+  document.getElementById('btnDismissOnboardingBottom').addEventListener('click', dismiss);
 
   document.getElementById('btnGoServices')?.addEventListener('click', () => {
     location.hash = 'class-types';
