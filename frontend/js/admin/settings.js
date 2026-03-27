@@ -180,6 +180,38 @@ export async function renderSettings(container) {
         </div>
       </div>` : ''}
 
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">Redes Sociais</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">Links exibidos no catálogo público para seus clientes.</p>
+          <div style="display:grid;gap:0.75rem">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Instagram</label>
+              <input class="form-control" id="inputSocialInstagram" type="url" placeholder="https://instagram.com/seuuser" value="${settings.socialInstagram ?? ''}">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Facebook</label>
+              <input class="form-control" id="inputSocialFacebook" type="url" placeholder="https://facebook.com/suapagina" value="${settings.socialFacebook ?? ''}">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">WhatsApp</label>
+              <input class="form-control" id="inputSocialWhatsApp" type="url" placeholder="https://wa.me/5511999999999" value="${settings.socialWhatsApp ?? ''}">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Website</label>
+              <input class="form-control" id="inputSocialWebsite" type="url" placeholder="https://seusite.com.br" value="${settings.socialWebsite ?? ''}">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">TikTok</label>
+              <input class="form-control" id="inputSocialTikTok" type="url" placeholder="https://tiktok.com/@seuuser" value="${settings.socialTikTok ?? ''}">
+            </div>
+          </div>
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" id="btnSaveSocialLinks">${t('btn.save')}</button>
+          </div>
+        </div>
+      </div>
+
       ${!isSalon ? `
       <div class="card" style="grid-column:1/-1">
         <div class="card-body" style="padding:1.5rem">
@@ -346,6 +378,25 @@ export async function renderSettings(container) {
     try {
       await api.put('/settings/tenant-type', { tenantType: val });
       showToast(t('settings.tenantType.saved'), 'success');
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnSaveSocialLinks').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSaveSocialLinks');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/social-links', {
+        instagram: document.getElementById('inputSocialInstagram').value.trim() || null,
+        facebook:  document.getElementById('inputSocialFacebook').value.trim()  || null,
+        whatsApp:  document.getElementById('inputSocialWhatsApp').value.trim()  || null,
+        website:   document.getElementById('inputSocialWebsite').value.trim()   || null,
+        tikTok:    document.getElementById('inputSocialTikTok').value.trim()    || null,
+      });
+      showToast('Redes sociais salvas!', 'success');
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {

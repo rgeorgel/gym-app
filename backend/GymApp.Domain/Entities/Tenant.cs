@@ -39,6 +39,13 @@ public class Tenant
     public string? AbacatePayStudentApiKey { get; set; }
     public string? AbacatePayStudentWebhookSecret { get; set; }
 
+    // ── Social links ────────────────────────────────────────────────────────
+    public string? SocialInstagram { get; set; }
+    public string? SocialFacebook { get; set; }
+    public string? SocialWhatsApp { get; set; }
+    public string? SocialWebsite { get; set; }
+    public string? SocialTikTok { get; set; }
+
     // ── AI Assistant ────────────────────────────────────────────────────────
     public string? AiSystemPrompt { get; set; }
 

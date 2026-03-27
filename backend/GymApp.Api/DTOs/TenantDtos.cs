@@ -9,7 +9,12 @@ public record TenantConfigResponse(
     string SecondaryColor,
     string Slug,
     string Language,
-    TenantType TenantType
+    TenantType TenantType,
+    string? SocialInstagram,
+    string? SocialFacebook,
+    string? SocialWhatsApp,
+    string? SocialWebsite,
+    string? SocialTikTok
 );
 
 public record CreateTenantRequest(
@@ -64,7 +69,12 @@ public record TenantSettingsResponse(
     string? LogoUrl,
     bool HasAbacatePayStudentApiKey,
     bool HasAbacatePayStudentWebhookSecret,
-    TenantType TenantType
+    TenantType TenantType,
+    string? SocialInstagram,
+    string? SocialFacebook,
+    string? SocialWhatsApp,
+    string? SocialWebsite,
+    string? SocialTikTok
 );
 
 public record SetTenantTypeRequest(TenantType TenantType);
@@ -104,6 +114,14 @@ public record SetColorsRequest(
 
 public record SetPaymentsAllowedRequest(
     bool Allowed
+);
+
+public record SetSocialLinksRequest(
+    string? Instagram,
+    string? Facebook,
+    string? WhatsApp,
+    string? Website,
+    string? TikTok
 );
 
 public record SelfSignupRequest(

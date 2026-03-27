@@ -37,7 +37,8 @@ public static class TenantEndpoints
             if (tenant is null) return Results.NotFound();
 
             return Results.Ok(new TenantConfigResponse(
-                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language, tenant.TenantType));
+                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language, tenant.TenantType,
+                tenant.SocialInstagram, tenant.SocialFacebook, tenant.SocialWhatsApp, tenant.SocialWebsite, tenant.SocialTikTok));
         }).AllowAnonymous();
 
         // Public: self-signup from landing page
@@ -316,6 +317,20 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         }).RequireAuthorization("SuperAdmin");
 
+        settingsGroup.MapPut("/social-links", async (SetSocialLinksRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            tenant.SocialInstagram = string.IsNullOrWhiteSpace(req.Instagram) ? null : req.Instagram.Trim();
+            tenant.SocialFacebook  = string.IsNullOrWhiteSpace(req.Facebook)  ? null : req.Facebook.Trim();
+            tenant.SocialWhatsApp  = string.IsNullOrWhiteSpace(req.WhatsApp)  ? null : req.WhatsApp.Trim();
+            tenant.SocialWebsite   = string.IsNullOrWhiteSpace(req.Website)   ? null : req.Website.Trim();
+            tenant.SocialTikTok    = string.IsNullOrWhiteSpace(req.TikTok)    ? null : req.TikTok.Trim();
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             var tenant = await db.Tenants.FindAsync(id);
@@ -340,7 +355,12 @@ public static class TenantEndpoints
         new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl,
             HasAbacatePayStudentApiKey: !string.IsNullOrEmpty(t.AbacatePayStudentApiKey),
             HasAbacatePayStudentWebhookSecret: !string.IsNullOrEmpty(t.AbacatePayStudentWebhookSecret),
-            TenantType: t.TenantType);
+            TenantType: t.TenantType,
+            SocialInstagram: t.SocialInstagram,
+            SocialFacebook: t.SocialFacebook,
+            SocialWhatsApp: t.SocialWhatsApp,
+            SocialWebsite: t.SocialWebsite,
+            SocialTikTok: t.SocialTikTok);
 
     private static string GenerateSlug(string name)
     {
