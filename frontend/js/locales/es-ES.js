@@ -483,6 +483,7 @@ export default {
   'salonBook.back': '← Volver',
 
   // Appointments (BeautySalon admin)
+  'appointments.new': '+ Nueva Cita',
   'appointments.title': 'Citas',
   'appointments.date': 'Fecha',
   'appointments.none': 'Sin citas en esta fecha',

@@ -28,7 +28,7 @@ export async function renderAppointments(container) {
       <div class="appts-toolbar-row appts-toolbar-row--date" id="dateRow">
         <input class="form-control appts-date-input" id="apptDate" type="date" value="${today}">
         <button class="btn btn-secondary btn-sm" id="btnLoadAppts">${t('btn.load')}</button>
-        <button class="btn btn-primary btn-new-appt" id="btnNewAppt">＋ ${t('appointments.new') || 'Novo Agendamento'}</button>
+        <button class="btn btn-primary btn-new-appt" id="btnNewAppt">${t('appointments.new')}</button>
       </div>
     </div>
     <div id="apptsContent"><div class="loading-center"><span class="spinner"></span></div></div>

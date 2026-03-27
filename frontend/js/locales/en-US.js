@@ -483,6 +483,7 @@ export default {
   'salonBook.back': '← Back',
 
   // Appointments (BeautySalon admin)
+  'appointments.new': '+ New Appointment',
   'appointments.title': 'Appointments',
   'appointments.date': 'Date',
   'appointments.none': 'No appointments on this date',

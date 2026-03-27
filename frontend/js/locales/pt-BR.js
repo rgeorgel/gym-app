@@ -483,6 +483,7 @@ export default {
   'salonBook.back': '← Voltar',
 
   // Appointments (BeautySalon admin)
+  'appointments.new': '+ Novo Agendamento',
   'appointments.title': 'Atendimentos',
   'appointments.date': 'Data',
   'appointments.none': 'Nenhum atendimento nesta data',
