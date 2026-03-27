@@ -156,7 +156,80 @@ export async function renderAppointments(container) {
     });
   };
 
+  // ── Agenda view (mobile alternative for week/month) ──────────────────────
+  const renderAgendaView = (container, appts, days, skipEmpty = false) => {
+    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const todayStr = toDateStr(new Date());
+
+    const apptsByDay = {};
+    appts.forEach(a => {
+      if (!apptsByDay[a.date]) apptsByDay[a.date] = [];
+      apptsByDay[a.date].push(a);
+    });
+
+    const visibleDays = skipEmpty ? days.filter(d => (apptsByDay[toDateStr(d)] || []).length > 0) : days;
+
+    if (!visibleDays.length) {
+      container.innerHTML = emptyState(t('appointments.none'));
+      return;
+    }
+
+    container.innerHTML = '<div class="agenda-view"></div>';
+    const agenda = container.querySelector('.agenda-view');
+
+    for (const day of visibleDays) {
+      const dateStr = toDateStr(day);
+      const dayAppts = (apptsByDay[dateStr] || []).slice().sort((a, b) => a.startTime.localeCompare(b.startTime));
+      const isToday = dateStr === todayStr;
+
+      const section = document.createElement('div');
+      section.className = 'agenda-day';
+      section.innerHTML = `
+        <div class="agenda-day-header${isToday ? ' agenda-day-header--today' : ''}">
+          <span class="agenda-day-name">${dayNames[day.getDay()]}</span>
+          <span>${day.getDate()} ${monthNames[day.getMonth()]}</span>
+          ${dayAppts.length ? `<span class="agenda-day-count">${dayAppts.length}</span>` : ''}
+        </div>
+        ${!dayAppts.length ? `<div class="agenda-day-empty">Sem agendamentos</div>` : ''}
+        ${dayAppts.map(a => `
+          <div class="agenda-appt" data-date="${dateStr}">
+            <span class="agenda-appt-time">${formatTime(a.startTime)}</span>
+            <span class="agenda-appt-dot" style="background:${a.serviceColor ?? '#888'}"></span>
+            <div class="agenda-appt-info">
+              <div class="agenda-appt-client">${a.clientName}</div>
+              <div class="agenda-appt-service">${a.serviceName}${a.professionalName ? ` · ${a.professionalName}` : ''}</div>
+            </div>
+            ${statusBadge(a.status)}
+          </div>
+        `).join('')}
+      `;
+      agenda.appendChild(section);
+    }
+
+    container.querySelectorAll('.agenda-appt').forEach(el => {
+      el.addEventListener('click', () => {
+        const dateStr = el.dataset.date;
+        document.getElementById('apptDate').value = dateStr;
+        const [y, m, d] = dateStr.split('-').map(Number);
+        currentDate = new Date(y, m - 1, d);
+        currentView = 'day';
+        updateViewButtons();
+        load();
+      });
+    });
+  };
+
   const renderWeekView = (container, appts, weekStart) => {
+    if (window.innerWidth < 640) {
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+        return d;
+      });
+      renderAgendaView(container, appts, days, false);
+      return;
+    }
     const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     const hours = [];
     for (let h = 6; h <= 21; h++) hours.push(h);
@@ -227,6 +300,14 @@ export async function renderAppointments(container) {
   };
 
   const renderMonthView = (container, appts, monthDate) => {
+    if (window.innerWidth < 640) {
+      const year = monthDate.getFullYear();
+      const month = monthDate.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const days = Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
+      renderAgendaView(container, appts, days, true);
+      return;
+    }
     const year = monthDate.getFullYear();
     const month = monthDate.getMonth();
     const firstDay = new Date(year, month, 1);
