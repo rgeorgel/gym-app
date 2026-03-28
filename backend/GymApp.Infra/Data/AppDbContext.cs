@@ -25,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<TimeBlock> TimeBlocks => Set<TimeBlock>();
     public DbSet<InstructorService> InstructorServices => Set<InstructorService>();
+    public DbSet<DemoSeedLog> DemoSeedLogs => Set<DemoSeedLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -257,6 +258,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasKey(x => x.Id);
             e.HasIndex(x => new { x.TenantId, x.Date });
             e.Property(x => x.Reason).HasMaxLength(500);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // DemoSeedLog
+        modelBuilder.Entity<DemoSeedLog>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.TenantId);
+            e.HasIndex(x => new { x.TenantId, x.EntityType });
+            e.Property(x => x.EntityType).HasMaxLength(50);
             e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
         });
     }

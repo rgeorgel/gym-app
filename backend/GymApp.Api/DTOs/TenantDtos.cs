@@ -45,7 +45,8 @@ public record TenantResponse(
     bool PaymentsEnabled,
     string? EfiPayeeCode,
     string TenantType,
-    int SubscriptionPriceCents
+    int SubscriptionPriceCents,
+    bool HasDemoData = false
 );
 
 public record UpdateTenantRequest(

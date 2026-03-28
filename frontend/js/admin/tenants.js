@@ -50,6 +50,7 @@ async function loadTenants() {
                 <th>${t('field.status')}</th>
                 <th>${t('tenants.col.payments')}</th>
                 <th>${t('tenants.col.createdAt')}</th>
+                <th>Demo</th>
                 <th></th>
               </tr>
             </thead>
@@ -67,7 +68,15 @@ async function loadTenants() {
                   </td>
                   <td class="text-sm text-muted">${formatDate(ten.createdAt)}</td>
                   <td>
+                    ${ten.hasDemoData
+                      ? '<span class="badge badge-success">Sim</span>'
+                      : '<span class="badge badge-gray">Não</span>'}
+                  </td>
+                  <td style="white-space:nowrap">
                     <button class="btn btn-secondary btn-sm" data-edit="${ten.id}">${t('btn.edit')}</button>
+                    ${!ten.hasDemoData
+                      ? `<button class="btn btn-sm" style="background:#7c3aed;color:#fff;margin-left:0.3rem" data-seed-demo="${ten.id}" title="Inserir dados demo">🧪</button>`
+                      : `<button class="btn btn-sm btn-danger" style="margin-left:0.3rem" data-remove-demo="${ten.id}" title="Remover dados demo">🗑️</button>`}
                   </td>
                 </tr>
               `).join('')}
@@ -79,6 +88,38 @@ async function loadTenants() {
 
     list.querySelectorAll('[data-edit]').forEach(btn => {
       btn.addEventListener('click', () => openTenantModal(tenants.find(ten => ten.id === btn.dataset.edit)));
+    });
+
+    list.querySelectorAll('[data-seed-demo]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const ten = tenants.find(t => t.id === btn.dataset.seedDemo);
+        if (!await confirm(`Inserir dados demo em "${ten.name}"?\n\nSerão criados serviços, profissionais, 20 clientes e agendamentos nos últimos 2 meses para demonstrar o sistema.`)) return;
+        btn.disabled = true;
+        try {
+          await api.post(`/admin/tenants/${ten.id}/demo`, {});
+          showToast('Dados demo inseridos com sucesso!', 'success');
+          await loadTenants();
+        } catch (e) {
+          showToast('Erro: ' + e.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    list.querySelectorAll('[data-remove-demo]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const ten = tenants.find(t => t.id === btn.dataset.removeDemo);
+        if (!await confirm(`Remover todos os dados demo de "${ten.name}"?\n\nEsta ação é irreversível — todos os usuários, serviços e agendamentos de demonstração serão excluídos.`)) return;
+        btn.disabled = true;
+        try {
+          await api.delete(`/admin/tenants/${ten.id}/demo`);
+          showToast('Dados demo removidos com sucesso!', 'success');
+          await loadTenants();
+        } catch (e) {
+          showToast('Erro: ' + e.message, 'error');
+          btn.disabled = false;
+        }
+      });
     });
 
   } catch (e) {

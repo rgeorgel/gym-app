@@ -113,6 +113,7 @@ builder.Services.AddHttpClient("MiMo", client =>
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AiAssistantService>();
+builder.Services.AddScoped<DemoSeedService>();
 
 builder.Services.AddProblemDetails();
 
@@ -153,6 +154,7 @@ app.MapAdminUserEndpoints();
 app.MapBillingEndpoints();
 app.MapAbacatePayWebhook();
 app.MapSuperAdminEndpoints();
+app.MapDemoEndpoints();
 app.MapAiAssistantEndpoints();
 app.MapLocationEndpoints();
 

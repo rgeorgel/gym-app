@@ -115,10 +115,14 @@ public static class TenantEndpoints
 
         adminGroup.MapGet("/", async (AppDbContext db) =>
         {
+            var demoTenantIds = await db.DemoSeedLogs
+                .Select(l => l.TenantId).Distinct().ToListAsync();
+
             var tenants = await db.Tenants.AsNoTracking()
                 .OrderBy(t => t.Name)
                 .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.LogoUrl, t.PrimaryColor, t.SecondaryColor,
-                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin, t.PaymentsEnabled, t.EfiPayeeCode, t.TenantType.ToString(), t.SubscriptionPriceCents))
+                    t.Plan, t.IsActive, t.CustomDomain, t.CreatedAt, t.PaymentsAllowedBySuperAdmin, t.PaymentsEnabled, t.EfiPayeeCode, t.TenantType.ToString(), t.SubscriptionPriceCents,
+                    demoTenantIds.Contains(t.Id)))
                 .ToListAsync();
             return Results.Ok(tenants);
         });
