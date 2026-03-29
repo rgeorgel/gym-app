@@ -41,6 +41,8 @@ export async function loadTenantTheme() {
     root.style.setProperty('--brand-primary', config.primaryColor);
     root.style.setProperty('--brand-secondary', config.secondaryColor);
     root.style.setProperty('--brand-primary-light', shadeColor(config.primaryColor, -20));
+    root.style.setProperty('--brand-text-on-primary', config.textColor ?? '#ffffff');
+    root.style.setProperty('--brand-text-on-secondary', config.textColor ?? '#ffffff');
 
     // Update page title
     document.title = config.name + ' — Agendofy';

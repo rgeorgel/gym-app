@@ -7,6 +7,7 @@ public record TenantConfigResponse(
     string? LogoUrl,
     string PrimaryColor,
     string SecondaryColor,
+    string TextColor,
     string Slug,
     string Language,
     TenantType TenantType,
@@ -67,6 +68,7 @@ public record TenantSettingsResponse(
     bool PaymentsAllowedBySuperAdmin,
     string PrimaryColor,
     string SecondaryColor,
+    string TextColor,
     string? LogoUrl,
     bool HasAbacatePayStudentApiKey,
     bool HasAbacatePayStudentWebhookSecret,
@@ -110,7 +112,8 @@ public record SetPaymentsEnabledRequest(
 
 public record SetColorsRequest(
     string PrimaryColor,
-    string SecondaryColor
+    string SecondaryColor,
+    string TextColor
 );
 
 public record SetPaymentsAllowedRequest(

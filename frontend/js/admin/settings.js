@@ -106,7 +106,7 @@ export async function renderSettings(container) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.colors.title')}</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.colors.desc')}</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
             <div class="form-group" style="margin:0">
               <label class="form-label">${t('settings.colors.primary')}</label>
               <div style="display:flex;align-items:center;gap:0.5rem">
@@ -119,6 +119,13 @@ export async function renderSettings(container) {
               <div style="display:flex;align-items:center;gap:0.5rem">
                 <input type="color" id="inputSecondaryColor" value="${settings.secondaryColor}" style="width:48px;height:36px;padding:2px;border:1px solid var(--gray-300);border-radius:var(--border-radius);cursor:pointer">
                 <input class="form-control" id="inputSecondaryHex" value="${settings.secondaryColor}" maxlength="7" style="font-family:monospace">
+              </div>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">${t('settings.colors.text')}</label>
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <input type="color" id="inputTextColor" value="${settings.textColor ?? '#ffffff'}" style="width:48px;height:36px;padding:2px;border:1px solid var(--gray-300);border-radius:var(--border-radius);cursor:pointer">
+                <input class="form-control" id="inputTextHex" value="${settings.textColor ?? '#ffffff'}" maxlength="7" style="font-family:monospace">
               </div>
             </div>
           </div>
@@ -258,22 +265,33 @@ export async function renderSettings(container) {
     if (/^#[0-9a-fA-F]{6}$/.test(e.target.value))
       document.getElementById('inputSecondaryColor').value = e.target.value;
   });
+  document.getElementById('inputTextColor').addEventListener('input', (e) => {
+    document.getElementById('inputTextHex').value = e.target.value;
+  });
+  document.getElementById('inputTextHex').addEventListener('input', (e) => {
+    if (/^#[0-9a-fA-F]{6}$/.test(e.target.value))
+      document.getElementById('inputTextColor').value = e.target.value;
+  });
 
   document.getElementById('btnSaveColors').addEventListener('click', async () => {
     const primary = document.getElementById('inputPrimaryHex').value.trim();
     const secondary = document.getElementById('inputSecondaryHex').value.trim();
-    if (!/^#[0-9a-fA-F]{6}$/.test(primary) || !/^#[0-9a-fA-F]{6}$/.test(secondary)) {
+    const text = document.getElementById('inputTextHex').value.trim();
+    const hexRe = /^#[0-9a-fA-F]{6}$/;
+    if (!hexRe.test(primary) || !hexRe.test(secondary) || !hexRe.test(text)) {
       showToast(t('error.prefix') + 'Cor inválida (use formato #RRGGBB)', 'error');
       return;
     }
     const btn = document.getElementById('btnSaveColors');
     btn.disabled = true;
     try {
-      await api.put('/settings/colors', { primaryColor: primary, secondaryColor: secondary });
+      await api.put('/settings/colors', { primaryColor: primary, secondaryColor: secondary, textColor: text });
       showToast(t('settings.colors.saved'), 'success');
       // Apply immediately to current page
       document.documentElement.style.setProperty('--brand-primary', primary);
       document.documentElement.style.setProperty('--brand-secondary', secondary);
+      document.documentElement.style.setProperty('--brand-text-on-primary', text);
+      document.documentElement.style.setProperty('--brand-text-on-secondary', text);
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {

@@ -50,8 +50,8 @@
   border-left: 3px solid transparent;
   font-size: var(--font-size-sm);
 }
-.nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
-.nav-item.active { background: rgba(255,255,255,0.12); color: white; border-left-color: var(--brand-secondary); }
+.nav-item:hover { background: rgba(255,255,255,0.08); color: var(--brand-text-on-primary); }
+.nav-item.active { background: rgba(255,255,255,0.12); color: var(--brand-text-on-primary); border-left-color: var(--brand-secondary); }
 .nav-item .nav-icon { font-size: 1.125rem; width: 20px; text-align: center; }
 
 .sidebar-footer {
@@ -117,7 +117,7 @@
   background: var(--gray-100);
   border-radius: var(--border-radius);
 }
-.day-header.today { background: var(--brand-secondary); color: white; }
+.day-header.today { background: var(--brand-secondary); color: var(--brand-text-on-secondary); }
 
 .class-card {
   border-radius: var(--border-radius);
@@ -723,7 +723,7 @@
 }
 .btn-toggle-view.active {
   background: var(--brand-primary);
-  color: white;
+  color: var(--brand-text-on-primary);
 }
 
 /* ─── Calendar Views ─── */
@@ -772,14 +772,14 @@
 }
 .agenda-day-header--today {
   background: var(--brand-primary);
-  color: white;
+  color: var(--brand-text-on-primary);
 }
 .agenda-day-name { text-transform: capitalize; }
 .agenda-day-count {
   margin-left: auto;
   font-size: var(--font-size-xs);
   background: var(--brand-secondary);
-  color: white;
+  color: var(--brand-text-on-secondary);
   border-radius: 999px;
   padding: 1px 8px;
   font-weight: 500;
@@ -842,7 +842,7 @@
 
 .ai-fab {
   width: 56px; height: 56px; border-radius: 50%;
-  background: var(--brand-secondary); color: #fff;
+  background: var(--brand-secondary); color: var(--brand-text-on-secondary);
   border: none; cursor: pointer; font-size: 1.4rem;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
   display: flex; align-items: center; justify-content: center;
@@ -868,14 +868,14 @@
 .ai-panel-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.85rem 1rem;
-  background: var(--brand-primary); color: #fff;
+  background: var(--brand-primary); color: var(--brand-text-on-primary);
   border-radius: 16px 16px 0 0;
 }
 .ai-panel-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem; }
 .ai-title-icon { font-size: 1rem; }
 .ai-panel-actions { display: flex; gap: 0.4rem; }
 .ai-btn-icon {
-  background: rgba(255,255,255,0.15); border: none; color: #fff;
+  background: rgba(255,255,255,0.15); border: none; color: var(--brand-text-on-primary);
   border-radius: 6px; padding: 0.25rem 0.6rem; cursor: pointer; font-size: 0.75rem;
   transition: background 0.15s;
 }
@@ -910,7 +910,7 @@
 .ai-message code { background: rgba(0,0,0,0.08); border-radius: 4px; padding: 0.1em 0.3em; font-size: 0.85em; }
 .ai-message-user {
   align-self: flex-end;
-  background: var(--brand-secondary); color: #fff;
+  background: var(--brand-secondary); color: var(--brand-text-on-secondary);
   border-bottom-right-radius: 4px;
 }
 .ai-message-assistant {
@@ -939,7 +939,7 @@
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
   color: var(--gray-700);
 }
-.ai-suggestion:hover { background: var(--brand-secondary); color: #fff; border-color: var(--brand-secondary); }
+.ai-suggestion:hover { background: var(--brand-secondary); color: var(--brand-text-on-secondary); border-color: var(--brand-secondary); }
 
 .ai-input-area {
   display: flex; align-items: flex-end; gap: 0.5rem;
@@ -956,7 +956,7 @@
 .ai-input:focus { border-color: var(--brand-secondary); }
 .ai-send {
   width: 38px; height: 38px; border-radius: 50%;
-  background: var(--brand-secondary); color: #fff; border: none;
+  background: var(--brand-secondary); color: var(--brand-text-on-secondary); border: none;
   cursor: pointer; font-size: 1rem; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, transform 0.1s;

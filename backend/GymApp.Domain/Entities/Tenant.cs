@@ -10,6 +10,7 @@ public class Tenant
     public string? LogoUrl { get; set; }
     public string PrimaryColor { get; set; } = "#1a1a2e";
     public string SecondaryColor { get; set; } = "#e94560";
+    public string TextColor { get; set; } = "#ffffff";
     public TenantPlan Plan { get; set; } = TenantPlan.Basic;
     public TenantType TenantType { get; set; } = TenantType.Gym;
     public bool IsActive { get; set; } = true;

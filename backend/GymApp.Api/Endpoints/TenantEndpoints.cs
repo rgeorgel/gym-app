@@ -37,7 +37,7 @@ public static class TenantEndpoints
             if (tenant is null) return Results.NotFound();
 
             return Results.Ok(new TenantConfigResponse(
-                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.Slug, tenant.Language, tenant.TenantType,
+                tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.TextColor, tenant.Slug, tenant.Language, tenant.TenantType,
                 tenant.SocialInstagram, tenant.SocialFacebook, tenant.SocialWhatsApp, tenant.SocialWebsite, tenant.SocialTikTok));
         }).AllowAnonymous();
 
@@ -279,14 +279,15 @@ public static class TenantEndpoints
 
         settingsGroup.MapPut("/colors", async (SetColorsRequest req, AppDbContext db, TenantContext tenantCtx) =>
         {
-            if (string.IsNullOrWhiteSpace(req.PrimaryColor) || string.IsNullOrWhiteSpace(req.SecondaryColor))
-                return Results.BadRequest("Colors are required.");
+            if (!IsValidHexColor(req.PrimaryColor) || !IsValidHexColor(req.SecondaryColor) || !IsValidHexColor(req.TextColor))
+                return Results.BadRequest("Colors must be valid hex values (e.g. #1a2b3c).");
 
             var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
             if (tenant is null) return Results.NotFound();
 
             tenant.PrimaryColor = req.PrimaryColor.Trim();
             tenant.SecondaryColor = req.SecondaryColor.Trim();
+            tenant.TextColor = req.TextColor.Trim();
             await db.SaveChangesAsync();
             return Results.Ok(ToSettingsResponse(tenant));
         });
@@ -337,6 +338,9 @@ public static class TenantEndpoints
 
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
+            if (!IsValidHexColor(req.PrimaryColor) || !IsValidHexColor(req.SecondaryColor))
+                return Results.BadRequest("Colors must be valid hex values (e.g. #1a2b3c).");
+
             var tenant = await db.Tenants.FindAsync(id);
             if (tenant is null) return Results.NotFound();
 
@@ -356,7 +360,7 @@ public static class TenantEndpoints
     }
 
     private static TenantSettingsResponse ToSettingsResponse(Tenant t) =>
-        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.LogoUrl,
+        new(t.DefaultPackageTemplateId, t.Language, t.EfiPayeeCode, t.PaymentsEnabled, t.PaymentsAllowedBySuperAdmin, t.PrimaryColor, t.SecondaryColor, t.TextColor, t.LogoUrl,
             HasAbacatePayStudentApiKey: !string.IsNullOrEmpty(t.AbacatePayStudentApiKey),
             HasAbacatePayStudentWebhookSecret: !string.IsNullOrEmpty(t.AbacatePayStudentWebhookSecret),
             TenantType: t.TenantType,
@@ -365,6 +369,9 @@ public static class TenantEndpoints
             SocialWhatsApp: t.SocialWhatsApp,
             SocialWebsite: t.SocialWebsite,
             SocialTikTok: t.SocialTikTok);
+
+    private static bool IsValidHexColor(string? color) =>
+        !string.IsNullOrWhiteSpace(color) && Regex.IsMatch(color.Trim(), @"^#[0-9a-fA-F]{6}$");
 
     private static string GenerateSlug(string name)
     {

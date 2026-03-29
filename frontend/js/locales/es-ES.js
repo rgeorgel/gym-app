@@ -428,6 +428,7 @@ export default {
   'settings.colors.desc': 'Personaliza los colores principales de tu app.',
   'settings.colors.primary': 'Color primario',
   'settings.colors.secondary': 'Color secundario',
+  'settings.colors.text': 'Color del texto',
   'settings.colors.saved': 'Colores guardados correctamente',
   'settings.logo.title': 'Logo de la academia',
   'settings.logo.desc': 'URL de la imagen del logo mostrado en la app y la página de inicio de sesión. Déjalo en blanco para usar el logo predeterminado.',

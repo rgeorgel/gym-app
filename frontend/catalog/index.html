@@ -9,7 +9,7 @@
     body { background: var(--bg-secondary, #f5f5f5); min-height: 100vh; }
     .catalog-header {
       background: var(--primary, #6c63ff);
-      color: #fff;
+      color: var(--brand-text-on-primary, #fff);
       padding: 2rem 1rem;
       text-align: center;
     }
@@ -30,7 +30,7 @@
       padding: 0.3rem 0.75rem;
       border-radius: 999px;
       background: rgba(255,255,255,0.18);
-      color: #fff;
+      color: var(--brand-text-on-primary, #fff);
       font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
@@ -107,7 +107,7 @@
     .pro-btn.active {
       border-color: var(--primary, #6c63ff);
       background: var(--primary, #6c63ff);
-      color: #fff;
+      color: var(--brand-text-on-primary, #fff);
     }
 
     /* Slot picker */
@@ -145,9 +145,9 @@
     .date-btn.active {
       border-color: var(--primary, #6c63ff);
       background: var(--primary, #6c63ff);
-      color: #fff;
+      color: var(--brand-text-on-primary, #fff);
     }
-    .date-btn.active .date-num { color: #fff; }
+    .date-btn.active .date-num { color: var(--brand-text-on-primary, #fff); }
     .slots-grid {
       display: flex;
       flex-wrap: wrap;
@@ -166,7 +166,7 @@
     }
     .slot-btn:hover {
       background: var(--primary, #6c63ff);
-      color: #fff;
+      color: var(--brand-text-on-primary, #fff);
     }
     .slots-empty { font-size: 0.85rem; color: var(--text-muted, #888); }
     .slots-loading { font-size: 0.85rem; color: var(--text-muted, #888); }
@@ -328,9 +328,12 @@
           <p>Escolha o serviço e veja os horários disponíveis</p>
           ${buildSocialChips(config)}
         `;
+        const textColor = config.textColor || '#ffffff';
         document.documentElement.style.setProperty('--primary', primaryColor);
         document.documentElement.style.setProperty('--brand-secondary', primaryColor);
+        document.documentElement.style.setProperty('--brand-text-on-primary', textColor);
         header.style.background = primaryColor;
+        header.style.color = textColor;
 
         if (!services.length) {
           grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">Nenhum serviço disponível no momento.</div>`;
