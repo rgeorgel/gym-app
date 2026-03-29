@@ -84,13 +84,15 @@ public static class AvailabilityEndpoints
             var blocks = await availQuery.ToListAsync();
             if (!blocks.Any()) return Results.Ok(Array.Empty<TimeOnly>());
 
-            // Get existing sessions — filter by professional if specified
+            // Get existing sessions that are actually occupied (SlotsAvailable <= 0)
+            // Sessions with SlotsAvailable > 0 had their booking cancelled and are free again
             var sessQuery = db.Sessions.AsNoTracking()
                 .Where(s =>
                     s.TenantId == tenant.TenantId &&
                     s.Date == date &&
                     s.ScheduleId == null &&
-                    s.Status != SessionStatus.Cancelled);
+                    s.Status != SessionStatus.Cancelled &&
+                    s.SlotsAvailable <= 0);
 
             if (professionalId.HasValue)
                 sessQuery = sessQuery.Where(s => s.InstructorId == professionalId.Value);

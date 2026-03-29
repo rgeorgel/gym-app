@@ -134,13 +134,15 @@ public static class BookingEndpoints
             if (!await blockQuery.AnyAsync())
                 return Results.BadRequest("No availability configured for this time slot.");
 
-            // Load all sessions for that day to check conflicts
+            // Load occupied sessions for that day to check conflicts
+            // Exclude sessions with SlotsAvailable > 0 — their booking was cancelled and the slot is free
             var daySessions = await db.Sessions
                 .Where(s =>
                     s.TenantId == tenant.TenantId &&
                     s.Date == req.Date &&
                     s.ScheduleId == null &&
-                    s.Status != SessionStatus.Cancelled)
+                    s.Status != SessionStatus.Cancelled &&
+                    s.SlotsAvailable <= 0)
                 .Select(s => new { s.StartTime, s.DurationMinutes, s.InstructorId })
                 .ToListAsync();
 
@@ -205,19 +207,38 @@ public static class BookingEndpoints
                 .OrderBy(l => l.IsMain ? 0 : 1)
                 .FirstOrDefaultAsync();
 
-            // Create the session on demand
-            var session = new Session
+            // Reuse a previously freed session (cancelled booking) if one exists,
+            // otherwise create a new session on demand
+            var session = await db.Sessions
+                .FirstOrDefaultAsync(s =>
+                    s.TenantId == tenant.TenantId &&
+                    s.Date == req.Date &&
+                    s.StartTime == req.StartTime &&
+                    s.ClassTypeId == service.Id &&
+                    s.InstructorId == assignedProfessionalId &&
+                    s.ScheduleId == null &&
+                    s.Status != SessionStatus.Cancelled &&
+                    s.SlotsAvailable > 0);
+
+            if (session is not null)
             {
-                TenantId = tenant.TenantId,
-                ClassTypeId = service.Id,
-                LocationId = mainLocation?.Id ?? Guid.Empty,
-                StartTime = req.StartTime,
-                DurationMinutes = duration,
-                Date = req.Date,
-                InstructorId = assignedProfessionalId,
-                SlotsAvailable = 0
-            };
-            db.Sessions.Add(session);
+                session.SlotsAvailable = 0;
+            }
+            else
+            {
+                session = new Session
+                {
+                    TenantId = tenant.TenantId,
+                    ClassTypeId = service.Id,
+                    LocationId = mainLocation?.Id ?? Guid.Empty,
+                    StartTime = req.StartTime,
+                    DurationMinutes = duration,
+                    Date = req.Date,
+                    InstructorId = assignedProfessionalId,
+                    SlotsAvailable = 0
+                };
+                db.Sessions.Add(session);
+            }
             await db.SaveChangesAsync();
 
             var booking = new Booking
