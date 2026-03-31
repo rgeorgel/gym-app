@@ -126,45 +126,32 @@ async function renderTransactions(el, container, year, month) {
         <button class="btn btn-primary" id="btnNewTx">+ Nova receita</button>
       </div>
       ${!items.length ? `<div class="card" style="padding:2rem">${emptyState('💰', 'Nenhuma receita registrada neste mês')}</div>` : `
-      <div class="card">
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:var(--font-size-sm)">
-            <thead>
-              <tr style="border-bottom:2px solid var(--gray-200)">
-                <th style="padding:0.625rem 0.75rem;text-align:left;color:var(--gray-500);font-weight:600">Data</th>
-                <th style="padding:0.625rem 0.75rem;text-align:left;color:var(--gray-500);font-weight:600">Cliente</th>
-                <th style="padding:0.625rem 0.75rem;text-align:left;color:var(--gray-500);font-weight:600">Serviço</th>
-                <th style="padding:0.625rem 0.75rem;text-align:right;color:var(--gray-500);font-weight:600">Bruto</th>
-                <th style="padding:0.625rem 0.75rem;text-align:left;color:var(--gray-500);font-weight:600">Pagamento</th>
-                <th style="padding:0.625rem 0.75rem;text-align:right;color:var(--gray-500);font-weight:600">Taxa</th>
-                <th style="padding:0.625rem 0.75rem;text-align:right;color:var(--gray-500);font-weight:600">Líquido</th>
-                <th style="padding:0.625rem 0.75rem"></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${items.map(tx => `
-                <tr style="border-bottom:1px solid var(--gray-100)" data-id="${tx.id}">
-                  <td style="padding:0.625rem 0.75rem">${FMT_DATE(tx.date)}</td>
-                  <td style="padding:0.625rem 0.75rem;color:var(--gray-600)">${tx.studentName ?? '—'}</td>
-                  <td style="padding:0.625rem 0.75rem">${tx.serviceName}</td>
-                  <td style="padding:0.625rem 0.75rem;text-align:right;font-weight:600">${FMT_BRL(tx.grossAmount)}</td>
-                  <td style="padding:0.625rem 0.75rem">
-                    ${PAYMENT_LABEL[tx.paymentMethod] ?? tx.paymentMethod}
-                    ${tx.paymentMethod === 'CreditCard' && tx.installments > 1 ? `<span style="color:var(--gray-400);font-size:0.75rem"> ${tx.installments}x</span>` : ''}
-                  </td>
-                  <td style="padding:0.625rem 0.75rem;text-align:right;color:var(--color-danger)">${tx.cardFeePercentage > 0 ? `-${FMT_BRL(tx.cardFeeAmount)} (${tx.cardFeePercentage}%)` : '—'}</td>
-                  <td style="padding:0.625rem 0.75rem;text-align:right;font-weight:700;color:var(--color-success)">${FMT_BRL(tx.netAmount)}</td>
-                  <td style="padding:0.625rem 0.75rem">
-                    <div style="display:flex;gap:0.375rem">
-                      <button class="btn btn-sm btn-secondary btn-edit-tx" data-tx='${JSON.stringify(tx)}' style="white-space:nowrap">Editar</button>
-                      <button class="btn btn-sm btn-danger btn-del-tx" data-id="${tx.id}" style="white-space:nowrap">Excluir</button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+        ${items.map(tx => `
+          <div class="card" style="padding:0.875rem 1rem">
+            <div style="display:flex;align-items:flex-start;gap:0.75rem">
+              <div style="min-width:2.75rem;text-align:center;flex-shrink:0">
+                <div style="font-size:1.1rem;font-weight:700;line-height:1;color:var(--gray-800)">${tx.date.slice(8)}</div>
+                <div style="font-size:0.65rem;color:var(--gray-400);text-transform:uppercase">${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][parseInt(tx.date.slice(5,7))-1]}</div>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:500;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${tx.serviceName}</div>
+                <div style="font-size:var(--font-size-xs);color:var(--gray-500);margin-top:0.1rem">
+                  ${tx.studentName ? `${tx.studentName} · ` : ''}${PAYMENT_LABEL[tx.paymentMethod] ?? tx.paymentMethod}${tx.paymentMethod === 'CreditCard' && tx.installments > 1 ? ` ${tx.installments}x` : ''}
+                </div>
+                ${tx.cardFeePercentage > 0 ? `<div style="font-size:var(--font-size-xs);color:var(--color-danger);margin-top:0.1rem">Taxa: -${FMT_BRL(tx.cardFeeAmount)} (${tx.cardFeePercentage}%)</div>` : ''}
+              </div>
+              <div style="flex-shrink:0;text-align:right">
+                <div style="font-weight:700;color:var(--color-success)">${FMT_BRL(tx.netAmount)}</div>
+                ${tx.cardFeePercentage > 0 ? `<div style="font-size:var(--font-size-xs);color:var(--gray-400)">${FMT_BRL(tx.grossAmount)} bruto</div>` : ''}
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:0.375rem;margin-top:0.625rem;padding-top:0.625rem;border-top:1px solid var(--gray-100)">
+              <button class="btn btn-sm btn-secondary btn-edit-tx" data-tx='${JSON.stringify(tx)}'>Editar</button>
+              <button class="btn btn-sm btn-danger btn-del-tx" data-id="${tx.id}">Excluir</button>
+            </div>
+          </div>
+        `).join('')}
       </div>`}
     `;
 
