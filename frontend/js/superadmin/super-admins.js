@@ -1,5 +1,5 @@
 import { api } from '../api.js?v=202603311200';
-import { showToast, formatDate } from '../ui.js?v=202603311200';
+import { showToast, formatDate, applyPhoneMask } from '../ui.js?v=202603311200';
 import { getUser } from '../auth.js?v=202603311200';
 
 export async function renderSuperAdmins(container) {
@@ -73,6 +73,8 @@ export async function renderSuperAdmins(container) {
       </div>
     </div>
   `;
+
+  applyPhoneMask(container.querySelector('#saPhone'));
 
   // --- create ---
   container.querySelector('#btnNewSuperAdmin').addEventListener('click', () => {

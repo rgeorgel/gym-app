@@ -1,6 +1,6 @@
 import { api } from './api.js?v=202603311200';
 import { loadTenantTheme } from './tenant.js?v=202603311200';
-import { showToast } from './ui.js?v=202603311200';
+import { showToast, applyPhoneMask } from './ui.js?v=202603311200';
 import { t } from './i18n.js?v=202603311200';
 import { trackEvent } from './analytics.js?v=202603311200';
 
@@ -97,6 +97,8 @@ export async function initLoginPage() {
   });
 
   // Register form
+  const regPhoneInput = document.getElementById('regPhone');
+  if (regPhoneInput) applyPhoneMask(regPhoneInput);
   const registerForm = document.getElementById('registerForm');
   registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -1,5 +1,5 @@
 import { api, getLocationId, setLocationId } from '../api.js?v=202603311200';
-import { showToast, createModal, openModal, closeModal, emptyState } from '../ui.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState, applyPhoneMask } from '../ui.js?v=202603311200';
 import { t } from '../i18n.js?v=202603311200';
 
 let locations = [];
@@ -90,6 +90,7 @@ async function openLocationModal(loc = null) {
     `
   });
   openModal('locationModal');
+  applyPhoneMask(document.getElementById('locPhone'));
 
   document.getElementById('btnSaveLoc').addEventListener('click', async () => {
     const name = document.getElementById('locName').value.trim();

@@ -142,3 +142,17 @@ export function confirm(message) {
 export function emptyState(icon, text) {
   return `<div class="empty-state"><div class="empty-state-icon">${icon}</div><div class="empty-state-text">${text}</div></div>`;
 }
+
+// Phone mask: (XX) XXXX-XXXX (10 digits) or (XX) XXXXX-XXXX (11 digits)
+export function applyPhoneMask(input) {
+  const fmt = v => {
+    const d = v.replace(/\D/g, '').slice(0, 11);
+    if (!d.length) return '';
+    if (d.length <= 2) return `(${d}`;
+    if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+    return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  };
+  input.value = fmt(input.value);
+  input.addEventListener('input', () => { input.value = fmt(input.value); });
+}

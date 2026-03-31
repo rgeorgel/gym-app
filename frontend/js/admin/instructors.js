@@ -1,5 +1,5 @@
 import { api } from '../api.js?v=202603311200';
-import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState, confirm, applyPhoneMask } from '../ui.js?v=202603311200';
 import { t } from '../i18n.js?v=202603311200';
 import { tenantType } from '../tenant.js?v=202603311200';
 
@@ -153,6 +153,7 @@ function openInstructorModal(instructor = null) {
     `
   });
   openModal('instructorModal');
+  applyPhoneMask(document.getElementById('iPhone'));
 
   // Live preview of photo URL
   document.getElementById('iPhotoUrl')?.addEventListener('input', e => {

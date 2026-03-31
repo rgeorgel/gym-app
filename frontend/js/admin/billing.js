@@ -1,5 +1,5 @@
 import { api } from '../api.js?v=202603311200';
-import { showToast, formatDate, confirm } from '../ui.js?v=202603311200';
+import { showToast, formatDate, confirm, applyPhoneMask } from '../ui.js?v=202603311200';
 
 export async function renderBilling(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -175,6 +175,7 @@ function hideModal(container) {
 }
 
 function attachEvents(container) {
+  applyPhoneMask(container.querySelector('#inputPhone'));
   container.querySelector('#btnSetupBilling')?.addEventListener('click', () => {
     showModal(container);
   });

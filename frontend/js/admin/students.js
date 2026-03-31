@@ -1,5 +1,5 @@
 import { api } from '../api.js?v=202603311200';
-import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm, applyPhoneMask } from '../ui.js?v=202603311200';
 import { t } from '../i18n.js?v=202603311200';
 import { renderStudentDetail } from './student-detail.js?v=202603311200';
 import { tenantType } from '../tenant.js?v=202603311200';
@@ -253,6 +253,7 @@ function openStudentModal(student = null) {
   });
 
   openModal('studentModal');
+  applyPhoneMask(document.getElementById('sPhone'));
 
   document.getElementById('btnSaveStudent').addEventListener('click', async () => {
     const body = {
