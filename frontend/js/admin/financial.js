@@ -1,5 +1,5 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js?v=202603311200';
 
 const PAYMENT_METHODS = [
   { value: 'Cash',       label: 'Dinheiro',      icon: '💵' },

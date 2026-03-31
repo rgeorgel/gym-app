@@ -1,6 +1,6 @@
-import { api, getLocationId, setLocationId } from '../api.js';
-import { showToast, createModal, openModal, closeModal, emptyState } from '../ui.js';
-import { t } from '../i18n.js';
+import { api, getLocationId, setLocationId } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
 
 let locations = [];
 

@@ -1,5 +1,5 @@
 // Shared UI utilities
-import { t, getLocale, getWeekdays, getWeekdaysFull } from './i18n.js';
+import { t, getLocale, getWeekdays, getWeekdaysFull } from './i18n.js?v=202603311200';
 export { getWeekdays, getWeekdaysFull };
 
 // Toast notifications

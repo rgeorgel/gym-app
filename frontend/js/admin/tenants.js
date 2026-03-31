@@ -1,6 +1,6 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, emptyState, formatDate, confirm } from '../ui.js';
-import { t } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState, formatDate, confirm } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
 
 const PLANS = { Basic: 'Basic', Pro: 'Pro', Enterprise: 'Enterprise' };
 const TENANT_TYPES = { Gym: '🏋️ Academia', BeautySalon: '💅 Salão' };

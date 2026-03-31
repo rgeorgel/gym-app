@@ -1,4 +1,4 @@
-import { api } from '../api.js';
+import { api } from '../api.js?v=202603311200';
 
 const DISMISSED_KEY = 'onboarding_dismissed';
 

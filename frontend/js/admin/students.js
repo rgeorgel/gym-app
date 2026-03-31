@@ -1,8 +1,8 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js';
-import { t } from '../i18n.js';
-import { renderStudentDetail } from './student-detail.js';
-import { tenantType } from '../tenant.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
+import { renderStudentDetail } from './student-detail.js?v=202603311200';
+import { tenantType } from '../tenant.js?v=202603311200';
 
 let allStudents = [];
 let sortField = 'name';

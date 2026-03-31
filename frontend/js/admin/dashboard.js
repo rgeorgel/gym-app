@@ -1,7 +1,7 @@
-import { api } from '../api.js';
-import { formatDate, formatCurrency, getWeekdays } from '../ui.js';
-import { t, getLocale } from '../i18n.js';
-import { renderStudentDetail } from './student-detail.js';
+import { api } from '../api.js?v=202603311200';
+import { formatDate, formatCurrency, getWeekdays } from '../ui.js?v=202603311200';
+import { t, getLocale } from '../i18n.js?v=202603311200';
+import { renderStudentDetail } from './student-detail.js?v=202603311200';
 
 export async function renderDashboard(container, openStudentId = null) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';

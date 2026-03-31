@@ -1,9 +1,9 @@
-import { api, getLocationId, setLocationId } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js';
-import { getUser } from '../auth.js';
-import { t, getWeekdays } from '../i18n.js';
-import { trackEvent } from '../analytics.js';
-import { tenantType } from '../tenant.js';
+import { api, getLocationId, setLocationId } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm } from '../ui.js?v=202603311200';
+import { getUser } from '../auth.js?v=202603311200';
+import { t, getWeekdays } from '../i18n.js?v=202603311200';
+import { trackEvent } from '../analytics.js?v=202603311200';
+import { tenantType } from '../tenant.js?v=202603311200';
 
 let currentDate = new Date();
 let sessions = [];

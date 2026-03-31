@@ -1,7 +1,7 @@
-import { api } from '../api.js';
-import { emptyState, formatDate } from '../ui.js';
-import { getUser } from '../auth.js';
-import { t } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { emptyState, formatDate } from '../ui.js?v=202603311200';
+import { getUser } from '../auth.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
 
 export async function renderMyPackages(container) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';

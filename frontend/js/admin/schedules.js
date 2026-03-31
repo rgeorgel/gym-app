@@ -1,7 +1,7 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm, getWeekdaysFull } from '../ui.js';
-import { t } from '../i18n.js';
-import { loadLocationsForSelector } from './locations.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatTime, emptyState, confirm, getWeekdaysFull } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
+import { loadLocationsForSelector } from './locations.js?v=202603311200';
 
 export async function renderSchedules(container) {
   container.innerHTML = `

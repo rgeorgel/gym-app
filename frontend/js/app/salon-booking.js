@@ -1,8 +1,8 @@
-import { api } from '../api.js';
-import { showToast, confirm } from '../ui.js';
-import { getUser } from '../auth.js';
-import { t } from '../i18n.js';
-import { trackEvent } from '../analytics.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, confirm } from '../ui.js?v=202603311200';
+import { getUser } from '../auth.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
+import { trackEvent } from '../analytics.js?v=202603311200';
 
 const user = getUser();
 

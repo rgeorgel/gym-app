@@ -121,31 +121,31 @@
   </div>
 
   <script type="module">
-    import { requireAuth, getUser } from '/js/auth.js';
-    import { logout } from '/js/api.js';
-    import { loadTenantTheme } from '/js/tenant.js';
-    import { showToast } from '/js/ui.js';
-    import { t } from '/js/i18n.js';
-    import { renderDashboard } from '/js/admin/dashboard.js';
-    import { renderSalonDashboard } from '/js/admin/salon-dashboard.js';
-    import { renderStudents } from '/js/admin/students.js';
-    import { renderClassTypes } from '/js/admin/class-types.js';
-    import { renderSchedules } from '/js/admin/schedules.js';
-    import { renderSessions } from '/js/admin/sessions.js';
-    import { renderPackageTemplates } from '/js/admin/package-templates.js';
-    import { renderInstructors } from '/js/admin/instructors.js';
-    import { renderSettings } from '/js/admin/settings.js';
-    import { renderAdmins } from '/js/admin/admins.js';
-    import { renderBilling } from '/js/admin/billing.js';
-    import { renderAppointments } from '/js/admin/appointments.js';
-    import { renderAvailability } from '/js/admin/availability.js';
-    import { renderReferral } from '/js/admin/referral.js';
-    import { trackPageView } from '/js/analytics.js';
-    import { initAiAssistant } from '/js/admin/ai-assistant.js';
-    import { renderLocations, loadLocationsForSelector } from '/js/admin/locations.js';
-    import { renderHeatmap } from '/js/admin/heatmap.js';
-    import { renderSalonBilling } from '/js/admin/salon-billing.js';
-    import { renderFinancial } from '/js/admin/financial.js';
+    import { requireAuth, getUser } from '/js/auth.js?v=202603311200';
+    import { logout } from '/js/api.js?v=202603311200';
+    import { loadTenantTheme } from '/js/tenant.js?v=202603311200';
+    import { showToast } from '/js/ui.js?v=202603311200';
+    import { t } from '/js/i18n.js?v=202603311200';
+    import { renderDashboard } from '/js/admin/dashboard.js?v=202603311200';
+    import { renderSalonDashboard } from '/js/admin/salon-dashboard.js?v=202603311200';
+    import { renderStudents } from '/js/admin/students.js?v=202603311200';
+    import { renderClassTypes } from '/js/admin/class-types.js?v=202603311200';
+    import { renderSchedules } from '/js/admin/schedules.js?v=202603311200';
+    import { renderSessions } from '/js/admin/sessions.js?v=202603311200';
+    import { renderPackageTemplates } from '/js/admin/package-templates.js?v=202603311200';
+    import { renderInstructors } from '/js/admin/instructors.js?v=202603311200';
+    import { renderSettings } from '/js/admin/settings.js?v=202603311200';
+    import { renderAdmins } from '/js/admin/admins.js?v=202603311200';
+    import { renderBilling } from '/js/admin/billing.js?v=202603311200';
+    import { renderAppointments } from '/js/admin/appointments.js?v=202603311200';
+    import { renderAvailability } from '/js/admin/availability.js?v=202603311200';
+    import { renderReferral } from '/js/admin/referral.js?v=202603311200';
+    import { trackPageView } from '/js/analytics.js?v=202603311200';
+    import { initAiAssistant } from '/js/admin/ai-assistant.js?v=202603311200';
+    import { renderLocations, loadLocationsForSelector } from '/js/admin/locations.js?v=202603311200';
+    import { renderHeatmap } from '/js/admin/heatmap.js?v=202603311200';
+    import { renderSalonBilling } from '/js/admin/salon-billing.js?v=202603311200';
+    import { renderFinancial } from '/js/admin/financial.js?v=202603311200';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
@@ -154,8 +154,8 @@
     const isBeautySalon = config?.tenantType === 'BeautySalon';
 
     // Load locations for the location selector
-    const { getLocationId } = await import('/js/api.js');
-    const { renderLocationSelector } = await import('/js/admin/locations.js');
+    const { getLocationId } = await import('/js/api.js?v=202603311200');
+    const { renderLocationSelector } = await import('/js/admin/locations.js?v=202603311200');
     const locations = await loadLocationsForSelector();
     renderLocationSelector(
       document.getElementById('locationSelectorContainer'),

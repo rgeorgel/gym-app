@@ -1,8 +1,8 @@
-import { api } from './api.js';
-import { loadTenantTheme } from './tenant.js';
-import { showToast } from './ui.js';
-import { t } from './i18n.js';
-import { trackEvent } from './analytics.js';
+import { api } from './api.js?v=202603311200';
+import { loadTenantTheme } from './tenant.js?v=202603311200';
+import { showToast } from './ui.js?v=202603311200';
+import { t } from './i18n.js?v=202603311200';
+import { trackEvent } from './analytics.js?v=202603311200';
 
 export function getUser() {
   const raw = localStorage.getItem('user');

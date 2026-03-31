@@ -28,7 +28,12 @@
       "Bash(infsh --version)",
       "Bash(ls /c/code/personal/gym-app/.env*)",
       "Bash(find /c/code/personal/gym-app -name nginx* -o -name *.conf)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Bash(find /c/code/personal/gym-app/frontend -path *admin* -name *.js -o -path *admin* -name *.jsx -o -path *admin* -name *.ts -o -path *admin* -name *.tsx)",
+      "Bash(tr -d '' node -e \":*)",
+      "Bash(cat /c/code/personal/gym-app/backend/GymApp.Domain/Enums/*.cs)",
+      "Bash(find /c/code/personal/gym-app -type f -name *.conf -o -name nginx.conf -o -name *.json -path */package.json)",
+      "Bash(grep -rl \"from ''''.*\\\\.js''''\" /c/code/personal/gym-app/frontend/js/)"
     ]
   }
 }

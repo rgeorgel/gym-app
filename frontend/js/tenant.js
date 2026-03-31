@@ -1,7 +1,7 @@
-import { setLocale, loadTranslations, t } from './i18n.js';
-import ptBR from './locales/pt-BR.js';
-import enUS from './locales/en-US.js';
-import esES from './locales/es-ES.js';
+import { setLocale, loadTranslations, t } from './i18n.js?v=202603311200';
+import ptBR from './locales/pt-BR.js?v=202603311200';
+import enUS from './locales/en-US.js?v=202603311200';
+import esES from './locales/es-ES.js?v=202603311200';
 
 // Pre-load all locale dictionaries
 loadTranslations('pt-BR', ptBR);

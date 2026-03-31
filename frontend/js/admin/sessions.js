@@ -1,6 +1,6 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatTime, emptyState, statusBadge, confirm } from '../ui.js';
-import { t, getLocale } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatTime, emptyState, statusBadge, confirm } from '../ui.js?v=202603311200';
+import { t, getLocale } from '../i18n.js?v=202603311200';
 
 export async function renderSessions(container) {
   const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;

@@ -1,6 +1,6 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js';
-import { t, getWeekdays } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, emptyState, confirm } from '../ui.js?v=202603311200';
+import { t, getWeekdays } from '../i18n.js?v=202603311200';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 

@@ -1,6 +1,6 @@
-import { api } from '../api.js';
-import { showToast, emptyState } from '../ui.js';
-import { t, getLocale } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, emptyState } from '../ui.js?v=202603311200';
+import { t, getLocale } from '../i18n.js?v=202603311200';
 
 export async function renderReports(container) {
   container.innerHTML = `

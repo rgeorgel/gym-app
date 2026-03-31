@@ -1,8 +1,8 @@
-import { api } from '../api.js';
-import { formatCurrency, formatTime, getWeekdays } from '../ui.js';
-import { t } from '../i18n.js';
-import { renderStudentDetail } from './student-detail.js';
-import { renderOnboardingWizard } from './onboarding.js';
+import { api } from '../api.js?v=202603311200';
+import { formatCurrency, formatTime, getWeekdays } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
+import { renderStudentDetail } from './student-detail.js?v=202603311200';
+import { renderOnboardingWizard } from './onboarding.js?v=202603311200';
 
 export async function renderSalonDashboard(container, openStudentId = null) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';

@@ -1,5 +1,5 @@
-import { api } from '../api.js';
-import { formatCurrency } from '../ui.js';
+import { api } from '../api.js?v=202603311200';
+import { formatCurrency } from '../ui.js?v=202603311200';
 
 const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 

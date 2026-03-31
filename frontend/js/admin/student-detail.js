@@ -1,8 +1,8 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js';
-import { t } from '../i18n.js';
-import { tenantType } from '../tenant.js';
-import { openCheckoutModal } from './financial.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
+import { tenantType } from '../tenant.js?v=202603311200';
+import { openCheckoutModal } from './financial.js?v=202603311200';
 
 const PM_LABEL = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
 

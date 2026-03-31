@@ -1,7 +1,7 @@
-import { api } from '../api.js';
-import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState } from '../ui.js';
-import { getUser } from '../auth.js';
-import { t } from '../i18n.js';
+import { api } from '../api.js?v=202603311200';
+import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState } from '../ui.js?v=202603311200';
+import { getUser } from '../auth.js?v=202603311200';
+import { t } from '../i18n.js?v=202603311200';
 
 let allAdmins = [];
 const currentUser = getUser();

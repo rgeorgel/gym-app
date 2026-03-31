@@ -52,17 +52,17 @@
   </div>
 
   <script type="module">
-    import { requireAuth, getUser } from '/js/auth.js';
-    import { logout } from '/js/api.js';
-    import { loadTenantTheme } from '/js/tenant.js';
-    import { t } from '/js/i18n.js';
-    import { renderSchedule } from '/js/app/schedule.js';
-    import { renderMyBookings } from '/js/app/my-bookings.js';
-    import { renderMyPackages } from '/js/app/my-packages.js';
-    import { renderPlans } from '/js/app/plans.js';
-    import { renderServices } from '/js/app/services.js';
-    import { renderSalonBooking } from '/js/app/salon-booking.js';
-    import { trackPageView } from '/js/analytics.js';
+    import { requireAuth, getUser } from '/js/auth.js?v=202603311200';
+    import { logout } from '/js/api.js?v=202603311200';
+    import { loadTenantTheme } from '/js/tenant.js?v=202603311200';
+    import { t } from '/js/i18n.js?v=202603311200';
+    import { renderSchedule } from '/js/app/schedule.js?v=202603311200';
+    import { renderMyBookings } from '/js/app/my-bookings.js?v=202603311200';
+    import { renderMyPackages } from '/js/app/my-packages.js?v=202603311200';
+    import { renderPlans } from '/js/app/plans.js?v=202603311200';
+    import { renderServices } from '/js/app/services.js?v=202603311200';
+    import { renderSalonBooking } from '/js/app/salon-booking.js?v=202603311200';
+    import { trackPageView } from '/js/analytics.js?v=202603311200';
 
     if (!requireAuth(['Student', 'Admin', 'SuperAdmin'])) throw new Error('unauthorized');
 
