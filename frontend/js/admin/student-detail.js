@@ -173,14 +173,27 @@ function render(container, student, bookings, packages, classTypes, templates, i
                 <div style="font-weight:500">${tx.serviceName}</div>
                 <div style="color:var(--gray-500)">${FMT_D(tx.date)} · ${tx.paymentMethod}${tx.installments > 1 ? ` ${tx.installments}x` : ''}</div>
               </div>
-              <div style="text-align:right">
-                <div style="font-weight:700">${FMT(tx.grossAmount)}</div>
-                ${tx.cardFeeAmount > 0 ? `<div style="color:var(--gray-400)">${FMT(tx.netAmount)} líquido</div>` : ''}
+              <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="text-align:right">
+                  <div style="font-weight:700">${FMT(tx.grossAmount)}</div>
+                  ${tx.cardFeeAmount > 0 ? `<div style="color:var(--gray-400)">${FMT(tx.netAmount)} líquido</div>` : ''}
+                </div>
+                <button class="btn btn-sm btn-danger btn-del-payment" data-id="${tx.id}" title="Excluir">✕</button>
               </div>
             </div>
           `).join('')}
         </div>
       `;
+      area.querySelectorAll('.btn-del-payment').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!await confirm('Excluir este pagamento?')) return;
+          try {
+            await api.delete(`/financial/transactions/${btn.dataset.id}`);
+            showToast('Pagamento excluído.', 'success');
+            loadPaymentHistory();
+          } catch (e) { showToast(e.message, 'error'); }
+        });
+      });
     }).catch(() => {});
   };
 
