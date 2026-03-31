@@ -345,41 +345,31 @@ function renderBookingsHtml(bookings, isGym) {
     Cancelled:  { label: 'Cancelado',   cls: 'badge-danger'  },
   };
 
+  const pmLabel = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
+
   return `
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:var(--font-size-sm)">
-        <thead>
-          <tr style="border-bottom:2px solid var(--gray-200);text-align:left">
-            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Data</th>
-            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Horário</th>
-            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">${isGym ? 'Modalidade' : 'Serviço'}</th>
-            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Status</th>
-            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Pagamento</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${bookings.map(b => {
-            const info = statusInfo[b.status] ?? { label: b.status, cls: 'badge-gray' };
-            const [y, m, d] = b.sessionDate.split('-');
-            const dateStr = `${d}/${m}/${y}`;
-            const time = b.sessionStartTime?.slice(0, 5) ?? '—';
-            const pmLabel = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
-            const payCell = b.paymentMethod
-              ? `<span style="color:var(--color-success);font-weight:500">${pmLabel[b.paymentMethod] ?? b.paymentMethod}${b.paymentMethod === 'CreditCard' && b.installments > 1 ? ` ${b.installments}x` : ''}</span>
-                 <span style="color:var(--gray-500);font-size:0.75rem;display:block">R$ ${Number(b.grossAmount).toFixed(2).replace('.', ',')}</span>`
-              : '<span style="color:var(--gray-300)">—</span>';
-            return `
-              <tr style="border-bottom:1px solid var(--gray-100)">
-                <td style="padding:0.625rem 0.75rem">${dateStr}</td>
-                <td style="padding:0.625rem 0.75rem">${time}</td>
-                <td style="padding:0.625rem 0.75rem">${b.classTypeName || '—'}</td>
-                <td style="padding:0.625rem 0.75rem"><span class="badge ${info.cls}">${info.label}</span></td>
-                <td style="padding:0.625rem 0.75rem">${payCell}</td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
+    <div style="display:flex;flex-direction:column;gap:0.5rem">
+      ${bookings.map(b => {
+        const info = statusInfo[b.status] ?? { label: b.status, cls: 'badge-gray' };
+        const [y, m, d] = b.sessionDate.split('-');
+        const time = b.sessionStartTime?.slice(0, 5) ?? '—';
+        const payStr = b.paymentMethod
+          ? `${pmLabel[b.paymentMethod] ?? b.paymentMethod}${b.paymentMethod === 'CreditCard' && b.installments > 1 ? ` ${b.installments}x` : ''} · R$ ${Number(b.grossAmount).toFixed(2).replace('.', ',')}`
+          : null;
+        return `
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid var(--gray-100);border-radius:var(--border-radius);background:var(--gray-50)">
+            <div style="min-width:3rem;text-align:center;flex-shrink:0">
+              <div style="font-size:1.1rem;font-weight:700;line-height:1;color:var(--gray-800)">${d}</div>
+              <div style="font-size:0.65rem;color:var(--gray-400);text-transform:uppercase">${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][parseInt(m)-1]}</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:500;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.classTypeName || '—'}</div>
+              <div style="font-size:var(--font-size-xs);color:var(--gray-400);margin-top:0.1rem">${time}${payStr ? ` · <span style="color:var(--color-success)">${payStr}</span>` : ''}</div>
+            </div>
+            <div style="flex-shrink:0"><span class="badge ${info.cls}">${info.label}</span></div>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 }
