@@ -7,8 +7,8 @@ function getCatalogUrl() {
   const host = location.hostname;
   const parts = host.split('.');
   return parts.length >= 3
-    ? `${location.protocol}//${host}/catalog/`
-    : `${location.protocol}//${host}/catalog/?slug=${slug}`;
+    ? `${location.protocol}//${host}/catalogo`
+    : `${location.protocol}//${host}/catalogo?slug=${slug}`;
 }
 
 /**

@@ -33,8 +33,8 @@ export async function renderSettings(container) {
   const host = location.hostname;
   const parts = host.split('.');
   const catalogUrl = parts.length >= 3
-    ? `${location.protocol}//${host}/catalog/`
-    : `${location.protocol}//${host}/catalog/?slug=${slug}`;
+    ? `${location.protocol}//${host}/catalogo`
+    : `${location.protocol}//${host}/catalogo?slug=${slug}`;
 
   const isSalon = settings.tenantType === 'BeautySalon';
 
