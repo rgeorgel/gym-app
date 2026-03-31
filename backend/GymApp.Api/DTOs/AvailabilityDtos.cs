@@ -14,3 +14,6 @@ public record CreateAvailabilityRequest(int Weekday, TimeOnly StartTime, TimeOnl
 
 public record TimeBlockResponse(Guid Id, DateOnly Date, TimeOnly StartTime, TimeOnly EndTime, string? Reason, DateTime CreatedAt);
 public record CreateTimeBlockRequest(DateOnly Date, TimeOnly StartTime, TimeOnly EndTime, string? Reason);
+
+public record VacationBlockResponse(Guid Id, DateOnly StartDate, DateOnly EndDate, string? Reason, DateTime CreatedAt);
+public record CreateVacationBlockRequest(DateOnly StartDate, DateOnly EndDate, string? Reason);

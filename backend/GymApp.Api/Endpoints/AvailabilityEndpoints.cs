@@ -101,6 +101,11 @@ public static class AvailabilityEndpoints
                 .Select(s => new { s.StartTime, s.DurationMinutes })
                 .ToListAsync();
 
+            // If date falls within a vacation block, no slots available
+            var onVacation = await db.VacationBlocks.AsNoTracking()
+                .AnyAsync(vb => vb.TenantId == tenant.TenantId && vb.StartDate <= date && vb.EndDate >= date);
+            if (onVacation) return Results.Ok(Array.Empty<TimeOnly>());
+
             // Get time blocks (admin-defined closures) for that date
             var timeBlocks = await db.TimeBlocks.AsNoTracking()
                 .Where(tb => tb.TenantId == tenant.TenantId && tb.Date == date)
@@ -219,6 +224,49 @@ public static class AvailabilityEndpoints
                 .FirstOrDefaultAsync(tb => tb.Id == id && tb.TenantId == tenant.TenantId);
             if (block is null) return Results.NotFound();
             db.TimeBlocks.Remove(block);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
+        // ── Vacation blocks (multi-day full-day closures) ─────────────────────
+        var vacGroup = app.MapGroup("/api/vacation-blocks").RequireAuthorization("AdminOrAbove");
+
+        vacGroup.MapGet("/", async (AppDbContext db, TenantContext tenant, DateOnly? from) =>
+        {
+            var start = from ?? DateOnly.FromDateTime(DateTime.UtcNow);
+            var blocks = await db.VacationBlocks.AsNoTracking()
+                .Where(vb => vb.TenantId == tenant.TenantId && vb.EndDate >= start)
+                .OrderBy(vb => vb.StartDate)
+                .Select(vb => new VacationBlockResponse(vb.Id, vb.StartDate, vb.EndDate, vb.Reason, vb.CreatedAt))
+                .ToListAsync();
+            return Results.Ok(blocks);
+        });
+
+        vacGroup.MapPost("/", async (CreateVacationBlockRequest req, AppDbContext db, TenantContext tenant) =>
+        {
+            if (req.StartDate > req.EndDate)
+                return Results.BadRequest("StartDate must be on or before EndDate.");
+
+            var block = new VacationBlock
+            {
+                TenantId  = tenant.TenantId,
+                StartDate = req.StartDate,
+                EndDate   = req.EndDate,
+                Reason    = string.IsNullOrWhiteSpace(req.Reason) ? null : req.Reason.Trim(),
+            };
+            db.VacationBlocks.Add(block);
+            await db.SaveChangesAsync();
+
+            return Results.Created($"/api/vacation-blocks/{block.Id}",
+                new VacationBlockResponse(block.Id, block.StartDate, block.EndDate, block.Reason, block.CreatedAt));
+        });
+
+        vacGroup.MapDelete("/{id:guid}", async (Guid id, AppDbContext db, TenantContext tenant) =>
+        {
+            var block = await db.VacationBlocks
+                .FirstOrDefaultAsync(vb => vb.Id == id && vb.TenantId == tenant.TenantId);
+            if (block is null) return Results.NotFound();
+            db.VacationBlocks.Remove(block);
             await db.SaveChangesAsync();
             return Results.NoContent();
         });

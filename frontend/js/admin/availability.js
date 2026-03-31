@@ -11,6 +11,18 @@ export async function renderAvailability(container) {
     </div>
     <div id="availabilityContent"><div class="loading-center"><span class="spinner"></span></div></div>
 
+    <!-- Vacation Blocks section -->
+    <div style="margin-top:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <h2 style="margin:0;font-size:1.1rem">🏖️ Férias / Feriados</h2>
+          <p class="text-sm text-muted" style="margin:0.25rem 0 0">Bloqueie um período completo. Os clientes não conseguirão agendar nenhum horário nesses dias.</p>
+        </div>
+        <button class="btn btn-secondary" id="btnNewVacation">+ Novo período</button>
+      </div>
+      <div id="vacationBlocksContent"><div class="loading-center"><span class="spinner"></span></div></div>
+    </div>
+
     <!-- Time Blocks section -->
     <div style="margin-top:2rem">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
@@ -25,9 +37,10 @@ export async function renderAvailability(container) {
   `;
 
   document.getElementById('btnNewBlock').addEventListener('click', () => openBlockModal());
+  document.getElementById('btnNewVacation').addEventListener('click', () => openVacationModal());
   document.getElementById('btnNewTimeBlock').addEventListener('click', () => openTimeBlockModal());
 
-  await Promise.all([loadBlocks(), loadTimeBlocks()]);
+  await Promise.all([loadBlocks(), loadVacationBlocks(), loadTimeBlocks()]);
 }
 
 // ── Recurring availability ────────────────────────────────────────────────────
@@ -142,6 +155,123 @@ function openBlockModal() {
       await loadBlocks();
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
+    }
+  });
+}
+
+// ── Vacation Blocks (multi-day full closures) ─────────────────────────────────
+
+async function loadVacationBlocks() {
+  const content = document.getElementById('vacationBlocksContent');
+  if (!content) return;
+  try {
+    const blocks = await api.get('/vacation-blocks');
+
+    if (!blocks.length) {
+      content.innerHTML = `
+        <div class="card" style="padding:1.5rem">
+          ${emptyState('🏖️', 'Nenhum período de férias agendado')}
+          <p class="text-sm text-muted" style="text-align:center;margin-top:0.75rem">
+            Agende suas férias ou feriados para bloquear todos os horários nesses dias.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    const fmt = (d) => { const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; };
+
+    content.innerHTML = `
+      <div class="avail-list">
+        ${blocks.map(b => `
+          <div class="avail-card" style="border-left:3px solid var(--color-warning)">
+            <div class="avail-card-day" style="color:var(--color-warning)">🏖️</div>
+            <div class="avail-card-time">
+              <span class="avail-time-range" style="font-weight:600">
+                ${fmt(b.startDate)} – ${fmt(b.endDate)}
+              </span>
+              ${b.reason ? `<span class="avail-instructor" style="color:var(--gray-500)">${b.reason}</span>` : ''}
+            </div>
+            <button class="btn btn-sm btn-danger btn-del-vac" data-id="${b.id}">Remover</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    content.querySelectorAll('.btn-del-vac').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!await confirm('Remover este período de férias?')) return;
+        try {
+          await api.delete(`/vacation-blocks/${btn.dataset.id}`);
+          showToast('Período removido.', 'success');
+          await loadVacationBlocks();
+        } catch (e) {
+          showToast(t('error.prefix') + e.message, 'error');
+        }
+      });
+    });
+  } catch (e) {
+    content.innerHTML = `<div class="empty-state"><div class="empty-state-text">${e.message}</div></div>`;
+  }
+}
+
+function openVacationModal() {
+  const today = new Date().toISOString().split('T')[0];
+
+  createModal({
+    id: 'vacationModal',
+    title: '🏖️ Novo período de férias / feriado',
+    body: `
+      <p class="text-sm text-muted" style="margin:0 0 1.25rem">
+        Durante este período, <strong>nenhum horário</strong> estará disponível para agendamento.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <label class="form-label">Data de início *</label>
+          <input class="form-control" id="vacStart" type="date" value="${today}" min="${today}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de término *</label>
+          <input class="form-control" id="vacEnd" type="date" value="${today}" min="${today}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motivo <span class="text-muted">(opcional)</span></label>
+        <input class="form-control" id="vacReason" type="text" placeholder="Ex: férias, feriado nacional, reforma…" maxlength="200">
+      </div>
+    `,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal('vacationModal')">Cancelar</button>
+      <button class="btn btn-primary" id="btnSaveVacation">Salvar período</button>
+    `,
+  });
+  openModal('vacationModal');
+
+  document.getElementById('vacStart').addEventListener('change', (e) => {
+    document.getElementById('vacEnd').min = e.target.value;
+    if (document.getElementById('vacEnd').value < e.target.value)
+      document.getElementById('vacEnd').value = e.target.value;
+  });
+
+  document.getElementById('btnSaveVacation').addEventListener('click', async () => {
+    const startDate = document.getElementById('vacStart').value;
+    const endDate   = document.getElementById('vacEnd').value;
+    const reason    = document.getElementById('vacReason').value.trim() || null;
+
+    if (!startDate || !endDate) { showToast('Preencha as datas.', 'error'); return; }
+    if (startDate > endDate)    { showToast('A data de início deve ser anterior ou igual à de término.', 'error'); return; }
+
+    const btn = document.getElementById('btnSaveVacation');
+    btn.disabled = true;
+    try {
+      await api.post('/vacation-blocks', { startDate, endDate, reason });
+      showToast('Período de férias salvo.', 'success');
+      closeModal('vacationModal');
+      await loadVacationBlocks();
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
     }
   });
 }

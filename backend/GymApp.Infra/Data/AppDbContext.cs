@@ -24,6 +24,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AiMessage> AiMessages => Set<AiMessage>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<TimeBlock> TimeBlocks => Set<TimeBlock>();
+    public DbSet<VacationBlock> VacationBlocks => Set<VacationBlock>();
     public DbSet<InstructorService> InstructorServices => Set<InstructorService>();
     public DbSet<DemoSeedLog> DemoSeedLogs => Set<DemoSeedLog>();
 
@@ -257,6 +258,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => new { x.TenantId, x.Date });
+            e.Property(x => x.Reason).HasMaxLength(500);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<VacationBlock>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.StartDate, x.EndDate });
             e.Property(x => x.Reason).HasMaxLength(500);
             e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
         });
