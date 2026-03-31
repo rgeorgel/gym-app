@@ -354,6 +354,7 @@ function renderBookingsHtml(bookings, isGym) {
             <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Horário</th>
             <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">${isGym ? 'Modalidade' : 'Serviço'}</th>
             <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Status</th>
+            <th style="padding:0.5rem 0.75rem;color:var(--gray-500);font-weight:500">Pagamento</th>
           </tr>
         </thead>
         <tbody>
@@ -362,12 +363,18 @@ function renderBookingsHtml(bookings, isGym) {
             const [y, m, d] = b.sessionDate.split('-');
             const dateStr = `${d}/${m}/${y}`;
             const time = b.sessionStartTime?.slice(0, 5) ?? '—';
+            const pmLabel = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
+            const payCell = b.paymentMethod
+              ? `<span style="color:var(--color-success);font-weight:500">${pmLabel[b.paymentMethod] ?? b.paymentMethod}${b.paymentMethod === 'CreditCard' && b.installments > 1 ? ` ${b.installments}x` : ''}</span>
+                 <span style="color:var(--gray-500);font-size:0.75rem;display:block">R$ ${Number(b.grossAmount).toFixed(2).replace('.', ',')}</span>`
+              : '<span style="color:var(--gray-300)">—</span>';
             return `
               <tr style="border-bottom:1px solid var(--gray-100)">
                 <td style="padding:0.625rem 0.75rem">${dateStr}</td>
                 <td style="padding:0.625rem 0.75rem">${time}</td>
                 <td style="padding:0.625rem 0.75rem">${b.classTypeName || '—'}</td>
                 <td style="padding:0.625rem 0.75rem"><span class="badge ${info.cls}">${info.label}</span></td>
+                <td style="padding:0.625rem 0.75rem">${payCell}</td>
               </tr>
             `;
           }).join('')}
