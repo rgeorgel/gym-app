@@ -392,6 +392,14 @@ export default {
   'store.credits': 'créditos',
 
   // Settings — Payments toggle
+  'settings.ai.title': 'Assistente IA',
+  'settings.ai.desc': 'Exibe o botão do assistente de IA no painel administrativo.',
+  'settings.ai.enable': 'Ativar IA',
+  'settings.ai.disable': 'Desativar IA',
+  'settings.ai.enabled': 'IA ativada',
+  'settings.ai.disabled': 'IA desativada',
+  'settings.ai.saved': 'Status da IA atualizado',
+
   'settings.payments.title': 'Pagamentos online',
   'settings.payments.desc': 'Permite que alunos comprem planos diretamente pelo app via PIX.',
   'settings.payments.enable': 'Ativar pagamentos',

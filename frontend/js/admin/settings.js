@@ -104,6 +104,21 @@ export async function renderSettings(container) {
 
       <div class="card">
         <div class="card-body" style="padding:1.5rem">
+          <h3 style="margin:0 0 0.25rem">${t('settings.ai.title')}</h3>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.ai.desc')}</p>
+          <div style="display:flex;align-items:center;gap:1rem">
+            ${settings.aiEnabled
+              ? `<span class="badge badge-success">${t('settings.ai.enabled')}</span>
+                 <button class="btn btn-secondary btn-sm" id="btnToggleAi">${t('settings.ai.disable')}</button>`
+              : `<span class="badge badge-gray">${t('settings.ai.disabled')}</span>
+                 <button class="btn btn-primary btn-sm" id="btnToggleAi">${t('settings.ai.enable')}</button>`
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">${t('settings.colors.title')}</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">${t('settings.colors.desc')}</p>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
@@ -295,6 +310,19 @@ export async function renderSettings(container) {
     } catch (e) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnToggleAi')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btnToggleAi');
+    btn.disabled = true;
+    try {
+      await api.put('/settings/ai-enabled', { enabled: !settings.aiEnabled });
+      showToast(t('settings.ai.saved'), 'success');
+      await renderSettings(container);
+    } catch (e) {
+      showToast(t('error.prefix') + e.message, 'error');
       btn.disabled = false;
     }
   });

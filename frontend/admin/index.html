@@ -287,7 +287,7 @@
     const initialPage = location.hash.slice(1);
     await navigateTo(pages[initialPage] ? initialPage : 'dashboard');
 
-    initAiAssistant();
+    if (config?.aiEnabled) initAiAssistant();
   </script>
 </body>
 </html>

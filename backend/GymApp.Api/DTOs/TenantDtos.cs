@@ -77,8 +77,11 @@ public record TenantSettingsResponse(
     string? SocialFacebook,
     string? SocialWhatsApp,
     string? SocialWebsite,
-    string? SocialTikTok
+    string? SocialTikTok,
+    bool AiEnabled = false
 );
+
+public record SetAiEnabledRequest(bool Enabled);
 
 public record SetTenantTypeRequest(TenantType TenantType);
 

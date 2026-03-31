@@ -48,6 +48,7 @@ public class Tenant
     public string? SocialTikTok { get; set; }
 
     // ── AI Assistant ────────────────────────────────────────────────────────
+    public bool AiEnabled { get; set; } = false;
     public string? AiSystemPrompt { get; set; }
 
     // ── Referral program ────────────────────────────────────────────────────

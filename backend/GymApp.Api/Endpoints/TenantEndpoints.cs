@@ -267,6 +267,15 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        settingsGroup.MapPut("/ai-enabled", async (SetAiEnabledRequest req, AppDbContext db, TenantContext tenantCtx) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+            tenant.AiEnabled = req.Enabled;
+            await db.SaveChangesAsync();
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         settingsGroup.MapPut("/logo", async (SetLogoUrlRequest req, AppDbContext db, TenantContext tenantCtx) =>
         {
             var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
@@ -368,7 +377,8 @@ public static class TenantEndpoints
             SocialFacebook: t.SocialFacebook,
             SocialWhatsApp: t.SocialWhatsApp,
             SocialWebsite: t.SocialWebsite,
-            SocialTikTok: t.SocialTikTok);
+            SocialTikTok: t.SocialTikTok,
+            AiEnabled: t.AiEnabled);
 
     private static bool IsValidHexColor(string? color) =>
         !string.IsNullOrWhiteSpace(color) && Regex.IsMatch(color.Trim(), @"^#[0-9a-fA-F]{6}$");
