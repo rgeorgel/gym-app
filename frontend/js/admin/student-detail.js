@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { showToast, createModal, openModal, closeModal, formatDate, statusBadge, emptyState, confirm } from '../ui.js';
 import { t } from '../i18n.js';
 import { tenantType } from '../tenant.js';
+import { openCheckoutModal } from './financial.js';
 
 export async function renderStudentDetail(container, studentId, onBack) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
@@ -135,10 +136,62 @@ function render(container, student, bookings, packages, classTypes, templates, i
         </div>
       </div>
 
+      <!-- Payment history -->
+      <div class="card" style="margin-top:1.25rem" id="paymentHistoryCard">
+        <div class="card-body" style="padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <h3 style="margin:0;font-size:1rem">💰 Histórico financeiro</h3>
+            <button class="btn btn-primary btn-sm" id="btnAddPayment">+ Registrar pagamento</button>
+          </div>
+          <div id="paymentHistoryArea"><div class="loading-center"><span class="spinner"></span></div></div>
+        </div>
+      </div>
+
     </div>
   `;
 
   document.getElementById('btnBack').addEventListener('click', onBack);
+
+  // Payment history
+  const FMT    = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+  const FMT_D  = (d) => { const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; };
+
+  const loadPaymentHistory = () => {
+    const area = container.querySelector('#paymentHistoryArea');
+    if (!area) return;
+    area.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+    api.get(`/financial/transactions?studentId=${student.id}`).then(txs => {
+      if (!txs.length) {
+        area.innerHTML = `<p style="color:var(--gray-400);font-size:var(--font-size-sm);font-style:italic">Nenhum pagamento registrado.</p>`;
+        return;
+      }
+      area.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          ${txs.map(tx => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray-100);font-size:var(--font-size-sm)">
+              <div>
+                <div style="font-weight:500">${tx.serviceName}</div>
+                <div style="color:var(--gray-500)">${FMT_D(tx.date)} · ${tx.paymentMethod}${tx.installments > 1 ? ` ${tx.installments}x` : ''}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:700">${FMT(tx.grossAmount)}</div>
+                ${tx.cardFeeAmount > 0 ? `<div style="color:var(--gray-400)">${FMT(tx.netAmount)} líquido</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }).catch(() => {});
+  };
+
+  loadPaymentHistory();
+
+  container.querySelector('#btnAddPayment').addEventListener('click', () => {
+    openCheckoutModal(
+      { studentId: student.id, studentName: student.name },
+      loadPaymentHistory
+    );
+  });
 
   // Notes inline edit
   const notesDisplay = document.getElementById('notesDisplay');

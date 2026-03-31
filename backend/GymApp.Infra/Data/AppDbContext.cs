@@ -25,6 +25,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<TimeBlock> TimeBlocks => Set<TimeBlock>();
     public DbSet<VacationBlock> VacationBlocks => Set<VacationBlock>();
+    public DbSet<FinancialTransaction> FinancialTransactions => Set<FinancialTransaction>();
+    public DbSet<Expense> Expenses => Set<Expense>();
+    public DbSet<CardFeeConfig> CardFeeConfigs => Set<CardFeeConfig>();
     public DbSet<InstructorService> InstructorServices => Set<InstructorService>();
     public DbSet<DemoSeedLog> DemoSeedLogs => Set<DemoSeedLog>();
 
@@ -277,6 +280,40 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(x => x.TenantId);
             e.HasIndex(x => new { x.TenantId, x.EntityType });
             e.Property(x => x.EntityType).HasMaxLength(50);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FinancialTransaction>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.Date });
+            e.HasIndex(x => new { x.TenantId, x.StudentId });
+            e.Property(x => x.GrossAmount).HasPrecision(10, 2);
+            e.Property(x => x.CardFeeAmount).HasPrecision(10, 2);
+            e.Property(x => x.NetAmount).HasPrecision(10, 2);
+            e.Property(x => x.CardFeePercentage).HasPrecision(5, 2);
+            e.Property(x => x.ServiceName).HasMaxLength(200);
+            e.Property(x => x.StudentName).HasMaxLength(200);
+            e.Property(x => x.Notes).HasMaxLength(500);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Expense>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.Date });
+            e.Property(x => x.Amount).HasPrecision(10, 2);
+            e.Property(x => x.Category).HasMaxLength(100);
+            e.Property(x => x.Description).HasMaxLength(500);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CardFeeConfig>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.TenantId, x.FeeType }).IsUnique();
+            e.Property(x => x.FeePercentage).HasPrecision(5, 2);
+            e.Property(x => x.FeeType).HasMaxLength(30);
             e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
         });
     }

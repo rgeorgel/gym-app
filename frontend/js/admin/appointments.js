@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { showToast, formatTime, emptyState, statusBadge } from '../ui.js';
 import { t } from '../i18n.js';
 import { renderStudentDetail } from './student-detail.js';
+import { openCheckoutModal } from './financial.js';
 
 export async function renderAppointments(container) {
   const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -128,6 +129,7 @@ export async function renderAppointments(container) {
         <div class="appt-card-actions">
           ${statusBadge(a.status)}
           ${canCheckin ? `<button class="btn btn-sm btn-primary btn-checkin" data-id="${a.bookingId}">${t('appointments.checkin')}</button>` : ''}
+          ${(a.status === 'Confirmed' || a.status === 'CheckedIn') ? `<button class="btn btn-sm btn-secondary btn-checkout" data-id="${a.bookingId}" data-service="${a.serviceName ?? ''}" data-price="${a.servicePrice ?? 0}" data-student="${a.clientName ?? ''}" data-student-id="${a.clientId ?? ''}" data-date="${a.date}">💳 Checkout</button>` : ''}
           <button class="btn btn-sm btn-secondary btn-client-detail" data-id="${a.clientId}" title="Ver detalhes do cliente">👤</button>
         </div>
       `;
@@ -153,6 +155,19 @@ export async function renderAppointments(container) {
       btn.addEventListener('click', () =>
         renderStudentDetail(outerEl, btn.dataset.id, () => renderAppointments(outerEl))
       );
+    });
+
+    container.querySelectorAll('.btn-checkout').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openCheckoutModal({
+          date: btn.dataset.date,
+          serviceName: btn.dataset.service,
+          grossAmount: parseFloat(btn.dataset.price) || undefined,
+          studentName: btn.dataset.student || undefined,
+          studentId: btn.dataset.studentId || undefined,
+          bookingId: btn.dataset.id,
+        });
+      });
     });
   };
 

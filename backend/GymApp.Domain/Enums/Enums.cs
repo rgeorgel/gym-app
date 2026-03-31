@@ -10,3 +10,4 @@ public enum StudentStatus { Active, Inactive, Suspended }
 public enum PaymentStatus { Pending, Paid, Expired, Cancelled }
 public enum SubscriptionStatus { Trial, Active, PastDue, Canceled, Suspended }
 public enum TenantType { Gym, BeautySalon }
+public enum PaymentMethod { Cash, Pix, DebitCard, CreditCard }

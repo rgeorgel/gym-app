@@ -61,6 +61,9 @@
         </div>
 
         <div class="nav-section-label">Crescimento</div>
+        <div class="nav-item" data-page="financial">
+          <span class="nav-icon">💰</span> <span>Financeiro</span>
+        </div>
         <div class="nav-item" data-page="heatmap">
           <span class="nav-icon">🔥</span> <span data-i18n="heatmap.title">Mapa de Calor</span>
         </div>
@@ -142,6 +145,7 @@
     import { renderLocations, loadLocationsForSelector } from '/js/admin/locations.js';
     import { renderHeatmap } from '/js/admin/heatmap.js';
     import { renderSalonBilling } from '/js/admin/salon-billing.js';
+    import { renderFinancial } from '/js/admin/financial.js';
 
     if (!requireAuth(['Admin', 'SuperAdmin'])) throw new Error('unauthorized');
     if (getUser()?.role === 'SuperAdmin') { location.href = '/superadmin/index.html'; throw new Error(); }
@@ -207,7 +211,7 @@
         const billingNav = document.createElement('div');
         billingNav.className = 'nav-item';
         billingNav.dataset.page = 'salon-billing';
-        billingNav.innerHTML = `<span class="nav-icon">💰</span> <span>Faturamento</span>`;
+        billingNav.innerHTML = `<span class="nav-icon">📊</span> <span>Faturamento</span>`;
         heatmapNav.insertAdjacentElement('afterend', billingNav);
         billingNav.addEventListener('click', () => { navigateTo('salon-billing'); document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('visible'); });
       }
@@ -231,6 +235,7 @@
       locations: { titleKey: 'nav.locations', render: renderLocations },
       heatmap: { titleKey: 'heatmap.title', render: renderHeatmap },
       'salon-billing': { titleKey: 'nav.salonBilling', render: renderSalonBilling },
+      financial: { titleKey: 'nav.financial', render: renderFinancial },
       admins: { titleKey: 'nav.admins', render: renderAdmins },
       settings: { titleKey: 'nav.settings', render: renderSettings },
       billing: { titleKey: 'nav.billing', render: renderBilling },

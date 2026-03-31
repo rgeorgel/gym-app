@@ -145,6 +145,7 @@ app.MapSessionEndpoints();
 app.MapBookingEndpoints();
 app.MapAppointmentEndpoints();
 app.MapAvailabilityEndpoints();
+app.MapFinancialEndpoints();
 app.MapPackageEndpoints();
 app.MapPackageTemplateEndpoints();
 app.MapInstructorEndpoints();
