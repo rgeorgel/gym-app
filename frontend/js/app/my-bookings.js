@@ -1,5 +1,8 @@
 import { api } from '../api.js';
 import { showToast, formatTime, statusBadge, emptyState, confirm } from '../ui.js';
+import { getUser } from '../auth.js';
+import { t, getMonthNames } from '../i18n.js';
+import { trackEvent } from '../analytics.js';
 
 const PAYMENT_LABEL = {
   Cash:       '💵 Dinheiro',
@@ -8,9 +11,6 @@ const PAYMENT_LABEL = {
   CreditCard: '💳 Crédito',
 };
 const FMT_BRL = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-import { getUser } from '../auth.js';
-import { t, getMonthNames } from '../i18n.js';
-import { trackEvent } from '../analytics.js';
 
 let locations = [];
 
