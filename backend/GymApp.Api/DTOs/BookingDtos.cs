@@ -21,5 +21,9 @@ public record BookingResponse(
     BookingStatus Status,
     DateTime? CheckedInAt,
     DateTime CreatedAt,
-    Guid LocationId
+    Guid LocationId,
+    string? PaymentMethod = null,
+    decimal? GrossAmount = null,
+    decimal? NetAmount = null,
+    int? Installments = null
 );

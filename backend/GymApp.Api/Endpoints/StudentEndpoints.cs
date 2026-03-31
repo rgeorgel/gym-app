@@ -117,7 +117,20 @@ public static class StudentEndpoints
                     b.Session.LocationId))
                 .ToListAsync();
 
-            return Results.Ok(bookings);
+            var bookingIds = bookings.Where(b => b.Id != Guid.Empty).Select(b => b.Id).ToList();
+            var payments = await db.FinancialTransactions.AsNoTracking()
+                .Where(t => t.TenantId == tenant.TenantId && t.BookingId != null && bookingIds.Contains(t.BookingId.Value))
+                .Select(t => new { t.BookingId, t.PaymentMethod, t.GrossAmount, t.NetAmount, t.Installments })
+                .ToListAsync();
+            var paymentMap = payments.GroupBy(t => t.BookingId!.Value)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var enriched = bookings.Select(b =>
+                paymentMap.TryGetValue(b.Id, out var p)
+                    ? b with { PaymentMethod = p.PaymentMethod.ToString(), GrossAmount = p.GrossAmount, NetAmount = p.NetAmount, Installments = p.Installments }
+                    : b).ToList();
+
+            return Results.Ok(enriched);
         });
 
         group.MapPatch("/{id:guid}/notes", async (Guid id, UpdateStudentNotesRequest req, AppDbContext db, TenantContext tenant) =>

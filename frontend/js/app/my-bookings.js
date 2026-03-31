@@ -1,5 +1,13 @@
 import { api } from '../api.js';
 import { showToast, formatTime, statusBadge, emptyState, confirm } from '../ui.js';
+
+const PAYMENT_LABEL = {
+  Cash:       '💵 Dinheiro',
+  Pix:        '⚡ PIX',
+  DebitCard:  '💳 Débito',
+  CreditCard: '💳 Crédito',
+};
+const FMT_BRL = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 import { getUser } from '../auth.js';
 import { t, getMonthNames } from '../i18n.js';
 import { trackEvent } from '../analytics.js';
@@ -71,6 +79,7 @@ function renderBookingRow(b, showCancel) {
       <div class="booking-info">
         <div class="booking-class">${b.classTypeName}</div>
         <div class="booking-time">${formatTime(b.sessionStartTime?.toString())}${loc ? ` · 📍 ${loc.name}` : ''}</div>
+        ${b.paymentMethod ? `<div class="booking-payment">${PAYMENT_LABEL[b.paymentMethod] ?? b.paymentMethod}${b.paymentMethod === 'CreditCard' && b.installments > 1 ? ` ${b.installments}x` : ''} · ${FMT_BRL(b.grossAmount)}</div>` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:0.75rem">
         ${statusBadge(b.status)}
