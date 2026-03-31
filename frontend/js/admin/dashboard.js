@@ -94,10 +94,8 @@ function renderTodaySessions(sessions) {
 
 function renderKpiGrid(stats) {
   const kpis = [
-    { label: t('dash.kpi.activeStudents'), value: stats.totalStudents, icon: '👥' },
-    { label: t('dash.kpi.newThisMonth'), value: stats.newStudentsThisMonth, icon: '🆕' },
-    { label: t('dash.kpi.classesToday'), value: stats.sessionsToday, icon: '📅' },
-    { label: t('dash.kpi.bookingsThisMonth'), value: stats.bookingsThisMonth, icon: '🎫' },
+    { label: t('dash.kpi.clients'), value: `${stats.totalStudents} / ${stats.newStudentsThisMonth}`, icon: '👥', meta: t('dash.kpi.clientsMeta') },
+    { label: t('dash.kpi.attendances'), value: `${stats.sessionsToday} / ${stats.bookingsThisMonth}`, icon: '📅', meta: t('dash.kpi.attendancesMeta') },
     { label: t('dash.kpi.avgOccupancy'), value: `${stats.avgOccupancyPct}%`, icon: '📊', meta: t('dash.kpi.last30') },
     { label: t('dash.kpi.cancellationRate'), value: `${stats.cancellationRatePct}%`, icon: '❌', meta: t('dash.kpi.thisMonth'), warn: stats.cancellationRatePct > 20 },
     { label: t('dash.kpi.revenue'), value: formatCurrency(stats.revenueThisMonth), icon: '💰' },

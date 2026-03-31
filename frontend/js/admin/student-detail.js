@@ -4,6 +4,8 @@ import { t } from '../i18n.js';
 import { tenantType } from '../tenant.js';
 import { openCheckoutModal } from './financial.js';
 
+const PM_LABEL = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
+
 export async function renderStudentDetail(container, studentId, onBack) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
@@ -171,7 +173,7 @@ function render(container, student, bookings, packages, classTypes, templates, i
             <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray-100);font-size:var(--font-size-sm)">
               <div>
                 <div style="font-weight:500">${tx.serviceName}</div>
-                <div style="color:var(--gray-500)">${FMT_D(tx.date)} · ${tx.paymentMethod}${tx.installments > 1 ? ` ${tx.installments}x` : ''}</div>
+                <div style="color:var(--gray-500)">${FMT_D(tx.date)} · ${PM_LABEL[tx.paymentMethod] ?? tx.paymentMethod}${tx.installments > 1 ? ` ${tx.installments}x` : ''}</div>
               </div>
               <div style="display:flex;align-items:center;gap:0.75rem">
                 <div style="text-align:right">
@@ -358,7 +360,7 @@ function renderBookingsHtml(bookings, isGym) {
     Cancelled:  { label: 'Cancelado',   cls: 'badge-danger'  },
   };
 
-  const pmLabel = { Cash: '💵 Dinheiro', Pix: '⚡ PIX', DebitCard: '💳 Débito', CreditCard: '💳 Crédito' };
+  const pmLabel = PM_LABEL;
 
   return `
     <div style="display:flex;flex-direction:column;gap:0.5rem">

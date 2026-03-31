@@ -95,12 +95,10 @@ function renderTodayCard(appointments) {
 
 function renderKpis(stats) {
   const kpis = [
-    { label: 'Atendimentos hoje',       value: stats.appointmentsToday,    icon: '📅' },
-    { label: 'Atendimentos no mês',     value: stats.appointmentsThisMonth, icon: '🎫' },
-    { label: 'Receita estimada',        value: formatCurrency(stats.revenueThisMonth), icon: '💰', meta: 'este mês' },
-    { label: 'Clientes ativos',         value: stats.totalClients,          icon: '👥' },
-    { label: 'Novos clientes',          value: stats.newClientsThisMonth,   icon: '🆕', meta: 'este mês' },
-    { label: 'Taxa de cancelamento',    value: `${stats.cancellationRatePct}%`, icon: '❌', meta: 'este mês', warn: stats.cancellationRatePct > 20 },
+    { label: 'Atendimentos',         value: `${stats.appointmentsToday} / ${stats.appointmentsThisMonth}`, icon: '📅', meta: 'hoje / mês' },
+    { label: 'Clientes',             value: `${stats.totalClients} / ${stats.newClientsThisMonth}`,        icon: '👥', meta: 'ativos / novos' },
+    { label: 'Receita estimada',     value: formatCurrency(stats.revenueThisMonth), icon: '💰', meta: 'este mês' },
+    { label: 'Taxa de cancelamento', value: `${stats.cancellationRatePct}%`, icon: '❌', meta: 'este mês', warn: stats.cancellationRatePct > 20 },
   ];
 
   return `
