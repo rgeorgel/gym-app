@@ -38,7 +38,7 @@ public static class TenantEndpoints
 
             return Results.Ok(new TenantConfigResponse(
                 tenant.Name, tenant.LogoUrl, tenant.PrimaryColor, tenant.SecondaryColor, tenant.TextColor, tenant.Slug, tenant.Language, tenant.TenantType,
-                tenant.SocialInstagram, tenant.SocialFacebook, tenant.SocialWhatsApp, tenant.SocialWebsite, tenant.SocialTikTok));
+                tenant.SocialInstagram, tenant.SocialFacebook, tenant.SocialWhatsApp, tenant.SocialWebsite, tenant.SocialTikTok, tenant.AiEnabled));
         }).AllowAnonymous();
 
         // Public: self-signup from landing page

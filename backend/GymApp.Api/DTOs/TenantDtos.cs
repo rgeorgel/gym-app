@@ -15,7 +15,8 @@ public record TenantConfigResponse(
     string? SocialFacebook,
     string? SocialWhatsApp,
     string? SocialWebsite,
-    string? SocialTikTok
+    string? SocialTikTok,
+    bool AiEnabled = false
 );
 
 public record CreateTenantRequest(
