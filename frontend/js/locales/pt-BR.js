@@ -430,7 +430,7 @@ export default {
   'settings.colors.secondary': 'Cor secundária',
   'settings.colors.text': 'Cor dos textos',
   'settings.colors.saved': 'Cores salvas com sucesso',
-  'settings.logo.title': 'Logo da academia',
+  'settings.logo.title': 'Logo do estabelecimento',
   'settings.logo.desc': 'URL da imagem do logo exibido no app e na página de login. Deixe em branco para usar o logo padrão.',
   'settings.logo.field': 'URL do logo',
   'settings.logo.placeholder': 'https://exemplo.com/logo.png',
