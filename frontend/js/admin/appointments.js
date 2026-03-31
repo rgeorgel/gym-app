@@ -4,12 +4,41 @@ import { t } from '../i18n.js';
 import { renderStudentDetail } from './student-detail.js';
 import { openCheckoutModal } from './financial.js';
 
-export async function renderAppointments(container) {
+export async function renderAppointments(container, subRoute = null) {
   const toDateStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const today = toDateStr(new Date());
 
-  let currentView = 'day';
-  let currentDate = new Date();
+  // Parse subRoute: "day/YYYY-MM-DD", "week/YYYY-MM-DD", "month/YYYY-MM", "student/{uuid}"
+  let openStudentId = null;
+  let initView = 'day';
+  let initDate = new Date();
+
+  if (subRoute) {
+    if (subRoute.startsWith('student/')) {
+      openStudentId = subRoute.slice('student/'.length);
+    } else {
+      const [view, dateStr] = subRoute.split('/');
+      if (['day', 'week', 'month'].includes(view) && dateStr) {
+        initView = view;
+        if (view === 'month') {
+          const [y, m] = dateStr.split('-').map(Number);
+          initDate = new Date(y, m - 1, 1);
+        } else {
+          const [y, m, d] = dateStr.split('-').map(Number);
+          initDate = new Date(y, m - 1, d);
+        }
+      }
+    }
+  }
+
+  let currentView = initView;
+  let currentDate = new Date(initDate);
+
+  const buildSubRoute = () => currentView === 'month'
+    ? `month/${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+    : `${currentView}/${toDateStr(currentDate)}`;
+
+  const updateHash = () => history.replaceState(null, '', '#appointments/' + buildSubRoute());
 
   container.innerHTML = `
     <div class="appts-toolbar">
@@ -27,7 +56,7 @@ export async function renderAppointments(container) {
         </div>
       </div>
       <div class="appts-toolbar-row appts-toolbar-row--date" id="dateRow">
-        <input class="form-control appts-date-input" id="apptDate" type="date" value="${today}">
+        <input class="form-control appts-date-input" id="apptDate" type="date" value="${toDateStr(initDate)}">
         <button class="btn btn-secondary btn-sm" id="btnLoadAppts">${t('btn.load')}</button>
         <button class="btn btn-primary btn-new-appt" id="btnNewAppt">${t('appointments.new')}</button>
       </div>
@@ -93,7 +122,7 @@ export async function renderAppointments(container) {
 
   const renderDayView = (container, appts, date) => {
     if (!appts.length) {
-      container.innerHTML = emptyState(t('appointments.none'));
+      container.innerHTML = emptyState('📅', t('appointments.none'));
       return;
     }
 
@@ -152,9 +181,14 @@ export async function renderAppointments(container) {
 
     const outerEl = container.closest('#contentArea') ?? container.parentElement;
     container.querySelectorAll('.btn-client-detail').forEach(btn => {
-      btn.addEventListener('click', () =>
-        renderStudentDetail(outerEl, btn.dataset.id, () => renderAppointments(outerEl))
-      );
+      btn.addEventListener('click', () => {
+        const viewSubRoute = buildSubRoute();
+        history.replaceState(null, '', '#appointments/student/' + btn.dataset.id);
+        renderStudentDetail(outerEl, btn.dataset.id, () => {
+          history.replaceState(null, '', '#appointments/' + viewSubRoute);
+          renderAppointments(outerEl, viewSubRoute);
+        });
+      });
     });
 
     container.querySelectorAll('.btn-checkout').forEach(btn => {
@@ -186,7 +220,7 @@ export async function renderAppointments(container) {
     const visibleDays = skipEmpty ? days.filter(d => (apptsByDay[toDateStr(d)] || []).length > 0) : days;
 
     if (!visibleDays.length) {
-      container.innerHTML = emptyState(t('appointments.none'));
+      container.innerHTML = emptyState('📅', t('appointments.none'));
       return;
     }
 
@@ -230,6 +264,7 @@ export async function renderAppointments(container) {
         currentDate = new Date(y, m - 1, d);
         currentView = 'day';
         updateViewButtons();
+        updateHash();
         load();
       });
     });
@@ -309,6 +344,7 @@ export async function renderAppointments(container) {
         currentDate = new Date(y, m - 1, d);
         currentView = 'day';
         updateViewButtons();
+        updateHash();
         load();
       });
     });
@@ -389,6 +425,7 @@ export async function renderAppointments(container) {
         currentDate = new Date(y, m - 1, d);
         currentView = 'day';
         updateViewButtons();
+        updateHash();
         load();
       });
     });
@@ -406,7 +443,10 @@ export async function renderAppointments(container) {
   container.querySelectorAll('.btn-toggle-view').forEach(btn => {
     btn.addEventListener('click', () => {
       currentView = btn.dataset.view;
+      currentDate = new Date();
+      document.getElementById('apptDate').value = today;
       updateViewButtons();
+      updateHash();
       load();
     });
   });
@@ -415,6 +455,7 @@ export async function renderAppointments(container) {
     currentDate = new Date();
     document.getElementById('apptDate').value = today;
     updateViewButtons();
+    updateHash();
     load();
   });
 
@@ -428,6 +469,7 @@ export async function renderAppointments(container) {
       currentDate.setMonth(currentDate.getMonth() - 1);
     }
     updateViewButtons();
+    updateHash();
     load();
   });
 
@@ -441,6 +483,7 @@ export async function renderAppointments(container) {
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
     updateViewButtons();
+    updateHash();
     load();
   });
 
@@ -452,13 +495,22 @@ export async function renderAppointments(container) {
     }
     currentView = 'day';
     updateViewButtons();
+    updateHash();
     load();
   });
 
   document.getElementById('btnNewAppt').addEventListener('click', () => openNewApptModal(load));
 
   updateViewButtons();
+  updateHash();
   await load();
+
+  if (openStudentId) {
+    renderStudentDetail(container, openStudentId, () => {
+      history.replaceState(null, '', '#appointments');
+      renderAppointments(container);
+    });
+  }
 }
 
 // ── Modal de novo agendamento ──────────────────────────────────────────────

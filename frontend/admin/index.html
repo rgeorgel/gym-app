@@ -244,10 +244,17 @@
 
     let currentPage = 'dashboard';
 
-    async function navigateTo(page, updateHash = true) {
+    function parseHash(hash) {
+      const raw = hash.startsWith('#') ? hash.slice(1) : hash;
+      const slashIdx = raw.indexOf('/');
+      if (slashIdx < 0) return { page: raw, subRoute: null };
+      return { page: raw.slice(0, slashIdx), subRoute: raw.slice(slashIdx + 1) || null };
+    }
+
+    async function navigateTo(page, updateHash = true, subRoute = null) {
       if (!pages[page]) return;
       currentPage = page;
-      if (updateHash) location.hash = page;
+      if (updateHash) location.hash = subRoute ? `${page}/${subRoute}` : page;
       const pageTitle = t(pages[page].titleKey);
       document.getElementById('pageTitle').textContent = pageTitle;
       trackPageView('Admin — ' + pageTitle);
@@ -257,7 +264,7 @@
       const content = document.getElementById('contentArea');
       content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
       try {
-        await pages[page].render(content);
+        await pages[page].render(content, subRoute);
       } catch (e) {
         content.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">${e.message}</div></div>`;
       }
@@ -280,12 +287,12 @@
     document.getElementById('btnRefresh').addEventListener('click', () => navigateTo(currentPage));
 
     window.addEventListener('hashchange', () => {
-      const page = location.hash.slice(1);
-      if (pages[page] && page !== currentPage) navigateTo(page, false);
+      const { page, subRoute } = parseHash(location.hash);
+      if (pages[page] && page !== currentPage) navigateTo(page, false, subRoute);
     });
 
-    const initialPage = location.hash.slice(1);
-    await navigateTo(pages[initialPage] ? initialPage : 'dashboard');
+    const { page: initialPage, subRoute: initialSubRoute } = parseHash(location.hash);
+    await navigateTo(pages[initialPage] ? initialPage : 'dashboard', false, initialSubRoute);
 
     if (config?.aiEnabled) initAiAssistant();
   </script>

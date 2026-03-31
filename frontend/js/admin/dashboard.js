@@ -3,7 +3,7 @@ import { formatDate, formatCurrency, getWeekdays } from '../ui.js';
 import { t, getLocale } from '../i18n.js';
 import { renderStudentDetail } from './student-detail.js';
 
-export async function renderDashboard(container) {
+export async function renderDashboard(container, openStudentId = null) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
   try {
@@ -31,10 +31,24 @@ export async function renderDashboard(container) {
       ${renderInactiveStudents(inactiveStudents)}
     `;
 
+    if (openStudentId) {
+      renderStudentDetail(container, openStudentId, () => {
+        history.replaceState(null, '', '#dashboard');
+        renderDashboard(container);
+      });
+      return;
+    }
+
     container._dashClick && container.removeEventListener('click', container._dashClick);
     container._dashClick = e => {
       const el = e.target.closest('[data-student-id]');
-      if (el) renderStudentDetail(container, el.dataset.studentId, () => renderDashboard(container));
+      if (el) {
+        history.replaceState(null, '', '#dashboard/' + el.dataset.studentId);
+        renderStudentDetail(container, el.dataset.studentId, () => {
+          history.replaceState(null, '', '#dashboard');
+          renderDashboard(container);
+        });
+      }
     };
     container.addEventListener('click', container._dashClick);
   } catch (e) {

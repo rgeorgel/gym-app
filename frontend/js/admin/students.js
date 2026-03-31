@@ -11,7 +11,7 @@ let activeQuickFilter = 'all';
 
 let studentsContainer = null;
 
-export async function renderStudents(container) {
+export async function renderStudents(container, openStudentId = null) {
   studentsContainer = container;
   const isGym = tenantType !== 'BeautySalon';
 
@@ -50,6 +50,14 @@ export async function renderStudents(container) {
   `;
 
   await loadStudents();
+
+  if (openStudentId) {
+    renderStudentDetail(studentsContainer, openStudentId, () => {
+      history.replaceState(null, '', '#students');
+      renderStudents(studentsContainer);
+    });
+    return;
+  }
 
   document.getElementById('btnNewStudent').addEventListener('click', () => openStudentModal());
   document.getElementById('studentSearch').addEventListener('input', applyFilters);
@@ -185,9 +193,13 @@ function renderList(students) {
     btn.addEventListener('click', () => openPackagesModal(btn.dataset.id, btn.dataset.name));
   });
   container.querySelectorAll('.btn-view-detail').forEach(btn => {
-    btn.addEventListener('click', () =>
-      renderStudentDetail(studentsContainer, btn.dataset.id, () => renderStudents(studentsContainer))
-    );
+    btn.addEventListener('click', () => {
+      history.replaceState(null, '', '#students/' + btn.dataset.id);
+      renderStudentDetail(studentsContainer, btn.dataset.id, () => {
+        history.replaceState(null, '', '#students');
+        renderStudents(studentsContainer);
+      });
+    });
   });
 }
 

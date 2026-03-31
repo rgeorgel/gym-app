@@ -28,7 +28,18 @@ let currentYear  = new Date().getFullYear();
 let currentMonth = new Date().getMonth() + 1;
 let currentTab   = 'dashboard';
 
-export async function renderFinancial(container) {
+export async function renderFinancial(container, subRoute = null) {
+  if (subRoute) {
+    const [tab, monthStr] = subRoute.split('/');
+    if (['dashboard', 'transactions', 'expenses', 'fees'].includes(tab)) currentTab = tab;
+    if (monthStr) {
+      const [y, m] = monthStr.split('-').map(Number);
+      if (y && m) { currentYear = y; currentMonth = m; }
+    }
+  }
+
+  history.replaceState(null, '', `#financial/${currentTab}/${currentYear}-${String(currentMonth).padStart(2, '0')}`);
+
   const monthLabel = new Date(currentYear, currentMonth - 1, 1)
     .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 

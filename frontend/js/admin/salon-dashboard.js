@@ -4,7 +4,7 @@ import { t } from '../i18n.js';
 import { renderStudentDetail } from './student-detail.js';
 import { renderOnboardingWizard } from './onboarding.js';
 
-export async function renderSalonDashboard(container) {
+export async function renderSalonDashboard(container, openStudentId = null) {
   container.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
   try {
@@ -28,10 +28,24 @@ export async function renderSalonDashboard(container) {
 
     await renderOnboardingWizard(container);
 
+    if (openStudentId) {
+      renderStudentDetail(container, openStudentId, () => {
+        history.replaceState(null, '', '#dashboard');
+        renderSalonDashboard(container);
+      });
+      return;
+    }
+
     container._dashClick && container.removeEventListener('click', container._dashClick);
     container._dashClick = e => {
       const el = e.target.closest('[data-student-id]');
-      if (el) renderStudentDetail(container, el.dataset.studentId, () => renderSalonDashboard(container));
+      if (el) {
+        history.replaceState(null, '', '#dashboard/' + el.dataset.studentId);
+        renderStudentDetail(container, el.dataset.studentId, () => {
+          history.replaceState(null, '', '#dashboard');
+          renderSalonDashboard(container);
+        });
+      }
     };
     container.addEventListener('click', container._dashClick);
   } catch (e) {
