@@ -234,8 +234,6 @@ tbody tr:hover { background: var(--gray-50); }
 
 /* Modal como bottom sheet no mobile */
 @media (max-width: 640px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-
   .modal-overlay {
     align-items: flex-end;
     padding: 0;
@@ -302,8 +300,12 @@ tbody tr:hover { background: var(--gray-50); }
 /* ─── Stats cards ─── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .stat-card {
   background: white;
