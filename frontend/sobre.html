@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre nós — Agendofy</title>
+<meta name="description" content="Conheça o Agendofy: sistema de agendamento criado por brasileiros para academias, estúdios e salões que querem parar de gerenciar pelo WhatsApp.">
+<link rel="canonical" href="https://www.agendofy.com/sobre.html">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Sobre nós — Agendofy">
+<meta property="og:description" content="Quem faz o Agendofy e por que criamos este sistema.">
+<meta property="og:url" content="https://www.agendofy.com/sobre.html">
+<meta name="language" content="pt-BR">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/institucional.css">
+<style>
+/* Story section */
+.story {
+  padding: 88px 24px;
+  background: var(--white);
+}
+
+.story-inner {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 88px; align-items: center;
+}
+
+.story-text h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.story-text h2 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #3563E9, #818CF8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.story-text p {
+  font-size: 16px; font-weight: 300;
+  color: var(--mid); line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.story-visual {
+  background: linear-gradient(135deg, var(--dark2), var(--dark3));
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+.story-stat {
+  display: flex; align-items: center; gap: 20px;
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+}
+
+.story-stat-icon {
+  font-size: 28px;
+}
+
+.story-stat-num {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 800;
+  color: white; letter-spacing: -1px;
+  line-height: 1;
+}
+
+.story-stat-label {
+  font-size: 13px; font-weight: 300;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+/* Mission, Vision, Values */
+.mvv {
+  background: var(--light);
+  padding: 88px 24px;
+}
+
+.mvv-grid {
+  max-width: 1140px; margin: 48px auto 0;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.mvv-card {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  border: 1px solid var(--border);
+  transition: all 0.25s;
+}
+
+.mvv-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+.mvv-icon {
+  font-size: 32px; margin-bottom: 16px;
+}
+
+.mvv-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 800;
+  color: var(--dark); margin-bottom: 12px;
+  letter-spacing: -0.3px;
+}
+
+.mvv-card p {
+  font-size: 14px; font-weight: 300;
+  color: var(--mid); line-height: 1.75;
+}
+
+/* Values */
+.values {
+  background: var(--white);
+  padding: 88px 24px;
+}
+
+.values-grid {
+  max-width: 1140px; margin: 48px auto 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.value-card {
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all 0.25s;
+}
+
+.value-card:hover {
+  border-color: rgba(53,99,233,0.2);
+  background: var(--brand-light);
+}
+
+.value-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--brand-light);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+
+.value-icon svg { width: 20px; height: 20px; fill: none; stroke: var(--brand); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.value-card h4 {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--dark); margin-bottom: 8px;
+}
+
+.value-card p {
+  font-size: 13px; font-weight: 300;
+  color: var(--mid); line-height: 1.65;
+}
+
+/* CTA section */
+.cta-about {
+  background: var(--dark);
+  padding: 88px 24px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+
+.cta-about::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(53,99,233,0.2), transparent 60%);
+  pointer-events: none;
+}
+
+.cta-about-inner {
+  max-width: 600px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+
+.cta-about h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800; letter-spacing: -1px;
+  color: white; margin-bottom: 16px;
+}
+
+.cta-about p {
+  font-size: 17px; font-weight: 300;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7; margin-bottom: 36px;
+}
+
+.cta-about-btns {
+  display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .story-inner { grid-template-columns: 1fr; gap: 48px; }
+  .mvv-grid { grid-template-columns: 1fr; }
+  .values-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .values-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="inst-nav scrolled" id="inst-nav">
+  <div class="inst-nav-inner">
+    <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
+    <ul class="inst-nav-links">
+      <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+      <li><a href="/precos.html">Preços</a></li>
+      <li><a href="/sobre.html" class="active">Sobre</a></li>
+      <li><a href="/contato.html">Contato</a></li>
+      <li><a href="/landing.html#cadastro" class="inst-btn-nav">Começar grátis →</a></li>
+    </ul>
+    <button class="inst-nav-hamburger" id="hamburger" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="inst-nav-mobile" id="mobile-nav">
+  <a href="/funcionalidades.html">Funcionalidades</a>
+  <a href="/precos.html">Preços</a>
+  <a href="/sobre.html">Sobre</a>
+  <a href="/contato.html">Contato</a>
+  <a href="/landing.html#cadastro" class="inst-btn-nav-mobile">Começar grátis →</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <span class="tag white">Sobre o Agendofy</span>
+    <h1>Feito por brasileiros,<br>para negócios brasileiros</h1>
+    <p>Criamos o Agendofy porque vimos de perto o quanto tempo se perde gerenciando academia pelo WhatsApp. Era hora de resolver isso.</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="/">Início</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Sobre nós</span>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story">
+  <div class="story-inner container">
+    <div class="story-text">
+      <span class="tag">Nossa história</span>
+      <h2>Nascemos de uma <em>frustração real</em></h2>
+      <p>Tudo começou quando um amigo que gerenciava uma academia de boxe mostrou a planilha dele: nomes rabiscados, créditos anotados errado, alunos faltando porque a mensagem do WhatsApp não foi vista. Um caos.</p>
+      <p>Ele não precisava de um ERP com mil funcionalidades. Precisava de algo simples: grade de aulas online, controle automático de créditos e alunos que se agendassem sozinhos. Isso não existia a um preço acessível para pequenas academias.</p>
+      <p>Então construímos. O Agendofy nasceu em 2025 com um único objetivo: tornar a gestão de academias e estúdios tão simples que você configure em 10 minutos e nunca mais precise do WhatsApp para confirmar presença.</p>
+    </div>
+
+    <div class="story-visual">
+      <div class="story-stat">
+        <div class="story-stat-icon">🇧🇷</div>
+        <div>
+          <div class="story-stat-num">100%</div>
+          <div class="story-stat-label">Desenvolvido no Brasil</div>
+        </div>
+      </div>
+      <div class="story-stat">
+        <div class="story-stat-icon">⚡</div>
+        <div>
+          <div class="story-stat-num">10min</div>
+          <div class="story-stat-label">Para configurar do zero</div>
+        </div>
+      </div>
+      <div class="story-stat">
+        <div class="story-stat-icon">🎯</div>
+        <div>
+          <div class="story-stat-num">R$49</div>
+          <div class="story-stat-label">Preço que cabe no orçamento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION, VISION, VALUES -->
+<section class="mvv">
+  <div style="max-width:1140px;margin:0 auto;text-align:center;">
+    <span class="tag">O que nos move</span>
+    <h2 class="section-title">Missão, visão e propósito</h2>
+  </div>
+
+  <div class="mvv-grid">
+    <div class="mvv-card reveal">
+      <div class="mvv-icon">🎯</div>
+      <h3>Nossa missão</h3>
+      <p>Dar a qualquer academia, estúdio ou salão de beleza do Brasil acesso a uma ferramenta de agendamento profissional — acessível, simples e com a identidade do próprio negócio.</p>
+    </div>
+
+    <div class="mvv-card reveal reveal-d2">
+      <div class="mvv-icon">🔭</div>
+      <h3>Nossa visão</h3>
+      <p>Ser a plataforma de agendamento preferida pelo segmento fitness e beleza no Brasil, reconhecida pela simplicidade, confiabilidade e preço justo.</p>
+    </div>
+
+    <div class="mvv-card reveal reveal-d4">
+      <div class="mvv-icon">💡</div>
+      <h3>Nosso propósito</h3>
+      <p>Devolver tempo para quem ensina — para que instrutores, professores e prestadores de serviço possam focar no que fazem de melhor, sem perder horas em administração manual.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values">
+  <div style="max-width:1140px;margin:0 auto;text-align:center;margin-bottom:0;">
+    <span class="tag">Nossos valores</span>
+    <h2 class="section-title">O que guia cada decisão que tomamos</h2>
+  </div>
+
+  <div class="values-grid" style="max-width:1140px;margin:48px auto 0;">
+    <div class="value-card reveal">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h4>Simplicidade</h4>
+      <p>Se levou mais de 10 minutos para configurar, erramos. Cada funcionalidade precisa ser óbvia.</p>
+    </div>
+
+    <div class="value-card reveal reveal-d1">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h4>Confiabilidade</h4>
+      <p>Seu negócio depende do sistema funcionar. Disponibilidade alta e dados sempre seguros.</p>
+    </div>
+
+    <div class="value-card reveal reveal-d2">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <h4>Preço justo</h4>
+      <p>Software de qualidade não deveria custar caro. Preços pensados para pequenos negócios crescerem.</p>
+    </div>
+
+    <div class="value-card reveal reveal-d3">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <h4>Foco no cliente</h4>
+      <p>Escutamos quem usa o sistema. Cada atualização resolve um problema real reportado por usuários reais.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-about">
+  <div class="cta-about-inner">
+    <span class="tag white">Venha junto</span>
+    <h2>Experimente por 14 dias, de graça</h2>
+    <p>Sem cartão, sem burocracia. Configure em minutos e veja o que o Agendofy pode fazer pelo seu negócio.</p>
+
+    <div class="cta-about-btns">
+      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:white;font-size:15px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Para academias — R$49/mês
+      </a>
+      <a href="/landing-salao.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:15px;font-weight:600;padding:14px 28px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.15);">
+        Para salões — R$19/mês
+      </a>
+    </div>
+
+    <p style="font-size:13px;color:rgba(255,255,255,0.3);margin-top:20px;">
+      Dúvidas? Escreva para <a href="mailto:contato@agendofy.com" style="color:rgba(255,255,255,0.5);text-decoration:none;">contato@agendofy.com</a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="inst-footer">
+  <div class="inst-footer-top">
+    <div class="inst-footer-brand">
+      <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
+      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <a href="mailto:contato@agendofy.com" class="inst-footer-email">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        contato@agendofy.com
+      </a>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Produto</h4>
+      <ul>
+        <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+        <li><a href="/precos.html">Preços</a></li>
+        <li><a href="/landing.html">Para academias</a></li>
+        <li><a href="/landing-salao.html">Para salões</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="/sobre.html">Sobre nós</a></li>
+        <li><a href="/contato.html">Contato</a></li>
+        <li><a href="/changelog.html">Novidades</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/termos.html">Termos de uso</a></li>
+        <li><a href="/privacidade.html">Privacidade</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="inst-footer-bottom">
+    <p class="inst-footer-copy">© 2026 Agendofy. Todos os direitos reservados.</p>
+    <div class="inst-footer-legal">
+      <a href="/termos.html">Termos</a>
+      <a href="/privacidade.html">Privacidade</a>
+      <a href="/contato.html">Suporte</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobile-nav').classList.toggle('open');
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

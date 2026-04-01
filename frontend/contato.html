@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato — Agendofy</title>
+<meta name="description" content="Entre em contato com o Agendofy. Suporte por e-mail respondido em até 1 dia útil. Estamos aqui para ajudar sua academia ou salão.">
+<link rel="canonical" href="https://www.agendofy.com/contato.html">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Contato — Agendofy">
+<meta property="og:description" content="Suporte por e-mail respondido em até 1 dia útil.">
+<meta property="og:url" content="https://www.agendofy.com/contato.html">
+<meta name="language" content="pt-BR">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/institucional.css">
+<style>
+/* Contact layout */
+.contact-section {
+  background: var(--white);
+  padding: 80px 24px 96px;
+}
+
+.contact-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
+}
+
+/* Info side */
+.contact-info {}
+
+.contact-info h2 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 800; letter-spacing: -1px;
+  color: var(--dark); margin-bottom: 14px;
+}
+
+.contact-info p {
+  font-size: 15px; font-weight: 300;
+  color: var(--mid); line-height: 1.75;
+  margin-bottom: 36px;
+}
+
+.contact-channels {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.contact-channel {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 20px;
+  background: var(--light);
+  border-radius: var(--radius-lg);
+  text-decoration: none; color: inherit;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.contact-channel:hover {
+  background: var(--brand-light);
+  border-color: rgba(53,99,233,0.15);
+  transform: translateY(-1px);
+}
+
+.contact-channel-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  background: var(--brand-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-channel-icon svg { width: 20px; height: 20px; fill: none; stroke: var(--brand); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.contact-channel-label {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  color: var(--dark); margin-bottom: 4px;
+}
+
+.contact-channel-value {
+  font-size: 14px; font-weight: 500;
+  color: var(--brand);
+}
+
+.contact-channel-note {
+  font-size: 12px; font-weight: 300;
+  color: var(--mid); margin-top: 2px;
+}
+
+/* Response time */
+.response-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-light);
+  color: #065F46;
+  font-size: 13px; font-weight: 600;
+  padding: 8px 14px; border-radius: 8px;
+  margin-top: 28px;
+}
+
+.response-badge-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse-g 2s ease-in-out infinite;
+}
+
+@keyframes pulse-g {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Form side */
+.contact-form-wrap {
+  background: var(--light);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  border: 1px solid var(--border);
+}
+
+.contact-form-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 800;
+  color: var(--dark); margin-bottom: 6px;
+}
+
+.contact-form-sub {
+  font-size: 14px; font-weight: 300;
+  color: var(--mid); margin-bottom: 28px;
+}
+
+.form-group {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 13px; font-weight: 600;
+  color: var(--dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 400;
+  color: var(--dark);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(53,99,233,0.08);
+}
+
+.form-group textarea {
+  resize: vertical; min-height: 120px;
+}
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+
+.form-submit {
+  width: 100%;
+  background: var(--brand);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 700;
+  padding: 14px 0;
+  border-radius: var(--radius);
+  border: none; cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.form-submit:hover {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(53,99,233,0.3);
+}
+
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.form-success-icon {
+  font-size: 40px; margin-bottom: 12px;
+}
+
+.form-success h3 {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 800;
+  color: var(--dark); margin-bottom: 8px;
+}
+
+.form-success p {
+  font-size: 14px; font-weight: 300;
+  color: var(--mid); line-height: 1.65;
+}
+
+/* FAQ */
+.faq-section {
+  background: var(--light);
+  padding: 80px 24px;
+}
+
+.faq-wrapper {
+  max-width: 720px; margin: 48px auto 0;
+}
+
+.faq-item { border-bottom: 1px solid var(--border); }
+
+.faq-question {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0;
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 600;
+  color: var(--dark); text-align: left; gap: 16px;
+}
+
+.faq-toggle {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--brand-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.2s;
+}
+
+.faq-toggle svg { width: 12px; height: 12px; stroke: var(--brand); stroke-width: 2; stroke-linecap: round; fill: none; transition: transform 0.3s; }
+
+.faq-item.open .faq-toggle { background: var(--brand); }
+.faq-item.open .faq-toggle svg { stroke: white; transform: rotate(45deg); }
+
+.faq-answer { display: none; padding: 0 0 20px; }
+.faq-item.open .faq-answer { display: block; }
+
+.faq-answer p { font-size: 14px; font-weight: 300; color: var(--mid); line-height: 1.75; }
+
+@media (max-width: 768px) {
+  .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="inst-nav scrolled" id="inst-nav">
+  <div class="inst-nav-inner">
+    <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
+    <ul class="inst-nav-links">
+      <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+      <li><a href="/precos.html">Preços</a></li>
+      <li><a href="/sobre.html">Sobre</a></li>
+      <li><a href="/contato.html" class="active">Contato</a></li>
+      <li><a href="/landing.html#cadastro" class="inst-btn-nav">Começar grátis →</a></li>
+    </ul>
+    <button class="inst-nav-hamburger" id="hamburger" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="inst-nav-mobile" id="mobile-nav">
+  <a href="/funcionalidades.html">Funcionalidades</a>
+  <a href="/precos.html">Preços</a>
+  <a href="/sobre.html">Sobre</a>
+  <a href="/contato.html">Contato</a>
+  <a href="/landing.html#cadastro" class="inst-btn-nav-mobile">Começar grátis →</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <span class="tag white">Contato</span>
+    <h1>Como podemos ajudar?</h1>
+    <p>Estamos aqui para tirar dúvidas, resolver problemas e ajudar você a aproveitar o Agendofy ao máximo.</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="/">Início</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Contato</span>
+  </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<section class="contact-section">
+  <div class="contact-inner container">
+
+    <!-- Info -->
+    <div class="contact-info">
+      <h2>Fale com a gente</h2>
+      <p>Somos uma equipe pequena e respondemos cada mensagem pessoalmente. Sem robôs, sem fila de espera.</p>
+
+      <div class="contact-channels">
+        <a href="mailto:contato@agendofy.com" class="contact-channel">
+          <div class="contact-channel-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">E-mail de suporte</div>
+            <div class="contact-channel-value">contato@agendofy.com</div>
+            <div class="contact-channel-note">Respondemos em até 1 dia útil</div>
+          </div>
+        </a>
+
+        <a href="/sobre.html" class="contact-channel">
+          <div class="contact-channel-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">Sobre o Agendofy</div>
+            <div class="contact-channel-value">Conheça nossa história</div>
+            <div class="contact-channel-note">Quem somos e o que nos move</div>
+          </div>
+        </a>
+
+        <a href="/changelog.html" class="contact-channel">
+          <div class="contact-channel-icon">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">Novidades do produto</div>
+            <div class="contact-channel-value">Ver changelog</div>
+            <div class="contact-channel-note">O que estamos construindo</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="response-badge">
+        <div class="response-badge-dot"></div>
+        Resposta em até 1 dia útil
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="contact-form-wrap">
+      <div id="form-content">
+        <h3 class="contact-form-title">Envie uma mensagem</h3>
+        <p class="contact-form-sub">Preencha o formulário e entraremos em contato em breve.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Seu nome *</label>
+            <input type="text" id="ct-nome" placeholder="João Silva" required>
+          </div>
+          <div class="form-group">
+            <label>E-mail *</label>
+            <input type="email" id="ct-email" placeholder="joao@suaacademia.com.br" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Assunto *</label>
+          <select id="ct-assunto">
+            <option value="">Selecione um assunto</option>
+            <option value="suporte">Preciso de suporte técnico</option>
+            <option value="duvida">Dúvida sobre funcionalidades</option>
+            <option value="preco">Dúvida sobre preço ou cobrança</option>
+            <option value="bug">Encontrei um problema</option>
+            <option value="sugestao">Tenho uma sugestão</option>
+            <option value="parceria">Proposta de parceria</option>
+            <option value="outro">Outro assunto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Mensagem *</label>
+          <textarea id="ct-mensagem" placeholder="Descreva sua dúvida ou problema com o máximo de detalhes possível..."></textarea>
+        </div>
+
+        <button type="button" class="form-submit" onclick="sendContact()">
+          Enviar mensagem →
+        </button>
+      </div>
+
+      <div class="form-success" id="form-success">
+        <div class="form-success-icon">✅</div>
+        <h3>Mensagem enviada!</h3>
+        <p>Recebemos sua mensagem e responderemos para o seu e-mail em até 1 dia útil. Obrigado pelo contato!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div style="max-width:720px;margin:0 auto;text-align:center;">
+    <span class="tag">FAQ de suporte</span>
+    <h2 class="section-title">Dúvidas mais frequentes</h2>
+    <p class="section-sub" style="margin:14px auto 0;text-align:center;">Pode ser que sua dúvida já esteja respondida aqui.</p>
+  </div>
+
+  <div class="faq-wrapper">
+    <div class="faq-item open">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Como faço para cadastrar minha academia?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Acesse <a href="/landing.html#cadastro" style="color:var(--brand)">a página de cadastro</a>, preencha o formulário com nome, e-mail, senha e nome da sua academia. Em segundos você recebe acesso ao painel administrativo.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Meus alunos precisam criar conta?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim, cada aluno tem login próprio. Você pode cadastrar os alunos pelo painel ou deixar que eles se cadastrem sozinhos pelo link da academia. O processo é simples: nome, e-mail e senha.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Posso migrar dados de outra ferramenta?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>No momento o cadastro é feito manualmente pelo painel. Se você tiver uma lista de alunos em planilha, podemos ajudar com a importação — escreva para contato@agendofy.com.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        O sistema funciona no celular?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Sim. Tanto o painel do administrador quanto o app do aluno são totalmente responsivos e funcionam pelo navegador do celular — sem instalar nenhum aplicativo.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        O que acontece quando o período de teste acaba?
+        <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </button>
+      <div class="faq-answer">
+        <p>Ao final dos 14 dias, você recebe um aviso para escolher um plano e realizar o pagamento. Enquanto não pagar, o acesso fica suspenso — mas seus dados são mantidos por 30 dias, então você não perde nada se decidir continuar depois.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="inst-footer">
+  <div class="inst-footer-top">
+    <div class="inst-footer-brand">
+      <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
+      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <a href="mailto:contato@agendofy.com" class="inst-footer-email">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        contato@agendofy.com
+      </a>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Produto</h4>
+      <ul>
+        <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+        <li><a href="/precos.html">Preços</a></li>
+        <li><a href="/landing.html">Para academias</a></li>
+        <li><a href="/landing-salao.html">Para salões</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="/sobre.html">Sobre nós</a></li>
+        <li><a href="/contato.html">Contato</a></li>
+        <li><a href="/changelog.html">Novidades</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/termos.html">Termos de uso</a></li>
+        <li><a href="/privacidade.html">Privacidade</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="inst-footer-bottom">
+    <p class="inst-footer-copy">© 2026 Agendofy. Todos os direitos reservados.</p>
+    <div class="inst-footer-legal">
+      <a href="/termos.html">Termos</a>
+      <a href="/privacidade.html">Privacidade</a>
+      <a href="/contato.html">Suporte</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobile-nav').classList.toggle('open');
+});
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+function sendContact() {
+  const nome = document.getElementById('ct-nome').value.trim();
+  const email = document.getElementById('ct-email').value.trim();
+  const assunto = document.getElementById('ct-assunto').value;
+  const mensagem = document.getElementById('ct-mensagem').value.trim();
+
+  if (!nome || !email || !assunto || !mensagem) {
+    alert('Por favor, preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Por favor, insira um e-mail válido.');
+    return;
+  }
+
+  // Send via mailto (simple fallback; replace with real API endpoint later)
+  const subject = encodeURIComponent('[Agendofy] ' + assunto);
+  const body = encodeURIComponent('Nome: ' + nome + '\nE-mail: ' + email + '\n\n' + mensagem);
+  window.location.href = 'mailto:contato@agendofy.com?subject=' + subject + '&body=' + body;
+
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

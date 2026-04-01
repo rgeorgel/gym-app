@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NWZTF6F3M6');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funcionalidades — Agendofy</title>
+<meta name="description" content="Conheça todas as funcionalidades do Agendofy: grade de horários, auto-agendamento, controle de créditos, venda de planos via Pix, white label e muito mais.">
+<link rel="canonical" href="https://www.agendofy.com/funcionalidades.html">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Funcionalidades — Agendofy">
+<meta property="og:description" content="Tudo que você precisa para gerenciar sua academia ou salão sem planilha e sem WhatsApp.">
+<meta property="og:url" content="https://www.agendofy.com/funcionalidades.html">
+<meta property="og:site_name" content="Agendofy">
+<meta name="language" content="pt-BR">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/institucional.css">
+<style>
+/* Feature categories */
+.feat-section {
+  padding: 80px 24px;
+}
+
+.feat-section:nth-child(even) {
+  background: var(--light);
+}
+
+.feat-section-inner {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+
+.feat-section-inner.reverse { direction: rtl; }
+.feat-section-inner.reverse > * { direction: ltr; }
+
+.feat-section-text {}
+
+.feat-section-text .tag { display: inline-flex; }
+
+.feat-section-text h2 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 38px);
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.feat-section-text p {
+  font-size: 16px; font-weight: 300;
+  color: var(--mid); line-height: 1.75;
+  margin-bottom: 24px;
+}
+
+.feat-list {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.feat-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 14px; font-weight: 400; color: var(--dark);
+  line-height: 1.5;
+}
+
+.feat-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--green-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+.feat-check svg { width: 10px; height: 10px; stroke: var(--green); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+/* Visual mockup panels */
+.feat-visual {
+  background: var(--dark2);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: var(--shadow-dark);
+  min-height: 340px;
+  display: flex; flex-direction: column;
+}
+
+.feat-visual-header {
+  background: var(--dark3);
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.feat-visual-dots { display: flex; gap: 5px; }
+.feat-visual-dot { width: 10px; height: 10px; border-radius: 50%; }
+.feat-visual-dot.r { background: #FF5F57; }
+.feat-visual-dot.y { background: #FFBD2E; }
+.feat-visual-dot.g { background: #28CA41; }
+.feat-visual-title { font-size: 11px; color: rgba(255,255,255,0.35); margin-left: 4px; }
+
+.feat-visual-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+/* Schedule mockup */
+.schedule-grid { display: flex; flex-direction: column; gap: 6px; }
+
+.schedule-day-header {
+  display: grid; grid-template-columns: 60px repeat(5, 1fr);
+  gap: 6px; margin-bottom: 4px;
+}
+
+.schedule-day-label {
+  font-size: 9px; font-weight: 600; text-align: center;
+  color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 6px 0;
+}
+
+.schedule-row { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 6px; }
+
+.schedule-time { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.25); padding: 8px 4px; text-align: right; }
+
+.schedule-slot {
+  border-radius: 6px; padding: 6px 8px;
+  font-size: 9px; font-weight: 600;
+}
+
+.schedule-slot.blue { background: rgba(53,99,233,0.2); color: #8AADFF; }
+.schedule-slot.green { background: rgba(16,185,129,0.15); color: #6EE7B7; }
+.schedule-slot.orange { background: rgba(249,115,22,0.15); color: #FED7AA; }
+.schedule-slot.empty { background: rgba(255,255,255,0.03); }
+
+/* Credits mockup */
+.credits-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.credits-card-title {
+  font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.credits-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.credits-row:last-child { border-bottom: none; }
+
+.credits-label { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.65); }
+
+.credits-badge {
+  display: flex; align-items: center; gap: 6px;
+}
+
+.credits-used { font-size: 11px; font-weight: 700; color: white; }
+.credits-total { font-size: 9px; color: rgba(255,255,255,0.3); }
+
+.credits-bar-wrap { width: 80px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-top: 4px; }
+.credits-bar { height: 100%; border-radius: 2px; background: var(--brand); }
+
+/* Dashboard mockup */
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.metric-tile {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 12px;
+}
+
+.metric-label { font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: white; margin-top: 4px; }
+.metric-delta { font-size: 9px; color: var(--green); margin-top: 2px; }
+
+.metric-tile.warn .metric-value { color: #F97316; }
+.metric-tile.warn .metric-delta { color: #F97316; }
+
+/* White-label mockup */
+.wl-phone {
+  background: #111827;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  max-width: 220px; margin: 0 auto;
+}
+
+.wl-phone-header {
+  padding: 14px 16px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.wl-logo-row { display: flex; align-items: center; gap: 8px; }
+.wl-logo-box {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #3563E9, #818CF8);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 13px; font-weight: 800; color: white;
+}
+
+.wl-name { font-size: 13px; font-weight: 700; color: white; }
+.wl-sub-name { font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+
+.wl-user { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+.wl-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+.wl-class {
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px; padding: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.wl-time { font-size: 11px; font-weight: 700; color: white; min-width: 36px; }
+.wl-class-name { font-size: 11px; color: rgba(255,255,255,0.7); flex: 1; }
+.wl-slots { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #6EE7B7; }
+
+/* ─── OVERVIEW GRID ─── */
+.overview { background: var(--white); padding: 80px 24px; }
+
+.overview-grid {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.overview-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.25s;
+}
+
+.overview-card:hover {
+  border-color: rgba(53,99,233,0.2);
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+}
+
+.ov-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+
+.ov-icon.blue { background: linear-gradient(135deg, #EEF3FF, #DBEAFE); }
+.ov-icon.green { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+.ov-icon.orange { background: linear-gradient(135deg, #FFF3E9, #FED7AA); }
+.ov-icon.purple { background: linear-gradient(135deg, #F3E8FF, #E9D5FF); }
+.ov-icon.teal { background: linear-gradient(135deg, #CCFBF1, #99F6E4); }
+.ov-icon.pink { background: linear-gradient(135deg, #FCE7F3, #FBCFE8); }
+
+.ov-icon svg { width: 20px; height: 20px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ov-icon.blue svg { stroke: #3563E9; }
+.ov-icon.green svg { stroke: #059669; }
+.ov-icon.orange svg { stroke: #EA580C; }
+.ov-icon.purple svg { stroke: #7C3AED; }
+.ov-icon.teal svg { stroke: #0D9488; }
+.ov-icon.pink svg { stroke: #DB2777; }
+
+.overview-card h3 {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--dark); margin-bottom: 8px;
+}
+
+.overview-card p { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.65; }
+
+/* CTA BANNER */
+.cta-banner {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.cta-banner h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.5vw, 38px);
+  font-weight: 800; letter-spacing: -0.8px;
+  color: white; margin-bottom: 12px;
+}
+
+.cta-banner p {
+  font-size: 16px; font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 28px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .feat-section-inner { grid-template-columns: 1fr; gap: 40px; }
+  .feat-section-inner.reverse { direction: ltr; }
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .overview-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="inst-nav scrolled" id="inst-nav">
+  <div class="inst-nav-inner">
+    <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
+    <ul class="inst-nav-links">
+      <li><a href="/funcionalidades.html" class="active">Funcionalidades</a></li>
+      <li><a href="/precos.html">Preços</a></li>
+      <li><a href="/sobre.html">Sobre</a></li>
+      <li><a href="/contato.html">Contato</a></li>
+      <li><a href="/landing.html#cadastro" class="inst-btn-nav">Começar grátis →</a></li>
+    </ul>
+    <button class="inst-nav-hamburger" id="hamburger" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="inst-nav-mobile" id="mobile-nav">
+  <a href="/funcionalidades.html">Funcionalidades</a>
+  <a href="/precos.html">Preços</a>
+  <a href="/sobre.html">Sobre</a>
+  <a href="/contato.html">Contato</a>
+  <a href="/landing.html#cadastro" class="inst-btn-nav-mobile">Começar grátis →</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <span class="tag white">Funcionalidades</span>
+    <h1>Tudo que você precisa.<br>Nada que não precisa.</h1>
+    <p>Desenvolvido para academias, estúdios e salões de beleza que querem parar de gerenciar pelo WhatsApp.</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="/">Início</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Funcionalidades</span>
+  </div>
+</div>
+
+<!-- OVERVIEW GRID -->
+<section class="overview">
+  <div style="max-width:1140px;margin:0 auto 56px;text-align:center;">
+    <span class="tag">Visão geral</span>
+    <h2 class="section-title">O sistema completo em uma visão</h2>
+    <p class="section-sub" style="margin:14px auto 0;text-align:center;">Cada funcionalidade foi pensada para resolver um problema real do seu dia a dia.</p>
+  </div>
+
+  <div class="overview-grid">
+    <div class="overview-card reveal">
+      <div class="ov-icon blue">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3>Grade de horários</h3>
+      <p>Monte a grade semanal com dias, horários, capacidade máxima e instrutor por aula.</p>
+    </div>
+
+    <div class="overview-card reveal reveal-d1">
+      <div class="ov-icon green">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <h3>Auto-agendamento</h3>
+      <p>Aluno abre o celular, vê as vagas e confirma sozinho. Sem WhatsApp, sem ligação.</p>
+    </div>
+
+    <div class="overview-card reveal reveal-d2">
+      <div class="ov-icon orange">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Controle de créditos</h3>
+      <p>Pacotes com créditos separados por modalidade. Saldo debitado automaticamente a cada aula.</p>
+    </div>
+
+    <div class="overview-card reveal reveal-d3">
+      <div class="ov-icon purple">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <h3>Venda via Pix</h3>
+      <p>Aluno compra o plano pelo sistema. Pix gerado automaticamente, ativação imediata.</p>
+    </div>
+
+    <div class="overview-card reveal reveal-d4">
+      <div class="ov-icon teal">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>Dashboard em tempo real</h3>
+      <p>Alunos ativos, aulas do dia, receita mensal e pacotes vencendo numa única tela.</p>
+    </div>
+
+    <div class="overview-card reveal reveal-d5">
+      <div class="ov-icon pink">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <h3>White label completo</h3>
+      <p>Logo, cores e subdomínio da sua academia. Aluno nunca vê o nome Agendofy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 1: GRADE -->
+<section class="feat-section">
+  <div class="feat-section-inner container">
+    <div class="feat-section-text">
+      <span class="tag">Grade de horários</span>
+      <h2>Monte sua grade semanal em minutos</h2>
+      <p>Crie aulas recorrentes com tudo que você precisa: modalidade, dia, horário, instrutor, capacidade máxima e tipo (grupo, individual, dupla). Visualize em grade semanal ou lista.</p>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Aulas recorrentes por dia da semana
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Capacidade máxima configurável por turma
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Múltiplos instrutores e tipos de aula
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Lista de presença gerada automaticamente
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Confirmação ou cancelamento pelo painel
+        </li>
+      </ul>
+    </div>
+
+    <div class="feat-visual reveal">
+      <div class="feat-visual-header">
+        <div class="feat-visual-dots">
+          <div class="feat-visual-dot r"></div>
+          <div class="feat-visual-dot y"></div>
+          <div class="feat-visual-dot g"></div>
+        </div>
+        <span class="feat-visual-title">Grade de aulas — semana atual</span>
+      </div>
+      <div class="feat-visual-body">
+        <div class="schedule-grid">
+          <div class="schedule-day-header">
+            <div class="schedule-day-label"></div>
+            <div class="schedule-day-label">SEG</div>
+            <div class="schedule-day-label">TER</div>
+            <div class="schedule-day-label">QUA</div>
+            <div class="schedule-day-label">QUI</div>
+            <div class="schedule-day-label">SEX</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">07:00</div>
+            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">18/20</span></div>
+            <div class="schedule-slot empty"></div>
+            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">12/20</span></div>
+            <div class="schedule-slot empty"></div>
+            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">20/20</span></div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">09:00</div>
+            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">19:00</div>
+            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">4/6</span></div>
+            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">16/20</span></div>
+            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">3/6</span></div>
+            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">14/20</span></div>
+            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">5/6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 2: CRÉDITOS -->
+<section class="feat-section">
+  <div class="feat-section-inner container reverse">
+    <div class="feat-section-text">
+      <span class="tag">Controle de créditos</span>
+      <h2>Pacotes multi-modalidade com saldo automático</h2>
+      <p>Crie planos com créditos separados por tipo de aula. Um aluno pode ter 8 créditos para aulas em grupo e 4 para individuais no mesmo pacote — e o sistema debita automaticamente.</p>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Saldos independentes por modalidade
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Débito automático a cada agendamento confirmado
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Aluno vê o saldo em tempo real no app
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Alerta de pacote vencendo para o admin
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Histórico completo de consumo por aluno
+        </li>
+      </ul>
+    </div>
+
+    <div class="feat-visual reveal">
+      <div class="feat-visual-header">
+        <div class="feat-visual-dots">
+          <div class="feat-visual-dot r"></div>
+          <div class="feat-visual-dot y"></div>
+          <div class="feat-visual-dot g"></div>
+        </div>
+        <span class="feat-visual-title">Pacote — João Silva</span>
+      </div>
+      <div class="feat-visual-body">
+        <div class="credits-card">
+          <div class="credits-card-title">Plano Mensal Plus</div>
+          <div class="credits-row">
+            <div>
+              <div class="credits-label">Boxe em Grupo</div>
+              <div class="credits-bar-wrap"><div class="credits-bar" style="width:75%"></div></div>
+            </div>
+            <div class="credits-badge">
+              <span class="credits-used">6</span>
+              <span class="credits-total">/ 8 créditos</span>
+            </div>
+          </div>
+          <div class="credits-row">
+            <div>
+              <div class="credits-label">Individual</div>
+              <div class="credits-bar-wrap"><div class="credits-bar" style="width:50%;background:#10B981"></div></div>
+            </div>
+            <div class="credits-badge">
+              <span class="credits-used">2</span>
+              <span class="credits-total">/ 4 créditos</span>
+            </div>
+          </div>
+          <div class="credits-row">
+            <div>
+              <div class="credits-label">Sparring</div>
+              <div class="credits-bar-wrap"><div class="credits-bar" style="width:33%;background:#F97316"></div></div>
+            </div>
+            <div class="credits-badge">
+              <span class="credits-used">1</span>
+              <span class="credits-total">/ 3 créditos</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:600;color:#6EE7B7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Validade</div>
+          <div style="font-size:12px;color:white;font-weight:500;">Até 30 de abril de 2026</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Ativo · 14 dias restantes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 3: DASHBOARD -->
+<section class="feat-section">
+  <div class="feat-section-inner container">
+    <div class="feat-section-text">
+      <span class="tag">Dashboard administrativo</span>
+      <h2>Tudo visível de uma tela só</h2>
+      <p>Abra o painel e tenha, em segundos, o número de alunos ativos, a agenda do dia, a receita do mês e quais pacotes estão vencendo. Sem precisar abrir planilha alguma.</p>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Alunos ativos e novos no mês
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Aulas do dia com status de ocupação
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Receita mensal consolidada
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Relatório de frequência semanal
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Alertas de pacotes vencendo
+        </li>
+      </ul>
+    </div>
+
+    <div class="feat-visual reveal">
+      <div class="feat-visual-header">
+        <div class="feat-visual-dots">
+          <div class="feat-visual-dot r"></div>
+          <div class="feat-visual-dot y"></div>
+          <div class="feat-visual-dot g"></div>
+        </div>
+        <span class="feat-visual-title">Painel Admin — Boxe Elite</span>
+      </div>
+      <div class="feat-visual-body">
+        <div class="metrics-grid">
+          <div class="metric-tile">
+            <div class="metric-label">Alunos ativos</div>
+            <div class="metric-value">48</div>
+            <div class="metric-delta">↑ 3 este mês</div>
+          </div>
+          <div class="metric-tile">
+            <div class="metric-label">Aulas hoje</div>
+            <div class="metric-value">5</div>
+            <div class="metric-delta" style="color:#8AADFF">2 em andamento</div>
+          </div>
+          <div class="metric-tile">
+            <div class="metric-label">Receita mês</div>
+            <div class="metric-value">9,6k</div>
+            <div class="metric-delta">↑ 12%</div>
+          </div>
+          <div class="metric-tile warn">
+            <div class="metric-label">Vencendo</div>
+            <div class="metric-value">7</div>
+            <div class="metric-delta">planos · 7 dias</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:12px;">
+          <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Aulas hoje</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">07:00</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Boxe em Grupo</span>
+            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,0.15);color:#6EE7B7">18/20</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:5px 0;">
+            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">19:00</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Boxe em Grupo</span>
+            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(249,115,22,0.15);color:#FED7AA">16/20</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 4: WHITE LABEL -->
+<section class="feat-section">
+  <div class="feat-section-inner container reverse">
+    <div class="feat-section-text">
+      <span class="tag">White label</span>
+      <h2>Seu app, com a cara do seu negócio</h2>
+      <p>Seu aluno nunca vê o nome Agendofy. Tudo aparece com o nome, logo, cores e subdomínio da sua academia — como se você tivesse desenvolvido o sistema do zero.</p>
+      <ul class="feat-list">
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Nome e logo personalizados
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Subdomínio exclusivo: suaacademia.agendofy.com
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Aluno nunca vê o nome Agendofy
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Página de catálogo pública para agendamentos
+        </li>
+        <li>
+          <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Link direto para compartilhar no WhatsApp
+        </li>
+      </ul>
+    </div>
+
+    <div class="feat-visual reveal" style="background:#0F172A;padding:24px;display:flex;align-items:center;justify-content:center;">
+      <div class="wl-phone">
+        <div class="wl-phone-header">
+          <div class="wl-logo-row">
+            <div class="wl-logo-box">B</div>
+            <div>
+              <div class="wl-name">Boxe Elite</div>
+              <div class="wl-sub-name">Academia</div>
+            </div>
+          </div>
+          <div class="wl-user">Ricardo G.</div>
+        </div>
+        <div class="wl-body">
+          <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;padding:0 2px">Quarta, 18 março</div>
+          <div class="wl-class">
+            <div class="wl-time">07:00</div>
+            <div class="wl-class-name">Boxe em Grupo</div>
+            <div class="wl-slots">18/20</div>
+          </div>
+          <div class="wl-class">
+            <div class="wl-time">09:00</div>
+            <div class="wl-class-name">Individual</div>
+            <div class="wl-slots" style="background:rgba(16,185,129,0.15);color:#6EE7B7">1/1</div>
+          </div>
+          <div class="wl-class">
+            <div class="wl-time">19:00</div>
+            <div class="wl-class-name">Sparring</div>
+            <div class="wl-slots" style="background:rgba(249,115,22,0.15);color:#FED7AA">4/6</div>
+          </div>
+          <div style="background:rgba(53,99,233,0.12);border:1px solid rgba(53,99,233,0.25);border-radius:8px;padding:8px 10px;margin-top:4px;">
+            <div style="font-size:10px;color:#8AADFF;font-weight:600">✓ Você está agendado</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">Individual · Seg 10:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <div style="max-width:600px;margin:0 auto;position:relative;z-index:1;">
+    <h2>Pronto para experimentar?</h2>
+    <p>14 dias grátis, sem cartão de crédito. Configure em menos de 10 minutos.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:white;color:var(--brand);font-size:15px;font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;">
+        Começar grátis para academias →
+      </a>
+      <a href="/precos.html" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);font-size:15px;font-weight:600;padding:13px 26px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.2);">
+        Ver preços
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="inst-footer">
+  <div class="inst-footer-top">
+    <div class="inst-footer-brand">
+      <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
+      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <a href="mailto:contato@agendofy.com" class="inst-footer-email">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        contato@agendofy.com
+      </a>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Produto</h4>
+      <ul>
+        <li><a href="/funcionalidades.html">Funcionalidades</a></li>
+        <li><a href="/precos.html">Preços</a></li>
+        <li><a href="/landing.html">Para academias</a></li>
+        <li><a href="/landing-salao.html">Para salões</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="/sobre.html">Sobre nós</a></li>
+        <li><a href="/contato.html">Contato</a></li>
+        <li><a href="/changelog.html">Novidades</a></li>
+      </ul>
+    </div>
+    <div class="inst-footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/termos.html">Termos de uso</a></li>
+        <li><a href="/privacidade.html">Privacidade</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="inst-footer-bottom">
+    <p class="inst-footer-copy">© 2026 Agendofy. Todos os direitos reservados.</p>
+    <div class="inst-footer-legal">
+      <a href="/termos.html">Termos</a>
+      <a href="/privacidade.html">Privacidade</a>
+      <a href="/contato.html">Suporte</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobile-nav').classList.toggle('open');
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

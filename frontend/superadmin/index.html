@@ -81,6 +81,7 @@
     import { renderTenants } from '/js/admin/tenants.js?v=202603311200';
     import { renderRevenue } from '/js/superadmin/revenue.js?v=202603311200';
     import { renderSuperAdmins } from '/js/superadmin/super-admins.js?v=202603311200';
+    import { trackPageView } from '/js/analytics.js?v=202603311200';
 
     if (!requireAuth(['SuperAdmin'])) throw new Error('unauthorized');
 
@@ -105,7 +106,10 @@
     async function navigateTo(page) {
       if (!pages[page]) return;
       currentPage = page;
-      document.getElementById('pageTitle').textContent = pages[page].title ?? t(pages[page].titleKey);
+      const pageTitle = pages[page].title ?? t(pages[page].titleKey);
+      document.getElementById('pageTitle').textContent = pageTitle;
+      location.hash = page;
+      trackPageView('SuperAdmin — ' + pageTitle);
       document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.page === page);
       });

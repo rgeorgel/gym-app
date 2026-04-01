@@ -86,7 +86,8 @@
         ];
 
     const tabs = Object.fromEntries(tabsConfig.map(tc => [tc.id, tc.render]));
-    const defaultTab = tabsConfig[0].id;
+    const hashTab = window.location.hash.slice(1);
+    const defaultTab = tabs[hashTab] ? hashTab : tabsConfig[0].id;
 
     // Inject tab bar
     document.getElementById('appTabsBar').innerHTML = tabsConfig
@@ -108,11 +109,13 @@
       if (!tabs[tab]) return;
       currentTab = tab;
 
+      history.replaceState(null, '', '#' + tab);
+
       document.querySelectorAll('.app-tab, .bottom-nav-item').forEach(el => {
         el.classList.toggle('active', el.dataset.tab === tab);
       });
 
-      trackPageView(tab);
+      trackPageView('App — ' + tab);
 
       const content = document.getElementById('appContent');
       content.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
