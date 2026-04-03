@@ -65,6 +65,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("SuperAdmin", policy => policy.RequireRole("SuperAdmin"));
     options.AddPolicy("AdminOrAbove", policy => policy.RequireRole("SuperAdmin", "Admin"));
     options.AddPolicy("AnyUser", policy => policy.RequireAuthenticatedUser());
+    options.AddPolicy("Affiliate", policy => policy.RequireRole("Affiliate"));
 });
 
 // CORS
@@ -155,6 +156,9 @@ app.MapAdminUserEndpoints();
 app.MapBillingEndpoints();
 app.MapAbacatePayWebhook();
 app.MapSuperAdminEndpoints();
+app.MapAffiliateEndpoints();
+app.MapSuperAdminAffiliateEndpoints();
+app.MapSystemConfigEndpoints();
 app.MapDemoEndpoints();
 app.MapAiAssistantEndpoints();
 app.MapLocationEndpoints();

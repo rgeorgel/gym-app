@@ -60,10 +60,20 @@ public static class TenantEndpoints
             while (await db.Tenants.AnyAsync(t => t.Slug == slug))
                 slug = $"{baseSlug}-{suffix++}";
 
-            // Resolve referral code
+            // Resolve tenant-to-tenant referral code
             Tenant? referrer = null;
             if (!string.IsNullOrWhiteSpace(req.ReferralCode))
                 referrer = await db.Tenants.FirstOrDefaultAsync(t => t.Slug == req.ReferralCode.Trim().ToLowerInvariant());
+
+            // Resolve affiliate code
+            Affiliate? affiliateFromCode = null;
+            if (!string.IsNullOrWhiteSpace(req.AffiliateCode))
+                affiliateFromCode = await db.Affiliates
+                    .FirstOrDefaultAsync(a => a.ReferralCode == req.AffiliateCode.Trim().ToLowerInvariant());
+
+            var trialDays = referrer is not null ? 44  // +30 bonus days for tenant-referral
+                          : affiliateFromCode is not null ? 15
+                          : 14;
 
             var tenant = new Tenant
             {
@@ -76,7 +86,8 @@ public static class TenantEndpoints
                 SubscriptionPriceCents = req.TenantType == GymApp.Domain.Enums.TenantType.BeautySalon ? 1900 : 4900,
                 ReferredByCode = referrer?.Slug,
                 ReferredByTenantId = referrer?.Id,
-                TrialDays = referrer is not null ? 44 : 14  // +30 bonus days for referred tenants
+                AffiliateReferralCode = affiliateFromCode?.ReferralCode,
+                TrialDays = trialDays
             };
             db.Tenants.Add(tenant);
 
@@ -100,6 +111,18 @@ public static class TenantEndpoints
             });
 
             await db.SaveChangesAsync();
+
+            // Create AffiliateReferral after tenant is persisted
+            if (affiliateFromCode is not null)
+            {
+                db.AffiliateReferrals.Add(new AffiliateReferral
+                {
+                    AffiliateId  = affiliateFromCode.Id,
+                    TenantId     = tenant.Id,
+                    RegisteredAt = DateTime.UtcNow
+                });
+                await db.SaveChangesAsync();
+            }
 
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
             var uri = new Uri(baseUrl);

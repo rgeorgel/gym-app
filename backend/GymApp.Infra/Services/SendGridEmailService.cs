@@ -53,4 +53,10 @@ public class SendGridEmailService(IConfiguration config) : IEmailService
 
     public Task SendNewBookingNotificationAsync(string toEmail, string adminName, string clientName, string? clientPhone, string serviceName, DateTime sessionDateTime)
         => Task.CompletedTask; // SendGrid not in use — no-op
+
+    public Task SendAffiliateCommissionEarnedAsync(string toEmail, string toName, string tenantName, decimal commissionAmount, decimal newBalance)
+        => Task.CompletedTask; // SendGrid not in use — no-op
+
+    public Task SendAffiliateWithdrawalStatusAsync(string toEmail, string toName, decimal amount, string status, string? adminNotes)
+        => Task.CompletedTask; // SendGrid not in use — no-op
 }

@@ -45,6 +45,20 @@
           <span class="nav-icon">🔑</span>
           <span>Super Admins</span>
         </div>
+
+        <div class="nav-section-label">Afiliados</div>
+        <div class="nav-item" data-page="affiliates">
+          <span class="nav-icon">🤝</span>
+          <span>Afiliados</span>
+        </div>
+        <div class="nav-item" data-page="affiliate-withdrawals">
+          <span class="nav-icon">💳</span>
+          <span>Saques</span>
+        </div>
+        <div class="nav-item" data-page="affiliate-config">
+          <span class="nav-icon">⚙️</span>
+          <span>Configurações</span>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -81,6 +95,9 @@
     import { renderTenants } from '/js/admin/tenants.js?v=202603311200';
     import { renderRevenue } from '/js/superadmin/revenue.js?v=202603311200';
     import { renderSuperAdmins } from '/js/superadmin/super-admins.js?v=202603311200';
+    import { renderSuperAdminAffiliates } from '/js/superadmin/affiliates.js?v=202604010001';
+    import { renderSuperAdminWithdrawals } from '/js/superadmin/affiliate-withdrawals.js?v=202604010001';
+    import { renderAffiliateConfig } from '/js/superadmin/affiliate-config.js?v=202604010001';
     import { trackPageView } from '/js/analytics.js?v=202603311200';
 
     if (!requireAuth(['SuperAdmin'])) throw new Error('unauthorized');
@@ -99,6 +116,9 @@
       tenants: { title: 'Clientes', render: renderTenants },
       revenue: { titleKey: 'nav.revenue', render: renderRevenue },
       'super-admins': { titleKey: 'nav.superAdmins', render: renderSuperAdmins },
+      affiliates: { title: 'Afiliados', render: renderSuperAdminAffiliates },
+      'affiliate-withdrawals': { title: 'Saques de Afiliados', render: renderSuperAdminWithdrawals },
+      'affiliate-config': { title: 'Configurações de Afiliados', render: renderAffiliateConfig },
     };
 
     let currentPage = 'tenants';

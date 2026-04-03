@@ -30,6 +30,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<CardFeeConfig> CardFeeConfigs => Set<CardFeeConfig>();
     public DbSet<InstructorService> InstructorServices => Set<InstructorService>();
     public DbSet<DemoSeedLog> DemoSeedLogs => Set<DemoSeedLog>();
+    public DbSet<Affiliate> Affiliates => Set<Affiliate>();
+    public DbSet<AffiliateReferral> AffiliateReferrals => Set<AffiliateReferral>();
+    public DbSet<AffiliateCommission> AffiliateCommissions => Set<AffiliateCommission>();
+    public DbSet<AffiliateWithdrawalRequest> AffiliateWithdrawalRequests => Set<AffiliateWithdrawalRequest>();
+    public DbSet<SystemConfig> SystemConfigs => Set<SystemConfig>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -315,6 +320,59 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.FeePercentage).HasPrecision(5, 2);
             e.Property(x => x.FeeType).HasMaxLength(30);
             e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Affiliate
+        modelBuilder.Entity<Affiliate>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.ReferralCode).IsUnique();
+            e.HasIndex(x => x.UserId).IsUnique();
+            e.Property(x => x.ReferralCode).HasMaxLength(50);
+            e.Property(x => x.CommissionRate).HasPrecision(5, 4);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<AffiliateReferral>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.TenantId).IsUnique(); // each tenant can only be referred once
+            e.HasOne(x => x.Affiliate).WithMany(a => a.Referrals).HasForeignKey(x => x.AffiliateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<AffiliateCommission>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.SubscriptionPaymentRef);
+            e.Property(x => x.GrossAmount).HasPrecision(10, 2);
+            e.Property(x => x.Rate).HasPrecision(5, 4);
+            e.Property(x => x.CommissionAmount).HasPrecision(10, 2);
+            e.Property(x => x.SubscriptionPaymentRef).HasMaxLength(200);
+            e.HasOne(x => x.Affiliate).WithMany(a => a.Commissions).HasForeignKey(x => x.AffiliateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Tenant).WithMany().HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<AffiliateWithdrawalRequest>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.RequestedAmount).HasPrecision(10, 2);
+            e.Property(x => x.AdminNotes).HasMaxLength(500);
+            e.HasOne(x => x.Affiliate).WithMany(a => a.WithdrawalRequests).HasForeignKey(x => x.AffiliateId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SystemConfig>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Key).IsUnique();
+            e.Property(x => x.Key).HasMaxLength(100);
+            e.Property(x => x.Value).HasMaxLength(500);
+        });
+
+        // Tenant: AffiliateReferralCode
+        modelBuilder.Entity<Tenant>(e =>
+        {
+            e.Property(x => x.AffiliateReferralCode).HasMaxLength(50);
         });
     }
 

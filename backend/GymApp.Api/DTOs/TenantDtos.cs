@@ -139,7 +139,8 @@ public record SelfSignupRequest(
     string Password,
     string? Phone = null,
     TenantType TenantType = TenantType.Gym,
-    string? ReferralCode = null
+    string? ReferralCode = null,
+    string? AffiliateCode = null
 );
 
 public record ReferralStatsResponse(

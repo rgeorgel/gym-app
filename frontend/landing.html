@@ -2422,6 +2422,7 @@ async function submitForm() {
   const whatsapp = document.getElementById('whatsapp').value.trim();
   const senha = document.getElementById('senha').value;
   const referralCode = document.getElementById('referral-code').value.trim() || undefined;
+  const affiliateCode = new URLSearchParams(window.location.search).get('ref')?.trim() || undefined;
 
   hideFormError();
 
@@ -2459,7 +2460,8 @@ async function submitForm() {
         password: senha,
         phone: whatsapp,
         tenantType: 'Gym',
-        referralCode
+        referralCode,
+        affiliateCode
       })
     });
 

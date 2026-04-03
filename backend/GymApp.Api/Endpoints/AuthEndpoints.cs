@@ -35,7 +35,8 @@ public static class AuthEndpoints
 
             var user = tenantCtx.IsResolved
                 ? await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantCtx.TenantId && u.Email == email)
-                : await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Role == UserRole.SuperAdmin);
+                : await db.Users.FirstOrDefaultAsync(u => u.Email == email
+                      && (u.Role == UserRole.SuperAdmin || u.Role == UserRole.Affiliate));
 
             if (user is null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
                 return Results.Unauthorized();

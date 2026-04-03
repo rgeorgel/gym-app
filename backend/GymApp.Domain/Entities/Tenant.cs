@@ -51,10 +51,14 @@ public class Tenant
     public bool AiEnabled { get; set; } = false;
     public string? AiSystemPrompt { get; set; }
 
-    // ── Referral program ────────────────────────────────────────────────────
+    // ── Referral program (tenant-to-tenant) ─────────────────────────────────
     public string? ReferredByCode { get; set; }
     public Guid? ReferredByTenantId { get; set; }
     public bool ReferralRewardClaimed { get; set; } = false;
+
+    // ── Affiliate program ────────────────────────────────────────────────────
+    /// <summary>Affiliate referral code used when this tenant registered.</summary>
+    public string? AffiliateReferralCode { get; set; }
 
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>

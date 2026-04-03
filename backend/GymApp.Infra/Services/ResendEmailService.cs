@@ -410,6 +410,163 @@ public class ResendEmailService(IResend resend, IConfiguration config) : IEmailS
         await resend.EmailSendAsync(msg);
     }
 
+    public async Task SendAffiliateCommissionEarnedAsync(string toEmail, string toName, string tenantName, decimal commissionAmount, decimal newBalance)
+    {
+        var msg = new EmailMessage
+        {
+            From = $"{FromName} <{FromEmail}>",
+            Subject = $"💰 Nova comissão: R${commissionAmount:F2} de {tenantName}",
+            HtmlBody = $"""
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+                <body style="margin:0;padding:0;background:#F4F6FB;font-family:'Helvetica Neue',Arial,sans-serif">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F6FB;padding:40px 16px">
+                    <tr><td align="center">
+                      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07)">
+                        <tr>
+                          <td style="background:#0D1525;padding:28px 40px;text-align:center">
+                            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px">
+                              agendo<span style="color:#3563E9">fy</span>
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding:40px 40px 32px">
+                            <div style="text-align:center;margin-bottom:24px">
+                              <div style="display:inline-block;background:#D1FAE5;border-radius:50%;width:56px;height:56px;line-height:56px;font-size:28px">💰</div>
+                            </div>
+                            <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#060A14;text-align:center">
+                              Nova comissão recebida!
+                            </h1>
+                            <p style="margin:0 0 28px;font-size:15px;color:#64748B;text-align:center">
+                              Olá, <strong style="color:#060A14">{toName}</strong>! Um dos seus indicados realizou um pagamento.
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFF;border-radius:12px;padding:20px;margin-bottom:24px">
+                              <tr>
+                                <td style="padding:8px 20px">
+                                  <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                      <td style="padding:10px 0;border-bottom:1px solid #E8ECF4">
+                                        <span style="font-size:13px;color:#64748B">Cliente</span>
+                                        <span style="float:right;font-size:14px;font-weight:600;color:#060A14">{tenantName}</span>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td style="padding:10px 0;border-bottom:1px solid #E8ECF4">
+                                        <span style="font-size:13px;color:#64748B">Comissão gerada</span>
+                                        <span style="float:right;font-size:16px;font-weight:800;color:#10B981">R${commissionAmount:F2}</span>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td style="padding:10px 0">
+                                        <span style="font-size:13px;color:#64748B">Saldo disponível</span>
+                                        <span style="float:right;font-size:14px;font-weight:700;color:#3563E9">R${newBalance:F2}</span>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                            <p style="margin:0;font-size:13px;color:#94A3B8;text-align:center">
+                              Acesse seu painel de afiliado para solicitar o saque.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background:#F8FAFF;border-top:1px solid #E8ECF4;padding:20px 40px;text-align:center">
+                            <p style="margin:0;font-size:12px;color:#94A3B8">
+                              <a href="https://agendofy.com" style="color:#3563E9;text-decoration:none">agendofy.com</a>
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td></tr>
+                  </table>
+                </body>
+                </html>
+                """
+        };
+        msg.To.Add(toEmail);
+        await resend.EmailSendAsync(msg);
+    }
+
+    public async Task SendAffiliateWithdrawalStatusAsync(string toEmail, string toName, decimal amount, string status, string? adminNotes)
+    {
+        var isApproved = status == "aprovada";
+        var icon       = isApproved ? "✅" : "❌";
+        var color      = isApproved ? "#10B981" : "#EF4444";
+        var bgColor    = isApproved ? "#D1FAE5" : "#FEE2E2";
+        var notesHtml  = !string.IsNullOrWhiteSpace(adminNotes)
+            ? $"""<p style="margin:16px 0 0;font-size:13px;color:#64748B;text-align:center"><strong>Observação:</strong> {adminNotes}</p>"""
+            : "";
+
+        var msg = new EmailMessage
+        {
+            From = $"{FromName} <{FromEmail}>",
+            Subject = $"{icon} Solicitação de saque {status} — R${amount:F2}",
+            HtmlBody = $"""
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+                <body style="margin:0;padding:0;background:#F4F6FB;font-family:'Helvetica Neue',Arial,sans-serif">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F6FB;padding:40px 16px">
+                    <tr><td align="center">
+                      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07)">
+                        <tr>
+                          <td style="background:#0D1525;padding:28px 40px;text-align:center">
+                            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px">
+                              agendo<span style="color:#3563E9">fy</span>
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding:40px 40px 32px">
+                            <div style="text-align:center;margin-bottom:24px">
+                              <div style="display:inline-block;background:{bgColor};border-radius:50%;width:56px;height:56px;line-height:56px;font-size:28px">{icon}</div>
+                            </div>
+                            <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#060A14;text-align:center">
+                              Saque {status}
+                            </h1>
+                            <p style="margin:0 0 28px;font-size:15px;color:#64748B;text-align:center">
+                              Olá, <strong style="color:#060A14">{toName}</strong>! Sua solicitação de saque foi <strong style="color:{color}">{status}</strong>.
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFF;border-radius:12px;padding:20px;margin-bottom:8px">
+                              <tr>
+                                <td style="padding:8px 20px">
+                                  <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                      <td style="padding:10px 0">
+                                        <span style="font-size:13px;color:#64748B">Valor solicitado</span>
+                                        <span style="float:right;font-size:18px;font-weight:800;color:{color}">R${amount:F2}</span>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                            {notesHtml}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background:#F8FAFF;border-top:1px solid #E8ECF4;padding:20px 40px;text-align:center">
+                            <p style="margin:0;font-size:12px;color:#94A3B8">
+                              Acesse seu painel para mais detalhes.<br>
+                              <a href="https://agendofy.com" style="color:#3563E9;text-decoration:none">agendofy.com</a>
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td></tr>
+                  </table>
+                </body>
+                </html>
+                """
+        };
+        msg.To.Add(toEmail);
+        await resend.EmailSendAsync(msg);
+    }
+
     private static string Step(string num, string title, string desc, string color = "#3563E9") => $"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
           <tr>

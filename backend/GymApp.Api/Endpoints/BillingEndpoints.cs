@@ -4,6 +4,7 @@ using GymApp.Api.DTOs;
 using GymApp.Api.Services;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
+using GymApp.Domain.Interfaces;
 using GymApp.Infra.Data;
 using GymApp.Infra.Services;
 using Microsoft.EntityFrameworkCore;
@@ -244,7 +245,8 @@ public static class BillingEndpoints
             HttpContext ctx,
             AppDbContext db,
             ILogger<AbacatePayService> logger,
-            IConfiguration config) =>
+            IConfiguration config,
+            IEmailService emailService) =>
         {
             // Validate webhook secret from query string
             var expectedSecret = config["AbacatePay:WebhookSecret"];
@@ -327,6 +329,68 @@ public static class BillingEndpoints
                             logger.LogInformation("Referral reward granted to {Slug} — +30 days", referrer.Slug);
                         }
                         tenant.ReferralRewardClaimed = true;
+                    }
+
+                    // Affiliate commission: generate for every subscription payment
+                    if (!string.IsNullOrEmpty(tenant.AffiliateReferralCode))
+                    {
+                        var affiliateRef = await db.AffiliateReferrals
+                            .Include(r => r.Affiliate).ThenInclude(a => a.User)
+                            .FirstOrDefaultAsync(r => r.TenantId == tenant.Id);
+
+                        if (affiliateRef is not null)
+                        {
+                            var grossAmount = tenant.SubscriptionPriceCents / 100m;
+                            var rate        = affiliateRef.Affiliate.CommissionRate;
+                            var commission  = Math.Round(grossAmount * rate, 2);
+                            var paymentRef  = billingId ?? customerId ?? Guid.NewGuid().ToString();
+
+                            var commissionEntity = new AffiliateCommission
+                            {
+                                AffiliateId            = affiliateRef.AffiliateId,
+                                TenantId               = tenant.Id,
+                                SubscriptionPaymentRef = paymentRef,
+                                GrossAmount            = grossAmount,
+                                Rate                   = rate,
+                                CommissionAmount       = commission,
+                                Status                 = AffiliateCommissionStatus.Pending
+                            };
+                            db.AffiliateCommissions.Add(commissionEntity);
+
+                            // Calculate new balance for email
+                            var totalEarned = await db.AffiliateCommissions
+                                .Where(c => c.AffiliateId == affiliateRef.AffiliateId)
+                                .SumAsync(c => c.CommissionAmount);
+                            var paidOut = await db.AffiliateCommissions
+                                .Where(c => c.AffiliateId == affiliateRef.AffiliateId
+                                         && c.Status == AffiliateCommissionStatus.Paid)
+                                .SumAsync(c => c.CommissionAmount);
+                            var pendingW = await db.AffiliateWithdrawalRequests
+                                .Where(w => w.AffiliateId == affiliateRef.AffiliateId
+                                    && (w.Status == AffiliateWithdrawalStatus.Pending
+                                        || w.Status == AffiliateWithdrawalStatus.Approved))
+                                .SumAsync(w => w.RequestedAmount);
+                            var newBalance = Math.Max(0m, totalEarned + commission - paidOut - pendingW);
+
+                            logger.LogInformation(
+                                "Affiliate commission created: affiliate={A}, tenant={T}, amount={C}",
+                                affiliateRef.AffiliateId, tenant.Slug, commission);
+
+                            try
+                            {
+                                await emailService.SendAffiliateCommissionEarnedAsync(
+                                    affiliateRef.Affiliate.User.Email,
+                                    affiliateRef.Affiliate.User.Name,
+                                    tenant.Name,
+                                    commission,
+                                    newBalance
+                                );
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogWarning(ex, "Failed to send affiliate commission email");
+                            }
+                        }
                     }
                     break;
 
