@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NWZTF6F3M6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NWZTF6F3M6');
+  </script>
+  <!-- Microsoft Clarity -->
+  <script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vxxeenq2oz");
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Panfletos — Agendofy</title>
+  <link rel="stylesheet" href="/css/main.css?v=202604030001">
+  <link rel="stylesheet" href="/css/panfleto.css?v=202604030001">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+</head>
+<body class="panfleto-body">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="panfleto-topbar">
+    <a href="/" class="panfleto-brand">
+      <img src="/assets/logo-placeholder.svg" alt="Agendofy" class="panfleto-brand-logo">
+      <span>Agendofy</span>
+    </a>
+    <div class="panfleto-cta-banner">
+      <span class="panfleto-cta-icon">✨</span>
+      <span>Usuário do Agendofy? <strong>Importe seus serviços e dados automaticamente</strong> com um clique.</span>
+      <button class="btn-import-agendofy" id="btnImportAgendofy">Importar meus dados</button>
+    </div>
+  </header>
+
+  <!-- ── Main layout ────────────────────────────────────────────────────── -->
+  <div class="panfleto-layout">
+
+    <!-- LEFT: Form panel -->
+    <aside class="panfleto-panel">
+      <div class="panel-scroll">
+
+        <!-- Logo -->
+        <section class="panel-section">
+          <h3 class="panel-section-title">Identidade</h3>
+          <div class="logo-upload-area" id="logoUploadArea">
+            <img src="" alt="" class="logo-preview-img" id="logoPreviewImg" style="display:none">
+            <div class="logo-placeholder" id="logoPlaceholder">
+              <span class="logo-placeholder-icon">🖼️</span>
+              <span>Adicionar logo</span>
+            </div>
+            <input type="file" accept="image/*" id="inputLogo" style="display:none">
+          </div>
+          <button class="btn-text" id="btnRemoveLogo" style="display:none;margin-top:0.35rem;font-size:0.8rem;color:var(--color-danger)">Remover logo</button>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label class="form-label">Nome do negócio</label>
+            <input class="form-control" type="text" id="inputName" placeholder="Ex: Studio Bella Unhas" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slogan / especialidade <span class="text-muted text-sm">(opcional)</span></label>
+            <input class="form-control" type="text" id="inputTagline" placeholder="Ex: Especialista em alongamento" maxlength="60">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone / WhatsApp</label>
+            <input class="form-control" type="tel" id="inputPhone" placeholder="(11) 9 9999-9999" maxlength="20">
+          </div>
+        </section>
+
+        <!-- Services -->
+        <section class="panel-section">
+          <div class="panel-section-header">
+            <h3 class="panel-section-title">Serviços e valores</h3>
+            <button class="btn-add-service" id="btnAddService">+ Adicionar</button>
+          </div>
+          <div class="services-list" id="servicesList"></div>
+        </section>
+
+        <!-- Social -->
+        <section class="panel-section">
+          <h3 class="panel-section-title">Redes sociais</h3>
+          <div class="form-group">
+            <label class="form-label">Instagram</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">@</span>
+              <input class="form-control" type="text" id="inputInstagram" placeholder="seuperfil" maxlength="40">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">TikTok</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">@</span>
+              <input class="form-control" type="text" id="inputTikTok" placeholder="seuperfil" maxlength="40">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Site / link</label>
+            <input class="form-control" type="text" id="inputWebsite" placeholder="agendofy.com.br/seu-salao" maxlength="80">
+          </div>
+        </section>
+
+        <!-- Export -->
+        <section class="panel-section panel-section-export">
+          <button class="btn-export" id="btnExport">
+            <span id="btnExportLabel">⬇ Baixar panfleto (PNG)</span>
+            <span id="btnExportSpinner" style="display:none">Gerando imagem…</span>
+          </button>
+          <p class="export-hint">Exporta em 1080×1080px — ideal para Instagram e WhatsApp</p>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- RIGHT: Preview + template selector -->
+    <div class="panfleto-preview-col">
+
+      <!-- Template strip -->
+      <div class="template-strip" id="templateStrip">
+        <button class="tpl-btn active" data-tpl="rosa-delicado" title="Rosa Delicado">
+          <div class="tpl-thumb tpl-thumb--rosa-delicado"></div>
+          <span>Rosa</span>
+        </button>
+        <button class="tpl-btn" data-tpl="nude-elegante" title="Nude Elegante">
+          <div class="tpl-thumb tpl-thumb--nude-elegante"></div>
+          <span>Nude</span>
+        </button>
+        <button class="tpl-btn" data-tpl="moderno-escuro" title="Moderno Escuro">
+          <div class="tpl-thumb tpl-thumb--moderno-escuro"></div>
+          <span>Dark</span>
+        </button>
+        <button class="tpl-btn" data-tpl="minimalista" title="Minimalista">
+          <div class="tpl-thumb tpl-thumb--minimalista"></div>
+          <span>Clean</span>
+        </button>
+        <button class="tpl-btn" data-tpl="verde-natural" title="Verde Natural">
+          <div class="tpl-thumb tpl-thumb--verde-natural"></div>
+          <span>Natural</span>
+        </button>
+        <button class="tpl-btn" data-tpl="vibrante" title="Vibrante">
+          <div class="tpl-thumb tpl-thumb--vibrante"></div>
+          <span>Vibrante</span>
+        </button>
+      </div>
+
+      <!-- Preview canvas -->
+      <div class="panfleto-preview-wrap">
+        <div class="panfleto-canvas" id="panfletoCanvas">
+          <!-- Rendered by editor.js -->
+        </div>
+      </div>
+
+      <p class="preview-hint">Preview ao vivo — edite os campos para ver as mudanças</p>
+    </div>
+
+  </div>
+
+  <!-- Import modal -->
+  <div class="modal-backdrop" id="importModal" style="display:none">
+    <div class="modal-box">
+      <h3 style="margin:0 0 0.5rem">Importar dados do Agendofy</h3>
+      <p class="text-muted text-sm" style="margin:0 0 1.25rem">Entre com suas credenciais para importar o nome, logo, serviços e redes sociais automaticamente.</p>
+      <div class="form-group">
+        <label class="form-label">E-mail</label>
+        <input class="form-control" type="email" id="importEmail" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input class="form-control" type="password" id="importPassword" placeholder="••••••••">
+      </div>
+      <p class="import-error text-sm" id="importError" style="display:none;color:var(--color-danger)"></p>
+      <div style="display:flex;gap:0.75rem;margin-top:1.25rem">
+        <button class="btn btn-primary" style="flex:1" id="btnDoImport">Importar</button>
+        <button class="btn btn-secondary" id="btnCancelImport">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/panfleto/editor.js?v=202604030001"></script>
+</body>
+</html>
