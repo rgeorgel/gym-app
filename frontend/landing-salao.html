@@ -524,17 +524,85 @@ footer { background: var(--dark); padding: 56px 0 0; }
   .hero-mockup { display: none; }
   .features-grid { grid-template-columns: 1fr 1fr; }
   .footer-top { grid-template-columns: 1fr 1fr; }
+  .how-inner { gap: 48px; }
+  .signup-inner { gap: 48px; }
+  .pricing-layout { gap: 28px; }
+  .how { padding: 72px 0; }
+  .signup { padding: 72px 0; }
+  .pricing { padding: 72px 0; }
+  .features { padding: 72px 0; }
+  .faq { padding: 72px 0; }
+  .calc-teaser { padding: 64px 0; }
+  .features-header { margin-bottom: 40px; }
+  .pricing-header, .faq-header { margin-bottom: 40px; }
 }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: block; }
+}
+
 @media (max-width: 600px) {
+  .container { padding: 0 18px; }
   .features-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 4px; }
   .dash-metrics { grid-template-columns: repeat(2, 1fr); }
-  .strip { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+  .strip { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding: 16px 18px; gap: 32px; }
   .hero-stats { flex-wrap: wrap; gap: 16px; }
   .hero-stat { padding: 0; border: none; }
   .nav-links { display: none; }
   .nav-hamburger { display: block; }
+
+  /* Hero */
+  .hero { padding: 88px 18px 60px; }
+  .hero h1 { letter-spacing: -1px; }
+  .hero-badge { font-size: 12px; padding: 6px 14px; margin-bottom: 20px; }
+  .hero-sub { font-size: 15px; margin-top: 16px; }
+  .hero-actions { flex-direction: column; gap: 10px; margin-top: 28px; }
+  .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+  .hero-stats { margin-top: 36px; padding-top: 24px; }
+  .hero-note { font-size: 12px; }
+
+  /* Sections */
+  .how { padding: 60px 0; }
+  .signup { padding: 60px 0; }
+  .pricing { padding: 60px 0; }
+  .features { padding: 60px 0; }
+  .faq { padding: 60px 0; }
+  .calc-teaser { padding: 52px 0; }
+  .features-header { margin-bottom: 32px; }
+  .pricing-header, .faq-header { margin-bottom: 32px; }
+
+  /* Section text */
+  p.section-sub { max-width: 100%; font-size: 15px; }
+  h2.section-title { letter-spacing: -0.5px; }
+
+  /* How section */
+  .how-inner { gap: 36px; }
+  .dashboard-mock { overflow-x: auto; }
+
+  /* Signup */
+  .signup-inner { gap: 36px; }
+  .form-card { padding: 24px 20px; }
+  .signup-left h2 { font-size: clamp(26px, 8vw, 38px); }
+
+  /* Pricing */
+  .pricing-compare { padding: 24px 20px; }
+  .pricing-card-inner { padding: 28px 22px; }
+  .price-amt { font-size: 56px; }
+
+  /* Footer */
+  .footer-top { gap: 32px; }
+  footer { padding: 48px 0 0; }
+
+  /* FAQ */
+  .faq-question { font-size: 15px; }
+  .faq-wrapper { padding: 0 18px; }
+
+  /* Strip */
+  .strip-item { flex-shrink: 0; }
 }
 </style>
 </head>
