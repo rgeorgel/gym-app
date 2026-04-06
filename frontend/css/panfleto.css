@@ -289,6 +289,13 @@
   color: var(--gray-400);
 }
 
+.panfleto-ad-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    PANFLETO CANVAS INTERNOS — elementos renderizados pelo editor
    ═══════════════════════════════════════════════════════════════ */

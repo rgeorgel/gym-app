@@ -156,6 +156,31 @@
       </div>
 
       <p class="preview-hint">Preview ao vivo — edite os campos para ver as mudanças</p>
+
+      <!-- Dynamic Ad Block -->
+      <div class="panfleto-ad-container" id="panfleto-ad-slot">
+        <script>
+          (function() {
+            var isMobile = window.innerWidth <= 768;
+            var adConfig = isMobile 
+              ? { key: 'f3e4c3c79dad9e190b348f7f6c792530', width: 320, height: 50 }
+              : { key: 'c738f2986874ec998eff6121008a4e56', width: 468, height: 60 };
+
+            window.atOptions = {
+              'key' : adConfig.key,
+              'format' : 'iframe',
+              'height' : adConfig.height,
+              'width' : adConfig.width,
+              'params' : {}
+            };
+
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://www.highperformanceformat.com/' + adConfig.key + '/invoke.js';
+            document.write(script.outerHTML);
+          })();
+        </script>
+      </div>
     </div>
 
   </div>
