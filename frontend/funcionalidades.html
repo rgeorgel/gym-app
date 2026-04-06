@@ -33,6 +33,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/institucional.css">
 <style>
+/* ── Match landing-choice colors ── */
+:root { --beauty: #EC4899; --beauty-light: #FDF2F8; }
+.inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
+.inst-nav:not(.scrolled) .inst-nav-links a { color: rgba(255,255,255,0.7); }
+.inst-nav:not(.scrolled) .inst-nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.inst-nav:not(.scrolled) .inst-nav-hamburger { color: var(--white); }
+.page-header { background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%) !important; }
+.page-header::before { background: radial-gradient(ellipse at 15% 30%, rgba(236,72,153,0.15) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(59,130,246,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 60%) !important; }
+.cta-banner { background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%) !important; }
+
 /* Feature categories */
 .feat-section {
   padding: 80px 24px;
@@ -323,7 +333,7 @@
 <body>
 
 <!-- NAV -->
-<nav class="inst-nav scrolled" id="inst-nav">
+<nav class="inst-nav" id="inst-nav">
   <div class="inst-nav-inner">
     <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
     <ul class="inst-nav-links">
@@ -331,7 +341,7 @@
       <li><a href="/precos.html">Preços</a></li>
       <li><a href="/sobre.html">Sobre</a></li>
       <li><a href="/contato.html">Contato</a></li>
-      <li><a href="/landing.html#cadastro" class="inst-btn-nav">Começar grátis →</a></li>
+      <li><a href="/landing-salao.html#cadastro" class="inst-btn-nav">Começar grátis →</a></li>
     </ul>
     <button class="inst-nav-hamburger" id="hamburger" aria-label="Menu">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -348,7 +358,7 @@
   <a href="/precos.html">Preços</a>
   <a href="/sobre.html">Sobre</a>
   <a href="/contato.html">Contato</a>
-  <a href="/landing.html#cadastro" class="inst-btn-nav-mobile">Começar grátis →</a>
+  <a href="/landing-salao.html#cadastro" class="inst-btn-nav-mobile">Começar grátis →</a>
 </div>
 
 <!-- PAGE HEADER -->
@@ -356,7 +366,7 @@
   <div class="page-header-inner">
     <span class="tag white">Funcionalidades</span>
     <h1>Tudo que você precisa.<br>Nada que não precisa.</h1>
-    <p>Desenvolvido para academias, estúdios e salões de beleza que querem parar de gerenciar pelo WhatsApp.</p>
+    <p>Para salões de beleza, manicures e barbearias que querem uma agenda sempre cheia — e também para academias e estúdios.</p>
   </div>
 </div>
 
@@ -379,35 +389,35 @@
 
   <div class="overview-grid">
     <div class="overview-card reveal">
-      <div class="ov-icon blue">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="ov-icon pink">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
-      <h3>Grade de horários</h3>
-      <p>Monte a grade semanal com dias, horários, capacidade máxima e instrutor por aula.</p>
+      <h3>Agenda por profissional</h3>
+      <p>Cada profissional tem sua própria agenda. Cliente escolhe quem quer ser atendida e vê os horários disponíveis.</p>
     </div>
 
     <div class="overview-card reveal reveal-d1">
       <div class="ov-icon green">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
       </div>
-      <h3>Auto-agendamento</h3>
-      <p>Aluno abre o celular, vê as vagas e confirma sozinho. Sem WhatsApp, sem ligação.</p>
+      <h3>Link de agendamento</h3>
+      <p>Um link público com seu catálogo. Compartilhe no Instagram, WhatsApp e TikTok — clientes agendam 24h por dia.</p>
     </div>
 
     <div class="overview-card reveal reveal-d2">
       <div class="ov-icon orange">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </div>
-      <h3>Controle de créditos</h3>
-      <p>Pacotes com créditos separados por modalidade. Saldo debitado automaticamente a cada aula.</p>
+      <h3>Catálogo de serviços</h3>
+      <p>Monte seus serviços com nome, preço e duração. Clientes veem tudo antes de agendar — sem precisar perguntar.</p>
     </div>
 
     <div class="overview-card reveal reveal-d3">
       <div class="ov-icon purple">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       </div>
-      <h3>Venda via Pix</h3>
-      <p>Aluno compra o plano pelo sistema. Pix gerado automaticamente, ativação imediata.</p>
+      <h3>PIX integrado</h3>
+      <p>Cliente paga na hora do agendamento via PIX. Confirmação automática, sem ficar cobrando pelo WhatsApp. *<small>Disponível para academias</small></p>
     </div>
 
     <div class="overview-card reveal reveal-d4">
@@ -415,46 +425,46 @@
         <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       </div>
       <h3>Dashboard em tempo real</h3>
-      <p>Alunos ativos, aulas do dia, receita mensal e pacotes vencendo numa única tela.</p>
+      <p>Clientes ativos, agenda do dia, receita mensal e próximos atendimentos numa única tela.</p>
     </div>
 
     <div class="overview-card reveal reveal-d5">
-      <div class="ov-icon pink">
+      <div class="ov-icon blue">
         <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       </div>
       <h3>White label completo</h3>
-      <p>Logo, cores e subdomínio da sua academia. Aluno nunca vê o nome Agendofy.</p>
+      <p>Logo, cores e link personalizado do seu negócio. Sua cliente nunca vê o nome Agendofy.</p>
     </div>
   </div>
 </section>
 
-<!-- FEATURE 1: GRADE -->
+<!-- FEATURE 1: AGENDA POR PROFISSIONAL -->
 <section class="feat-section">
   <div class="feat-section-inner container">
     <div class="feat-section-text">
-      <span class="tag">Grade de horários</span>
-      <h2>Monte sua grade semanal em minutos</h2>
-      <p>Crie aulas recorrentes com tudo que você precisa: modalidade, dia, horário, instrutor, capacidade máxima e tipo (grupo, individual, dupla). Visualize em grade semanal ou lista.</p>
+      <span class="tag">Agenda por profissional</span>
+      <h2>Cada profissional, sua própria agenda</h2>
+      <p>Cadastre seus profissionais com os dias e horários de atendimento de cada um. A cliente escolhe com quem quer ser atendida, vê os horários livres e agenda sozinha — sem te chamar no WhatsApp.</p>
       <ul class="feat-list">
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Aulas recorrentes por dia da semana
+          Agenda individual por manicure, cabeleireiro ou esteticista
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Capacidade máxima configurável por turma
+          Disponibilidade configurável por dia da semana
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Múltiplos instrutores e tipos de aula
+          Duração ajustada automaticamente por serviço
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Lista de presença gerada automaticamente
+          Bloqueio de horários e folgas
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Confirmação ou cancelamento pelo painel
+          Lista de atendimentos do dia em um clique
         </li>
       </ul>
     </div>
@@ -466,41 +476,41 @@
           <div class="feat-visual-dot y"></div>
           <div class="feat-visual-dot g"></div>
         </div>
-        <span class="feat-visual-title">Grade de aulas — semana atual</span>
+        <span class="feat-visual-title">Agenda — Studio Bella · Quarta-feira</span>
       </div>
       <div class="feat-visual-body">
         <div class="schedule-grid">
           <div class="schedule-day-header">
             <div class="schedule-day-label"></div>
-            <div class="schedule-day-label">SEG</div>
-            <div class="schedule-day-label">TER</div>
-            <div class="schedule-day-label">QUA</div>
-            <div class="schedule-day-label">QUI</div>
-            <div class="schedule-day-label">SEX</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">07:00</div>
-            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">18/20</span></div>
-            <div class="schedule-slot empty"></div>
-            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">12/20</span></div>
-            <div class="schedule-slot empty"></div>
-            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">20/20</span></div>
+            <div class="schedule-day-label">ANA</div>
+            <div class="schedule-day-label">CRIS</div>
+            <div class="schedule-day-label">MARI</div>
+            <div class="schedule-day-label">JUJU</div>
+            <div class="schedule-day-label">PAT</div>
           </div>
           <div class="schedule-row">
             <div class="schedule-time">09:00</div>
-            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
-            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
-            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
-            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
-            <div class="schedule-slot green">Individual<br><span style="font-weight:300;opacity:.7">1/1</span></div>
+            <div class="schedule-slot blue">Manicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot green">Gel<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot empty"></div>
+            <div class="schedule-slot blue">Manicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot empty"></div>
           </div>
           <div class="schedule-row">
-            <div class="schedule-time">19:00</div>
-            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">4/6</span></div>
-            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">16/20</span></div>
-            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">3/6</span></div>
-            <div class="schedule-slot blue">Boxe Grupo<br><span style="font-weight:300;opacity:.7">14/20</span></div>
-            <div class="schedule-slot orange">Sparring<br><span style="font-weight:300;opacity:.7">5/6</span></div>
+            <div class="schedule-time">10:30</div>
+            <div class="schedule-slot green">Pedicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot empty"></div>
+            <div class="schedule-slot blue">Manicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot green">Gel<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot green">Pedicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">14:00</div>
+            <div class="schedule-slot orange">Sobrancelha<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot blue">Manicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot orange">Sobrancelha<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
+            <div class="schedule-slot empty"></div>
+            <div class="schedule-slot blue">Manicure<br><span style="font-weight:300;opacity:.7">confirmado</span></div>
           </div>
         </div>
       </div>
@@ -508,33 +518,33 @@
   </div>
 </section>
 
-<!-- FEATURE 2: CRÉDITOS -->
+<!-- FEATURE 2: CATÁLOGO + LINK -->
 <section class="feat-section">
   <div class="feat-section-inner container reverse">
     <div class="feat-section-text">
-      <span class="tag">Controle de créditos</span>
-      <h2>Pacotes multi-modalidade com saldo automático</h2>
-      <p>Crie planos com créditos separados por tipo de aula. Um aluno pode ter 8 créditos para aulas em grupo e 4 para individuais no mesmo pacote — e o sistema debita automaticamente.</p>
+      <span class="tag">Catálogo e link de agendamento</span>
+      <h2>Sua agenda aberta 24h, sem te chamar</h2>
+      <p>Monte o catálogo com todos os seus serviços, preços e durações. Seu link personalizado fica disponível o tempo todo — a cliente agenda de madrugada, você acorda com a agenda cheia.</p>
       <ul class="feat-list">
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Saldos independentes por modalidade
+          Catálogo com serviços, preços e tempo de atendimento
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Débito automático a cada agendamento confirmado
+          Link público para compartilhar na bio do Instagram
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Aluno vê o saldo em tempo real no app
+          Cliente escolhe serviço, profissional e horário sozinha
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Alerta de pacote vencendo para o admin
+          Confirmação e lembrete automático por E-mail
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Histórico completo de consumo por aluno
+          Cancelamento com aviso antecipado, sem confusão
         </li>
       </ul>
     </div>
@@ -546,47 +556,45 @@
           <div class="feat-visual-dot y"></div>
           <div class="feat-visual-dot g"></div>
         </div>
-        <span class="feat-visual-title">Pacote — João Silva</span>
+        <span class="feat-visual-title">agendofy.com/studio-bella</span>
       </div>
       <div class="feat-visual-body">
         <div class="credits-card">
-          <div class="credits-card-title">Plano Mensal Plus</div>
+          <div class="credits-card-title">Serviços disponíveis</div>
           <div class="credits-row">
-            <div>
-              <div class="credits-label">Boxe em Grupo</div>
-              <div class="credits-bar-wrap"><div class="credits-bar" style="width:75%"></div></div>
-            </div>
+            <div class="credits-label">💅 Manicure simples</div>
             <div class="credits-badge">
-              <span class="credits-used">6</span>
-              <span class="credits-total">/ 8 créditos</span>
+              <span class="credits-used" style="color:#F472B6">R$ 35</span>
+              <span class="credits-total">· 45min</span>
             </div>
           </div>
           <div class="credits-row">
-            <div>
-              <div class="credits-label">Individual</div>
-              <div class="credits-bar-wrap"><div class="credits-bar" style="width:50%;background:#10B981"></div></div>
-            </div>
+            <div class="credits-label">💅 Pedicure completa</div>
             <div class="credits-badge">
-              <span class="credits-used">2</span>
-              <span class="credits-total">/ 4 créditos</span>
+              <span class="credits-used" style="color:#F472B6">R$ 55</span>
+              <span class="credits-total">· 60min</span>
             </div>
           </div>
           <div class="credits-row">
-            <div>
-              <div class="credits-label">Sparring</div>
-              <div class="credits-bar-wrap"><div class="credits-bar" style="width:33%;background:#F97316"></div></div>
-            </div>
+            <div class="credits-label">✨ Gel francês</div>
             <div class="credits-badge">
-              <span class="credits-used">1</span>
-              <span class="credits-total">/ 3 créditos</span>
+              <span class="credits-used" style="color:#F472B6">R$ 90</span>
+              <span class="credits-total">· 90min</span>
+            </div>
+          </div>
+          <div class="credits-row">
+            <div class="credits-label">🌿 Esmaltação em gel</div>
+            <div class="credits-badge">
+              <span class="credits-used" style="color:#F472B6">R$ 70</span>
+              <span class="credits-total">· 75min</span>
             </div>
           </div>
         </div>
 
-        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;font-weight:600;color:#6EE7B7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Validade</div>
-          <div style="font-size:12px;color:white;font-weight:500;">Até 30 de abril de 2026</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Ativo · 14 dias restantes</div>
+        <div style="background:rgba(236,72,153,0.08);border:1px solid rgba(236,72,153,0.2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:600;color:#F472B6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Próximo horário disponível</div>
+          <div style="font-size:12px;color:white;font-weight:500;">Hoje às 14:30 — Ana Souza</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Quarta-feira · 3 horários disponíveis</div>
         </div>
       </div>
     </div>
@@ -599,15 +607,15 @@
     <div class="feat-section-text">
       <span class="tag">Dashboard administrativo</span>
       <h2>Tudo visível de uma tela só</h2>
-      <p>Abra o painel e tenha, em segundos, o número de alunos ativos, a agenda do dia, a receita do mês e quais pacotes estão vencendo. Sem precisar abrir planilha alguma.</p>
+      <p>Abra o painel e tenha, em segundos, seus clientes ativos, a agenda do dia, a receita do mês e os próximos atendimentos. Sem planilha, sem caderninho, sem confusão.</p>
       <ul class="feat-list">
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Alunos ativos e novos no mês
+          Clientes ativos e novos no mês
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Aulas do dia com status de ocupação
+          Agenda do dia por profissional
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -615,11 +623,11 @@
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Relatório de frequência semanal
+          Histórico de atendimentos por cliente
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Alertas de pacotes vencendo
+          Relatório de serviços mais agendados
         </li>
       </ul>
     </div>
@@ -631,43 +639,43 @@
           <div class="feat-visual-dot y"></div>
           <div class="feat-visual-dot g"></div>
         </div>
-        <span class="feat-visual-title">Painel Admin — Boxe Elite</span>
+        <span class="feat-visual-title">Painel Admin — Studio Bella</span>
       </div>
       <div class="feat-visual-body">
         <div class="metrics-grid">
           <div class="metric-tile">
-            <div class="metric-label">Alunos ativos</div>
-            <div class="metric-value">48</div>
-            <div class="metric-delta">↑ 3 este mês</div>
+            <div class="metric-label">Clientes ativos</div>
+            <div class="metric-value">87</div>
+            <div class="metric-delta">↑ 6 este mês</div>
           </div>
           <div class="metric-tile">
-            <div class="metric-label">Aulas hoje</div>
-            <div class="metric-value">5</div>
-            <div class="metric-delta" style="color:#8AADFF">2 em andamento</div>
+            <div class="metric-label">Atendimentos hoje</div>
+            <div class="metric-value">12</div>
+            <div class="metric-delta" style="color:#F472B6">3 confirmados</div>
           </div>
           <div class="metric-tile">
             <div class="metric-label">Receita mês</div>
-            <div class="metric-value">9,6k</div>
-            <div class="metric-delta">↑ 12%</div>
+            <div class="metric-value">4,2k</div>
+            <div class="metric-delta">↑ 18%</div>
           </div>
           <div class="metric-tile warn">
-            <div class="metric-label">Vencendo</div>
-            <div class="metric-value">7</div>
-            <div class="metric-delta">planos · 7 dias</div>
+            <div class="metric-label">No-shows</div>
+            <div class="metric-value">2</div>
+            <div class="metric-delta">esta semana</div>
           </div>
         </div>
 
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:12px;">
-          <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Aulas hoje</div>
+          <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Próximos atendimentos</div>
           <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">07:00</span>
-            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Boxe em Grupo</span>
-            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,0.15);color:#6EE7B7">18/20</span>
+            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">14:30</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Manicure · Juliana M.</span>
+            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(236,72,153,0.15);color:#F472B6">Ana</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;padding:5px 0;">
-            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">19:00</span>
-            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Boxe em Grupo</span>
-            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(249,115,22,0.15);color:#FED7AA">16/20</span>
+            <span style="font-family:var(--font-display);font-size:12px;font-weight:700;color:white;min-width:36px">15:30</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.6);flex:1">Gel francês · Camila R.</span>
+            <span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,0.15);color:#6EE7B7">Cris</span>
           </div>
         </div>
       </div>
@@ -680,28 +688,28 @@
   <div class="feat-section-inner container reverse">
     <div class="feat-section-text">
       <span class="tag">White label</span>
-      <h2>Seu app, com a cara do seu negócio</h2>
-      <p>Seu aluno nunca vê o nome Agendofy. Tudo aparece com o nome, logo, cores e subdomínio da sua academia — como se você tivesse desenvolvido o sistema do zero.</p>
+      <h2>Seu link, com a cara do seu salão</h2>
+      <p>Sua cliente nunca vê o nome Agendofy. Tudo aparece com o nome, logo e cores do seu salão — como se você tivesse desenvolvido o sistema do zero, sem pagar uma fortuna.</p>
       <ul class="feat-list">
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Nome e logo personalizados
+          Nome e logo do seu salão em todo o sistema
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Subdomínio exclusivo: suaacademia.agendofy.com
+          Endereço exclusivo: seusalao.agendofy.com
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Aluno nunca vê o nome Agendofy
+          Cliente nunca vê o nome Agendofy
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Página de catálogo pública para agendamentos
+          Catálogo público com todos os serviços e profissionais
         </li>
         <li>
           <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Link direto para compartilhar no WhatsApp
+          Link para a bio do Instagram, Stories e WhatsApp
         </li>
       </ul>
     </div>
@@ -710,34 +718,34 @@
       <div class="wl-phone">
         <div class="wl-phone-header">
           <div class="wl-logo-row">
-            <div class="wl-logo-box">B</div>
+            <div class="wl-logo-box" style="background:linear-gradient(135deg,#EC4899,#F472B6)">S</div>
             <div>
-              <div class="wl-name">Boxe Elite</div>
-              <div class="wl-sub-name">Academia</div>
+              <div class="wl-name">Studio Bella</div>
+              <div class="wl-sub-name">Salão de Beleza</div>
             </div>
           </div>
-          <div class="wl-user">Ricardo G.</div>
+          <div class="wl-user">Ju Alves</div>
         </div>
         <div class="wl-body">
           <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;padding:0 2px">Quarta, 18 março</div>
           <div class="wl-class">
-            <div class="wl-time">07:00</div>
-            <div class="wl-class-name">Boxe em Grupo</div>
-            <div class="wl-slots">18/20</div>
-          </div>
-          <div class="wl-class">
             <div class="wl-time">09:00</div>
-            <div class="wl-class-name">Individual</div>
-            <div class="wl-slots" style="background:rgba(16,185,129,0.15);color:#6EE7B7">1/1</div>
+            <div class="wl-class-name">Manicure · Ana</div>
+            <div class="wl-slots" style="background:rgba(236,72,153,0.15);color:#F472B6">✓</div>
           </div>
           <div class="wl-class">
-            <div class="wl-time">19:00</div>
-            <div class="wl-class-name">Sparring</div>
-            <div class="wl-slots" style="background:rgba(249,115,22,0.15);color:#FED7AA">4/6</div>
+            <div class="wl-time">10:30</div>
+            <div class="wl-class-name">Pedicure · Cris</div>
+            <div class="wl-slots" style="background:rgba(236,72,153,0.15);color:#F472B6">✓</div>
           </div>
-          <div style="background:rgba(53,99,233,0.12);border:1px solid rgba(53,99,233,0.25);border-radius:8px;padding:8px 10px;margin-top:4px;">
-            <div style="font-size:10px;color:#8AADFF;font-weight:600">✓ Você está agendado</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">Individual · Seg 10:00</div>
+          <div class="wl-class">
+            <div class="wl-time">14:00</div>
+            <div class="wl-class-name">Gel francês · Ana</div>
+            <div class="wl-slots" style="background:rgba(16,185,129,0.15);color:#6EE7B7">livre</div>
+          </div>
+          <div style="background:rgba(236,72,153,0.12);border:1px solid rgba(236,72,153,0.25);border-radius:8px;padding:8px 10px;margin-top:4px;">
+            <div style="font-size:10px;color:#F472B6;font-weight:600">✓ Agendado com sucesso</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">Manicure · Qua 09:00 · Ana</div>
           </div>
         </div>
       </div>
@@ -791,11 +799,11 @@
     <h2>Pronto para experimentar?</h2>
     <p>14 dias grátis, sem cartão de crédito. Configure em menos de 10 minutos.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:white;color:var(--brand);font-size:15px;font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;">
-        Começar grátis para academias →
+      <a href="/landing-salao.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:#EC4899;color:white;font-size:15px;font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;">
+        Para salões — R$19/mês →
       </a>
-      <a href="/precos.html" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);font-size:15px;font-weight:600;padding:13px 26px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.2);">
-        Ver preços
+      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);font-size:15px;font-weight:600;padding:13px 26px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.2);">
+        Para academias — R$49/mês
       </a>
     </div>
   </div>
@@ -806,7 +814,7 @@
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
       <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <p class="inst-footer-tagline">Agendamento inteligente para salões, manicures, barbearias e academias brasileiras.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
@@ -849,6 +857,8 @@
 </footer>
 
 <script>
+const nav = document.getElementById('inst-nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('mobile-nav').classList.toggle('open');
 });

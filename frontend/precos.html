@@ -56,6 +56,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/institucional.css">
 <style>
+/* ── Match landing-choice colors ── */
+:root { --beauty: #EC4899; --beauty-light: #FDF2F8; }
+.inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
+.inst-nav:not(.scrolled) .inst-nav-links a { color: rgba(255,255,255,0.7); }
+.inst-nav:not(.scrolled) .inst-nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.inst-nav:not(.scrolled) .inst-nav-hamburger { color: var(--white); }
+.page-header { background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%) !important; }
+.page-header::before { background: radial-gradient(ellipse at 15% 30%, rgba(236,72,153,0.15) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(59,130,246,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 60%) !important; }
+
 /* Pricing */
 .pricing-section {
   background: var(--white);
@@ -83,7 +92,7 @@
 }
 
 .pricing-card.salon-card {
-  border-color: rgba(249,115,22,0.3);
+  border-color: rgba(236,72,153,0.3);
 }
 
 .pricing-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
@@ -99,6 +108,15 @@
 }
 
 .pricing-badge.orange { background: var(--accent); }
+.pricing-badge.pink { background: var(--beauty); }
+
+.pricing-cta.pink { background: var(--beauty); color: white; }
+.pricing-cta.pink:hover { background: #DB2777; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(236,72,153,0.3); }
+
+.price-check.pink-bg { background: #FCE7F3; }
+.price-check.pink-bg svg { stroke: var(--beauty); }
+
+.pricing-amt.pink { color: var(--beauty); }
 
 .pricing-segment {
   display: flex; align-items: center; gap: 10px;
@@ -341,7 +359,7 @@
 <body>
 
 <!-- NAV -->
-<nav class="inst-nav scrolled" id="inst-nav">
+<nav class="inst-nav" id="inst-nav">
   <div class="inst-nav-inner">
     <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
     <ul class="inst-nav-links">
@@ -396,14 +414,50 @@
   </div>
 
   <div class="pricing-grid">
-    <!-- Academia -->
-    <div class="pricing-card featured reveal">
-      <div class="pricing-badge">Mais popular</div>
+    <!-- Salão (destaque principal) -->
+    <div class="pricing-card salon-card featured reveal" style="border-color:rgba(236,72,153,0.4);box-shadow:0 0 0 4px rgba(236,72,153,0.08);">
+      <div class="pricing-badge pink">Mais popular</div>
+      <div class="pricing-segment">
+        <span class="pricing-segment-icon">💅</span>
+        <span class="pricing-segment-label">Salões, Manicures &amp; Barbearias</span>
+      </div>
+      <p class="pricing-desc">Para manicures, cabeleireiros, barbearias e clínicas de estética que querem uma agenda online profissional.</p>
+
+      <div class="pricing-price-row">
+        <span class="pricing-cur">R$</span>
+        <span class="pricing-amt pink">19</span>
+        <span class="pricing-period">/mês</span>
+      </div>
+      <p class="pricing-note">Cancele quando quiser · Sem taxa de adesão</p>
+
+      <div class="pricing-divider"></div>
+
+      <ul class="pricing-features">
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Clientes ilimitados</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Agenda online por profissional</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Catálogo de serviços e preços</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Link de agendamento personalizado</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Lembretes automáticos por E-mail</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>White label com logo e cores</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Histórico de atendimentos</li>
+        <li><div class="price-check pink-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Suporte por e-mail</li>
+      </ul>
+
+      <a href="/landing-salao.html#cadastro" class="pricing-cta pink">Começar 14 dias grátis →</a>
+      <p class="pricing-guarantee">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Sem cartão de crédito necessário
+      </p>
+    </div>
+
+    <!-- Academia (secundário) -->
+    <div class="pricing-card reveal reveal-d2">
+      <div class="pricing-badge" style="background:var(--brand)">Para academias</div>
       <div class="pricing-segment">
         <span class="pricing-segment-icon">🥊</span>
         <span class="pricing-segment-label">Academias &amp; Estúdios</span>
       </div>
-      <p class="pricing-desc">Para boxe, pilates, yoga, muay thai, CrossFit e qualquer modalidade que trabalhe com grade de aulas.</p>
+      <p class="pricing-desc">Para boxe, pilates, yoga, muay thai, CrossFit e qualquer modalidade com grade de aulas em grupo.</p>
 
       <div class="pricing-price-row">
         <span class="pricing-cur">R$</span>
@@ -426,42 +480,6 @@
       </ul>
 
       <a href="/landing.html#cadastro" class="pricing-cta blue">Começar 14 dias grátis →</a>
-      <p class="pricing-guarantee">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Sem cartão de crédito necessário
-      </p>
-    </div>
-
-    <!-- Salão -->
-    <div class="pricing-card salon-card reveal reveal-d2">
-      <div class="pricing-badge orange">Para salões</div>
-      <div class="pricing-segment">
-        <span class="pricing-segment-icon">✂️</span>
-        <span class="pricing-segment-label">Salões &amp; Barbearias</span>
-      </div>
-      <p class="pricing-desc">Para cabeleireiros, barbearias, clínicas de estética e negócios que trabalham com agendamentos individuais.</p>
-
-      <div class="pricing-price-row">
-        <span class="pricing-cur">R$</span>
-        <span class="pricing-amt orange">19</span>
-        <span class="pricing-period">/mês</span>
-      </div>
-      <p class="pricing-note">Cancele quando quiser · Sem taxa de adesão</p>
-
-      <div class="pricing-divider"></div>
-
-      <ul class="pricing-features">
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Clientes ilimitados</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Agenda online por profissional</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Catálogo de serviços e preços</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Link de agendamento personalizado</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Lembretes automáticos por WhatsApp</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>White label com logo e cores</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Histórico de atendimentos</li>
-        <li><div class="price-check orange-bg"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Suporte por e-mail</li>
-      </ul>
-
-      <a href="/landing-salao.html#cadastro" class="pricing-cta orange">Começar 14 dias grátis →</a>
       <p class="pricing-guarantee">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Sem cartão de crédito necessário
@@ -639,7 +657,7 @@
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
       <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <p class="inst-footer-tagline">Agendamento inteligente para salões, manicures, barbearias e academias brasileiras.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
@@ -681,6 +699,8 @@
 </footer>
 
 <script>
+const nav = document.getElementById('inst-nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('mobile-nav').classList.toggle('open');
 });

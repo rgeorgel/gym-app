@@ -32,6 +32,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/institucional.css">
 <style>
+/* ── Match landing-choice colors ── */
+:root { --beauty: #EC4899; --beauty-light: #FDF2F8; }
+.inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
+.inst-nav:not(.scrolled) .inst-nav-links a { color: rgba(255,255,255,0.7); }
+.inst-nav:not(.scrolled) .inst-nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.inst-nav:not(.scrolled) .inst-nav-hamburger { color: var(--white); }
+.page-header { background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%) !important; }
+.page-header::before { background: radial-gradient(ellipse at 15% 30%, rgba(236,72,153,0.15) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(59,130,246,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 60%) !important; }
+
 /* Story section */
 .story {
   padding: 88px 24px;
@@ -56,7 +65,7 @@
 
 .story-text h2 em {
   font-style: normal;
-  background: linear-gradient(135deg, #3563E9, #818CF8);
+  background: linear-gradient(135deg, #F472B6, #EC4899, #DB2777);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -195,7 +204,7 @@
 .cta-about::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(53,99,233,0.2), transparent 60%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(236,72,153,0.2), transparent 60%);
   pointer-events: none;
 }
 
@@ -235,7 +244,7 @@
 <body>
 
 <!-- NAV -->
-<nav class="inst-nav scrolled" id="inst-nav">
+<nav class="inst-nav" id="inst-nav">
   <div class="inst-nav-inner">
     <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
     <ul class="inst-nav-links">
@@ -268,7 +277,7 @@
   <div class="page-header-inner">
     <span class="tag white">Sobre o Agendofy</span>
     <h1>Feito por brasileiros,<br>para negócios brasileiros</h1>
-    <p>Criamos o Agendofy porque vimos de perto o quanto tempo se perde gerenciando academia pelo WhatsApp. Era hora de resolver isso.</p>
+    <p>Criamos o Agendofy porque vimos de perto o quanto tempo se perde confirmando horário no WhatsApp. Manicures, salões, barbearias — e também academias. Era hora de resolver isso.</p>
   </div>
 </div>
 
@@ -287,9 +296,9 @@
     <div class="story-text">
       <span class="tag">Nossa história</span>
       <h2>Nascemos de uma <em>frustração real</em></h2>
-      <p>Tudo começou quando um amigo que gerenciava uma academia de boxe mostrou a planilha dele: nomes rabiscados, créditos anotados errado, alunos faltando porque a mensagem do WhatsApp não foi vista. Um caos.</p>
-      <p>Ele não precisava de um ERP com mil funcionalidades. Precisava de algo simples: grade de aulas online, controle automático de créditos e alunos que se agendassem sozinhos. Isso não existia a um preço acessível para pequenas academias.</p>
-      <p>Então construímos. O Agendofy nasceu em 2025 com um único objetivo: tornar a gestão de academias e estúdios tão simples que você configure em 10 minutos e nunca mais precise do WhatsApp para confirmar presença.</p>
+      <p>Tudo começou quando uma amiga que trabalhava como manicure mostrou o caderninho dela: nomes rabiscados, horários trocados, clientes faltando porque a mensagem do WhatsApp não foi vista. Uma hora de trabalho perdida por dia, todo dia.</p>
+      <p>Ela não precisava de um sistema caro com mil funcionalidades. Precisava de algo simples: um link para compartilhar no Instagram, um catálogo bonito com seus serviços e clientes que agendassem sozinhas. Isso não existia a um preço justo para profissionais autônomos.</p>
+      <p>Então construímos. O Agendofy nasceu em 2025 para atender manicures, salões e barbearias — e cresceu para incluir academias e estúdios. Um único objetivo: agenda cheia, sem depender do WhatsApp.</p>
     </div>
 
     <div class="story-visual">
@@ -308,10 +317,10 @@
         </div>
       </div>
       <div class="story-stat">
-        <div class="story-stat-icon">🎯</div>
+        <div class="story-stat-icon">💅</div>
         <div>
-          <div class="story-stat-num">R$49</div>
-          <div class="story-stat-label">Preço que cabe no orçamento</div>
+          <div class="story-stat-num">R$19</div>
+          <div class="story-stat-label">Plano para salões e manicures</div>
         </div>
       </div>
     </div>
@@ -329,19 +338,19 @@
     <div class="mvv-card reveal">
       <div class="mvv-icon">🎯</div>
       <h3>Nossa missão</h3>
-      <p>Dar a qualquer academia, estúdio ou salão de beleza do Brasil acesso a uma ferramenta de agendamento profissional — acessível, simples e com a identidade do próprio negócio.</p>
+      <p>Dar a qualquer salão, manicure, barbearia ou academia do Brasil acesso a uma ferramenta de agendamento profissional — acessível, simples e com a identidade do próprio negócio.</p>
     </div>
 
     <div class="mvv-card reveal reveal-d2">
       <div class="mvv-icon">🔭</div>
       <h3>Nossa visão</h3>
-      <p>Ser a plataforma de agendamento preferida pelo segmento fitness e beleza no Brasil, reconhecida pela simplicidade, confiabilidade e preço justo.</p>
+      <p>Ser a plataforma de agendamento preferida por salões, manicures e barbearias do Brasil — e crescer junto com o segmento fitness e estética.</p>
     </div>
 
     <div class="mvv-card reveal reveal-d4">
       <div class="mvv-icon">💡</div>
       <h3>Nosso propósito</h3>
-      <p>Devolver tempo para quem ensina — para que instrutores, professores e prestadores de serviço possam focar no que fazem de melhor, sem perder horas em administração manual.</p>
+      <p>Devolver tempo para quem cuida — manicures, cabeleireiros, esteticistas e instrutores que passam o dia atendendo mas ainda perdem horas confirmando horário pelo WhatsApp.</p>
     </div>
   </div>
 </section>
@@ -396,12 +405,12 @@
     <p>Sem cartão, sem burocracia. Configure em minutos e veja o que o Agendofy pode fazer pelo seu negócio.</p>
 
     <div class="cta-about-btns">
-      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:white;font-size:15px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;">
+      <a href="/landing-salao.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:#EC4899;color:white;font-size:15px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Para academias — R$49/mês
-      </a>
-      <a href="/landing-salao.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:15px;font-weight:600;padding:14px 28px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.15);">
         Para salões — R$19/mês
+      </a>
+      <a href="/landing.html#cadastro" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:15px;font-weight:600;padding:14px 28px;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.15);">
+        Para academias — R$49/mês
       </a>
     </div>
 
@@ -416,7 +425,7 @@
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
       <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <p class="inst-footer-tagline">Agendamento inteligente para salões, manicures, barbearias e academias brasileiras.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
@@ -458,6 +467,8 @@
 </footer>
 
 <script>
+const nav = document.getElementById('inst-nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('mobile-nav').classList.toggle('open');
 });

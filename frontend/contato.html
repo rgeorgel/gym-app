@@ -32,6 +32,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/institucional.css">
 <style>
+/* ── Match landing-choice colors ── */
+:root { --beauty: #EC4899; --beauty-light: #FDF2F8; }
+.inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
+.inst-nav:not(.scrolled) .inst-nav-links a { color: rgba(255,255,255,0.7); }
+.inst-nav:not(.scrolled) .inst-nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.inst-nav:not(.scrolled) .inst-nav-hamburger { color: var(--white); }
+.page-header { background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%) !important; }
+.page-header::before { background: radial-gradient(ellipse at 15% 30%, rgba(236,72,153,0.15) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(59,130,246,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 60%) !important; }
+
 /* Contact layout */
 .contact-section {
   background: var(--white);
@@ -73,20 +82,20 @@
 }
 
 .contact-channel:hover {
-  background: var(--brand-light);
-  border-color: rgba(53,99,233,0.15);
+  background: var(--beauty-light);
+  border-color: rgba(236,72,153,0.15);
   transform: translateY(-1px);
 }
 
 .contact-channel-icon {
   width: 44px; height: 44px;
   border-radius: var(--radius);
-  background: var(--brand-light);
+  background: var(--beauty-light);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 
-.contact-channel-icon svg { width: 20px; height: 20px; fill: none; stroke: var(--brand); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.contact-channel-icon svg { width: 20px; height: 20px; fill: none; stroke: var(--beauty); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .contact-channel-label {
   font-family: var(--font-display);
@@ -96,7 +105,7 @@
 
 .contact-channel-value {
   font-size: 14px; font-weight: 500;
-  color: var(--brand);
+  color: var(--beauty);
 }
 
 .contact-channel-note {
@@ -148,14 +157,14 @@
 
 .faq-toggle {
   width: 24px; height: 24px; border-radius: 50%;
-  background: var(--brand-light);
+  background: var(--beauty-light);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.2s;
 }
 
-.faq-toggle svg { width: 12px; height: 12px; stroke: var(--brand); stroke-width: 2; stroke-linecap: round; fill: none; transition: transform 0.3s; }
+.faq-toggle svg { width: 12px; height: 12px; stroke: var(--beauty); stroke-width: 2; stroke-linecap: round; fill: none; transition: transform 0.3s; }
 
-.faq-item.open .faq-toggle { background: var(--brand); }
+.faq-item.open .faq-toggle { background: var(--beauty); }
 .faq-item.open .faq-toggle svg { stroke: white; transform: rotate(45deg); }
 
 .faq-answer { display: none; padding: 0 0 20px; }
@@ -168,7 +177,7 @@
 <body>
 
 <!-- NAV -->
-<nav class="inst-nav scrolled" id="inst-nav">
+<nav class="inst-nav" id="inst-nav">
   <div class="inst-nav-inner">
     <a href="/" class="inst-nav-logo">agendo<span>fy</span></a>
     <ul class="inst-nav-links">
@@ -278,21 +287,21 @@
   <div class="faq-wrapper">
     <div class="faq-item open">
       <button class="faq-question" onclick="toggleFaq(this)">
-        Como faço para cadastrar minha academia?
+        Como faço para cadastrar meu salão ou negócio?
         <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
       </button>
       <div class="faq-answer">
-        <p>Acesse <a href="/landing.html#cadastro" style="color:var(--brand)">a página de cadastro</a>, preencha o formulário com nome, e-mail, senha e nome da sua academia. Em segundos você recebe acesso ao painel administrativo.</p>
+        <p>Acesse <a href="/landing-salao.html#cadastro" style="color:var(--beauty)">a página de cadastro</a>, preencha com seu nome, e-mail, senha e nome do seu negócio. Em segundos você recebe acesso ao painel e já pode montar sua agenda.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggleFaq(this)">
-        Meus alunos precisam criar conta?
+        Minhas clientes precisam criar conta?
         <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
       </button>
       <div class="faq-answer">
-        <p>Sim, cada aluno tem login próprio. Você pode cadastrar os alunos pelo painel ou deixar que eles se cadastrem sozinhos pelo link da academia. O processo é simples: nome, e-mail e senha.</p>
+        <p>Sim, cada cliente tem login próprio. Você pode cadastrá-las pelo painel ou deixar que elas se cadastrem sozinhas pelo link do seu negócio. O processo é simples: nome, e-mail e senha.</p>
       </div>
     </div>
 
@@ -302,7 +311,7 @@
         <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
       </button>
       <div class="faq-answer">
-        <p>No momento o cadastro é feito manualmente pelo painel. Se você tiver uma lista de alunos em planilha, podemos ajudar com a importação — escreva para contato@agendofy.com.</p>
+        <p>No momento o cadastro é feito manualmente pelo painel. Se você tiver uma lista de clientes em planilha, podemos ajudar com a importação — escreva para contato@agendofy.com.</p>
       </div>
     </div>
 
@@ -312,7 +321,7 @@
         <div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
       </button>
       <div class="faq-answer">
-        <p>Sim. Tanto o painel do administrador quanto o app do aluno são totalmente responsivos e funcionam pelo navegador do celular — sem instalar nenhum aplicativo.</p>
+        <p>Sim. Tanto o painel do administrador quanto a agenda da cliente são totalmente responsivos e funcionam pelo navegador do celular — sem instalar nenhum aplicativo.</p>
       </div>
     </div>
 
@@ -333,7 +342,7 @@
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
       <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <p class="inst-footer-tagline">Agendamento inteligente para salões, manicures, barbearias e academias brasileiras.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
@@ -375,6 +384,8 @@
 </footer>
 
 <script>
+const nav = document.getElementById('inst-nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('mobile-nav').classList.toggle('open');
 });

@@ -19,8 +19,8 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agendofy — Agendamento online para salões de beleza e barbearias</title>
-<meta name="description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética. Agenda por profissional, link personalizado, lembretes automáticos e Pix integrado. 14 dias grátis.">
+<title>Agendofy — Agendamento para Salões, Manicures e Academias</title>
+<meta name="description" content="Sistema de agendamento online para manicures, salões de beleza, barbearias e academias. Agenda por profissional, link personalizado e PIX integrado. 14 dias grátis.">
 
 <link rel="canonical" href="https://www.agendofy.com/">
 <meta name="robots" content="index, follow">
@@ -28,16 +28,16 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.agendofy.com/">
 <meta property="og:site_name" content="Agendofy">
-<meta property="og:title" content="Agendofy — Agendamento online para salões de beleza e barbearias">
-<meta property="og:description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética. Agenda por profissional, lembretes automáticos e Pix integrado.">
+<meta property="og:title" content="Agendofy — Agendamento online para Salões e Manicures">
+<meta property="og:description" content="Sua agenda sempre cheia, seu salão sempre impecável. Sistema de agendamento online com link personalizado e lembretes automáticos.">
 <meta property="og:image" content="https://www.agendofy.com/assets/og-gym.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Agendofy — Agendamento online para salões de beleza e barbearias">
-<meta name="twitter:description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética.">
+<meta name="twitter:title" content="Agendofy — Agendamento online para Salões e Manicures">
+<meta name="twitter:description" content="Sistema de agendamento para salões de beleza, barbearias, clínicas de estética e academias.">
 <meta name="twitter:image" content="https://www.agendofy.com/assets/og-gym.png">
 
 <meta name="geo.region" content="BR">
@@ -53,9 +53,9 @@
       "@id": "https://www.agendofy.com/#organization",
       "name": "Agendofy",
       "url": "https://www.agendofy.com",
-      "logo": "https://www.agendofy.com/assets/agendofy-logo-v1-calendar.svg",
+      "logo": "https://www.agendofy.com/assets/agendofy-logo-v6-spark.svg",
       "email": "contato@agendofy.com",
-      "description": "Sistema de agendamento online para salões de beleza, barbearias, clínicas de estética e academias.",
+      "description": "Sistema de agendamento online para salões de beleza, manicures, barbearias e academias.",
       "areaServed": "BR",
       "inLanguage": "pt-BR"
     },
@@ -73,7 +73,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "url": "https://www.agendofy.com",
-      "description": "Sistema de agendamento para salões de beleza, barbearias, clínicas de estética e academias.",
+      "description": "Sistema de agendamento para salões de beleza, manicures, barbearias e academias.",
       "publisher": { "@id": "https://www.agendofy.com/#organization" }
     }
   ]
@@ -86,6 +86,14 @@
 <link rel="stylesheet" href="/css/institucional.css">
 <style>
 /* ─── HOME-SPECIFIC STYLES ─── */
+:root {
+  --beauty: #EC4899;
+  --beauty-light: #FDF2F8;
+  --hair: #F59E0B;
+  --hair-light: #FFFBEB;
+  --gym: #3B82F6;
+  --gym-light: #EFF6FF;
+}
 
 /* Nav — white logo/links over dark hero */
 .inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
@@ -95,8 +103,8 @@
 
 /* Hero */
 .hero {
-  background: linear-gradient(170deg, var(--dark) 0%, var(--dark3) 60%, #0F172A 100%);
-  padding: 130px 24px 100px;
+  background: linear-gradient(165deg, #0F172A 0%, #1E1B4B 40%, #4C1D95 100%);
+  padding: 140px 24px 120px;
   position: relative; overflow: hidden;
   text-align: center;
 }
@@ -105,9 +113,9 @@
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(53,99,233,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 20%, rgba(249,115,22,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% -10%, rgba(53,99,233,0.25) 0%, transparent 50%);
+    radial-gradient(ellipse at 15% 30%, rgba(236,72,153,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 70%, rgba(59,130,246,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -115,78 +123,111 @@
   position: absolute; inset: 0;
   background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
   pointer-events: none;
 }
 
+/* Animated Floating Elements */
+.floating-element {
+  position: absolute; pointer-events: none;
+  opacity: 0.15; z-index: 0;
+  animation: float 8s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(15px, -20px) rotate(5deg); }
+  66% { transform: translate(-10px, 15px) rotate(-3deg); }
+}
+
 .hero-inner {
-  max-width: 820px; margin: 0 auto;
+  max-width: 860px; margin: 0 auto;
   position: relative; z-index: 1;
 }
 
 .hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(53,99,233,0.15);
-  border: 1px solid rgba(53,99,233,0.3);
-  color: #8AADFF;
-  font-size: 12px; font-weight: 600;
-  padding: 6px 16px; border-radius: 999px;
-  margin-bottom: 28px;
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+  font-size: 13px; font-weight: 500;
+  padding: 8px 18px; border-radius: 999px;
+  margin-bottom: 32px;
   letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .hero-badge-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #3563E9;
-  box-shadow: 0 0 8px #3563E9;
-  animation: pulse-dot 2s ease-in-out infinite;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--beauty);
+  box-shadow: 0 0 12px var(--beauty);
+  animation: pulse-dot 2.5s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
 }
 
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(36px, 6vw, 64px);
+  font-size: clamp(38px, 6.5vw, 72px);
   font-weight: 900;
   color: var(--white);
-  line-height: 1.05;
-  letter-spacing: -2px;
-  margin-bottom: 24px;
+  line-height: 1;
+  letter-spacing: -2.5px;
+  margin-bottom: 28px;
 }
 
 .hero h1 .highlight {
-  background: linear-gradient(135deg, #3563E9, #818CF8);
+  background: linear-gradient(135deg, #F472B6, #EC4899, #DB2777);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  position: relative;
 }
 
 .hero-sub {
-  font-size: 19px; font-weight: 300;
-  color: rgba(255,255,255,0.55);
+  font-size: 20px; font-weight: 300;
+  color: rgba(255,255,255,0.6);
   line-height: 1.7;
-  max-width: 580px; margin: 0 auto 40px;
+  max-width: 620px; margin: 0 auto 48px;
 }
 
 .hero-actions {
-  display: flex; align-items: center; justify-content: center; gap: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 56px;
+  margin-bottom: 64px;
+}
+
+.btn-hero-primary {
+  background: var(--beauty);
+  color: white;
+  padding: 16px 36px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s;
+  box-shadow: 0 8px 32px rgba(236,72,153,0.3);
+}
+.btn-hero-primary:hover {
+  background: #DB2777;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(236,72,153,0.4);
 }
 
 .hero-stats {
   display: flex; align-items: center; justify-content: center;
   gap: 0;
-  max-width: 520px; margin: 0 auto;
+  max-width: 600px; margin: 0 auto;
 }
 
 .hero-stat {
   flex: 1;
   display: flex; flex-direction: column; align-items: center;
-  padding: 0 28px;
+  padding: 0 32px;
   border-right: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -194,443 +235,316 @@
 
 .hero-stat-num {
   font-family: var(--font-display);
-  font-size: 28px; font-weight: 800;
+  font-size: 32px; font-weight: 900;
   color: var(--white);
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
 }
 
 .hero-stat-label {
-  font-size: 12px; font-weight: 400;
-  color: rgba(255,255,255,0.35);
-  margin-top: 2px;
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
 }
 
 /* ─── SEGMENTS ─── */
 .segments {
-  background: var(--light);
-  padding: 80px 24px;
+  background: #fdfbff;
+  padding: 100px 24px;
 }
 
 .segments-header {
-  text-align: center; margin-bottom: 48px;
+  text-align: center; margin-bottom: 64px;
 }
 
 .segments-grid {
-  max-width: 900px; margin: 0 auto;
-  display: grid; grid-template-columns: 1.15fr 0.85fr;
-  gap: 24px;
+  max-width: 1100px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
 
-/* Featured badge */
+.seg-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 24px;
+  padding: 44px 32px 36px;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.seg-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, transparent, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: all 0.4s;
+}
+
+.seg-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
+.seg-card.beauty:hover::after { background: linear-gradient(135deg, var(--beauty), transparent); }
+.seg-card.hair:hover::after { background: linear-gradient(135deg, var(--hair), transparent); }
+.seg-card.gym:hover::after { background: linear-gradient(135deg, var(--gym), transparent); }
+
+/* Prominence to Beauty */
+.seg-card.featured {
+  grid-column: span 1;
+  background: linear-gradient(to bottom right, #fff, #fff5f9);
+}
+
 .seg-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, #F97316, #FBBF24);
+  background: linear-gradient(135deg, #EC4899, #F472B6);
   color: var(--white);
-  font-size: 11px; font-weight: 700;
-  padding: 4px 12px; border-radius: 999px;
-  margin-bottom: 16px;
-  letter-spacing: 0.3px;
+  font-size: 10px; font-weight: 800;
+  padding: 5px 12px; border-radius: 999px;
+  margin-bottom: 20px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   width: fit-content;
 }
 
-/* Secondary card (academy) */
-.seg-card.secondary {
-  opacity: 0.85;
-  padding: 32px 28px 28px;
-}
-
-.seg-card.secondary h3 { font-size: 18px; }
-.seg-card.secondary .seg-price-val { font-size: 26px; }
-.seg-card.secondary .seg-features { gap: 6px; margin-bottom: 20px; }
-.seg-card.secondary p { font-size: 13px; margin-bottom: 18px; }
-
-.seg-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 40px 36px 36px;
-  text-decoration: none; color: inherit;
-  display: flex; flex-direction: column;
-  transition: all 0.3s;
-  position: relative; overflow: hidden;
-}
-
-.seg-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-}
-
-.seg-card.academy::before { background: linear-gradient(90deg, #3563E9, #818CF8); }
-.seg-card.salon::before { background: linear-gradient(90deg, #F97316, #FBBF24); }
-
-.seg-card:hover {
-  border-color: rgba(53,99,233,0.2);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
-}
-
-.seg-card.salon:hover { border-color: rgba(249,115,22,0.2); }
-
 .seg-icon {
-  width: 60px; height: 60px;
-  border-radius: var(--radius);
+  width: 64px; height: 64px;
+  border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  margin-bottom: 20px;
+  font-size: 32px;
+  margin-bottom: 24px;
+  transition: transform 0.3s;
 }
+.seg-card:hover .seg-icon { transform: rotate(5deg) scale(1.1); }
 
-.seg-icon.blue { background: linear-gradient(135deg, #EEF3FF, #DBEAFE); }
-.seg-icon.orange { background: linear-gradient(135deg, #FFF3E9, #FED7AA); }
+.seg-icon.pink { background: linear-gradient(135deg, #FCE7F3, #FDF2F8); }
+.seg-icon.amber { background: linear-gradient(135deg, #FEF3C7, #FFFBEB); }
+.seg-icon.blue { background: linear-gradient(135deg, #DBEAFE, #EFF6FF); }
 
 .seg-card h3 {
   font-family: var(--font-display);
-  font-size: 22px; font-weight: 800;
-  color: var(--dark);
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  font-size: 24px; font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 12px;
+  letter-spacing: -0.8px;
 }
 
 .seg-card p {
-  font-size: 14px; font-weight: 300;
-  color: var(--mid); line-height: 1.65;
-  margin-bottom: 24px; flex: 1;
+  font-size: 14px; font-weight: 400;
+  color: #64748B; line-height: 1.6;
+  margin-bottom: 28px; flex: 1;
 }
 
 .seg-features {
-  display: flex; flex-direction: column; gap: 8px;
-  margin-bottom: 28px;
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 32px;
 }
 
 .seg-feat {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; font-weight: 400; color: var(--dark);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500; color: #1E293B;
 }
 
 .seg-feat-icon {
-  width: 18px; height: 18px; border-radius: 50%;
+  width: 20px; height: 20px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-
-.seg-feat-icon.blue { background: rgba(53,99,233,0.1); }
-.seg-feat-icon.blue svg { stroke: #3563E9; }
-.seg-feat-icon.orange { background: rgba(249,115,22,0.1); }
-.seg-feat-icon.orange svg { stroke: #F97316; }
+.seg-feat-icon.pink { background: #FCE7F3; color: #EC4899; }
+.seg-feat-icon.amber { background: #FEF3C7; color: #D97706; }
+.seg-feat-icon.blue { background: #DBEAFE; color: #2563EB; }
 
 .seg-price {
-  display: flex; align-items: baseline; gap: 4px;
-  margin-bottom: 20px;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  margin-bottom: 24px;
 }
 
 .seg-price-val {
   font-family: var(--font-display);
-  font-size: 32px; font-weight: 800;
-  color: var(--dark); letter-spacing: -1px;
+  font-size: 36px; font-weight: 900;
+  color: #0F172A; letter-spacing: -1.5px;
 }
 
 .seg-price-period {
-  font-size: 14px; font-weight: 400; color: var(--mid);
+  font-size: 14px; font-weight: 500; color: #94A3B8;
 }
 
 .seg-cta {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 13px 0;
-  border-radius: var(--radius);
-  font-size: 14px; font-weight: 600;
+  padding: 14px 0;
+  border-radius: 12px;
+  font-size: 14px; font-weight: 700;
   text-decoration: none;
   transition: all 0.2s;
 }
 
-.seg-cta.blue {
-  background: var(--brand-light);
-  color: var(--brand);
-}
-
-.seg-cta.blue:hover { background: var(--brand); color: var(--white); }
-
-.seg-cta.orange {
-  background: var(--accent-light);
-  color: var(--accent);
-}
-
-.seg-cta.orange:hover { background: var(--accent); color: var(--white); }
+.seg-cta.pink { background: #EC4899; color: white; }
+.seg-cta.pink:hover { background: #DB2777; }
+.seg-cta.amber { background: #F59E0B; color: white; }
+.seg-cta.amber:hover { background: #D97706; }
+.seg-cta.blue { background: #3B82F6; color: white; }
+.seg-cta.blue:hover { background: #2563EB; }
 
 /* ─── WHY SECTION ─── */
 .why {
   background: var(--white);
-  padding: 88px 24px;
+  padding: 100px 24px;
 }
 
-.why-inner {
-  max-width: 1140px; margin: 0 auto;
-}
-
-.why-header { text-align: center; margin-bottom: 56px; }
-.why-header .section-sub { margin: 14px auto 0; text-align: center; }
+.why-header { text-align: center; margin-bottom: 64px; }
+.why-header .section-sub { margin-left: auto; margin-right: auto; }
 
 .why-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 24px;
+  max-width: 1100px; margin: 0 auto;
 }
 
 .why-card {
-  background: var(--light);
-  border-radius: var(--radius-lg);
-  padding: 32px 28px;
-  transition: all 0.25s;
+  padding: 40px;
+  border-radius: 24px;
+  background: #f8fafc;
+  transition: all 0.3s;
 }
-
-.why-card:hover {
-  background: var(--white);
-  box-shadow: var(--shadow);
-  transform: translateY(-3px);
-}
+.why-card:hover { background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: translateY(-4px); }
 
 .why-icon {
-  width: 48px; height: 48px;
-  border-radius: var(--radius);
-  background: var(--brand-light);
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: #fff;
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
-
-.why-icon svg { width: 20px; height: 20px; stroke: var(--brand); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-.why-card h3 {
-  font-family: var(--font-display);
-  font-size: 17px; font-weight: 700;
-  color: var(--dark); margin-bottom: 8px;
-  letter-spacing: -0.3px;
-}
-
-.why-card p {
-  font-size: 14px; font-weight: 300;
-  color: var(--mid); line-height: 1.65;
-}
+.why-icon svg { width: 24px; height: 24px; stroke: var(--beauty); fill: none; stroke-width: 2; }
 
 /* ─── HOW IT WORKS ─── */
 .how {
-  background: var(--dark);
-  padding: 88px 24px;
+  background: #0F172A;
+  padding: 100px 24px;
   position: relative; overflow: hidden;
 }
 
-.how::before {
-  content: '';
-  position: absolute; top: 0; right: 0;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(53,99,233,0.12) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.how-inner {
-  max-width: 900px; margin: 0 auto;
-  position: relative; z-index: 1;
-}
-
-.how-header { text-align: center; margin-bottom: 56px; }
-.how-header .section-sub { margin: 14px auto 0; text-align: center; }
+.how-inner { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
 
 .how-steps {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  position: relative;
-}
-
-.how-steps::before {
-  content: '';
-  position: absolute; top: 28px; left: calc(12.5% + 20px); right: calc(12.5% + 20px);
-  height: 1px;
-  background: linear-gradient(90deg, rgba(53,99,233,0.4), rgba(53,99,233,0.2));
-  z-index: 0;
-}
-
-.how-step {
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center;
-  padding: 0 16px;
-  position: relative; z-index: 1;
+  gap: 32px;
+  margin-top: 64px;
 }
 
 .how-step-num {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: rgba(53,99,233,0.15);
-  border: 1.5px solid rgba(53,99,233,0.35);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 18px; font-weight: 800;
-  color: #8AADFF;
-  margin-bottom: 20px;
-  flex-shrink: 0;
+  font-family: var(--font-display); font-size: 48px; font-weight: 900;
+  background: linear-gradient(135deg, rgba(236,72,153,0.4), rgba(236,72,153,0.1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
 }
 
-.how-step h4 {
-  font-family: var(--font-display);
-  font-size: 15px; font-weight: 700;
-  color: var(--white); margin-bottom: 8px;
-}
-
-.how-step p {
-  font-size: 13px; font-weight: 300;
-  color: rgba(255,255,255,0.4); line-height: 1.6;
-}
+.how-step h4 { color: white; font-size: 18px; margin-bottom: 12px; }
+.how-step p { color: #94A3B8; font-size: 14px; line-height: 1.6; }
 
 /* ─── TESTIMONIALS ─── */
 .testimonials {
-  background: var(--light);
-  padding: 88px 24px;
+  background: #fdfbff;
+  padding: 100px 24px;
 }
 
-.testimonials-header { text-align: center; margin-bottom: 48px; }
-.testimonials-header .section-sub { margin: 14px auto 0; text-align: center; }
+.testimonials-header { text-align: center; margin-bottom: 64px; }
+.testimonials-header .section-sub { margin-left: auto; margin-right: auto; }
 
 .testi-grid {
-  max-width: 1000px; margin: 0 auto;
+  max-width: 1100px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
 .testi-card {
   background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-  display: flex; flex-direction: column; gap: 14px;
-  transition: all 0.25s;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex; flex-direction: column; gap: 20px;
+  transition: all 0.3s;
 }
 
 .testi-card:hover {
-  box-shadow: var(--shadow);
-  transform: translateY(-3px);
-  border-color: rgba(53,99,233,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.06);
 }
 
-.testi-stars { display: flex; gap: 3px; }
-.testi-star { color: #FBBF24; font-size: 14px; }
+.testi-stars { display: flex; gap: 4px; color: #FBBF24; font-size: 14px; }
 
 .testi-quote {
-  font-size: 14px; font-weight: 300;
-  color: var(--dark); line-height: 1.7; flex: 1;
+  font-size: 15px; font-weight: 400;
+  color: #1E293B; line-height: 1.6; flex: 1;
 }
 
-.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-author { display: flex; align-items: center; gap: 14px; }
 
 .testi-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
   flex-shrink: 0;
 }
 
-.testi-avatar.a1 { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #2563EB; }
-.testi-avatar.a2 { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); color: #059669; }
-.testi-avatar.a3 { background: linear-gradient(135deg, #FFF3E9, #FED7AA); color: #EA580C; }
+.testi-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: #0F172A; }
+.testi-gym { font-size: 12px; color: #64748B; margin-top: 2px; }
 
-.testi-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--dark); }
-.testi-gym { font-size: 12px; color: var(--mid); margin-top: 2px; }
-
-/* ─── CTA SECTION ─── */
+/* ─── CTA ─── */
 .cta-section {
-  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
-  padding: 88px 24px;
+  background: linear-gradient(135deg, #4C1D95 0%, #1E1B4B 100%);
+  padding: 120px 24px;
   text-align: center;
   position: relative; overflow: hidden;
 }
 
-.cta-section::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-.cta-inner {
-  max-width: 640px; margin: 0 auto;
-  position: relative; z-index: 1;
-}
-
-.cta-section h2 {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: 800; letter-spacing: -1px;
-  color: var(--white); margin-bottom: 14px;
-}
-
-.cta-section p {
-  font-size: 17px; font-weight: 300;
-  color: rgba(255,255,255,0.7);
-  line-height: 1.7; margin-bottom: 36px;
-}
+.cta-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 1; }
 
 .cta-btns {
-  display: flex; align-items: center; justify-content: center; gap: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
   flex-wrap: wrap;
+  margin-top: 40px;
 }
 
 .btn-cta-white {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--white);
-  color: var(--brand);
-  font-size: 15px; font-weight: 700;
-  padding: 14px 28px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: all 0.2s;
+  background: white; color: #4C1D95;
+  padding: 18px 40px; border-radius: 14px;
+  font-weight: 800; font-size: 18px;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+  transition: all 0.3s;
 }
+.btn-cta-white:hover { transform: scale(1.05); box-shadow: 0 10px 40px rgba(255,255,255,0.2); }
 
-.btn-cta-white:hover {
-  background: rgba(255,255,255,0.9);
-  transform: translateY(-1px);
-}
+.cta-note { margin-top: 32px; font-size: 14px; }
 
-.btn-cta-outline {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent;
-  color: rgba(255,255,255,0.85);
-  font-size: 15px; font-weight: 600;
-  padding: 14px 28px;
-  border-radius: 10px;
-  text-decoration: none;
-  border: 1.5px solid rgba(255,255,255,0.3);
-  transition: all 0.2s;
-}
-
-.btn-cta-outline:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.6);
-}
-
-.cta-note {
-  font-size: 13px; font-weight: 300;
-  color: rgba(255,255,255,0.5);
-  margin-top: 20px;
-}
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 768px) {
-  .hero { padding: 110px 24px 72px; }
-  .hero h1 { letter-spacing: -1px; }
-  .hero-stats { flex-direction: column; gap: 16px; }
-  .hero-stat { border-right: none; padding: 8px 0; }
-
-  .segments-grid { grid-template-columns: 1fr; }
-  .seg-card.secondary { opacity: 1; padding: 32px 28px 28px; }
-
-  .why-grid { grid-template-columns: 1fr; }
-
-  .how-steps { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .how-steps::before { display: none; }
-
-  .testi-grid { grid-template-columns: 1fr; }
+@media (max-width: 992px) {
+  .segments-grid { grid-template-columns: 1fr; max-width: 500px; }
+  .why-grid { grid-template-columns: 1fr 1fr; }
+  .how-steps { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .why-grid { grid-template-columns: 1fr; }
   .how-steps { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 20px; }
+  .hero-stat { border-right: none; }
 }
 </style>
+
 </head>
 <body>
 
@@ -666,44 +580,51 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
+
+  <!-- Floating Elements for Beauty/Style -->
+  <div class="floating-element" style="top: 20%; left: 10%; animation-duration: 6s;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0V8a2 2 0 0 1 2-2h1m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0h8m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0v11a2 2 0 1 0 4 0v-5h-4"/></svg>
+  </div>
+  <div class="floating-element" style="top: 60%; left: 15%; animation-duration: 9s;">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M12 3v19M5 8h14M15 21l-3-3-3 3"/></svg>
+  </div>
+  <div class="floating-element" style="top: 30%; right: 12%; animation-duration: 7s;">
+    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+  </div>
+
   <div class="hero-inner">
     <div class="hero-badge">
       <span class="hero-badge-dot"></span>
-      Agendamento online para salões e barbearias
+      O sistema favorito de manicures e salões
     </div>
 
-    <h1>Chega de agenda no<br>WhatsApp — use um <span class="highlight">sistema profissional</span></h1>
+    <h1>Sua agenda <span class="highlight">sempre cheia</span>,<br>seu salão impecável.</h1>
 
     <p class="hero-sub">
-      Seu salão, barbearia ou clínica de estética com agenda online, link personalizado e lembretes automáticos. Tudo por R$19/mês.
+      Abandone a agenda de papel e o WhatsApp. Tenha um sistema profissional com agendamento online, link personalizado e PIX automático.
     </p>
 
     <div class="hero-actions">
-      <a href="/landing-salao.html#cadastro" class="btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <a href="/landing-salao.html#cadastro" class="btn-hero-primary">
         Começar 14 dias grátis
       </a>
-      <a href="#segmentos" class="btn-secondary" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">
-        Ver planos disponíveis →
+      <a href="#segmentos" class="btn-secondary" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2); padding: 16px 36px;">
+        Ver planos e segmentos →
       </a>
     </div>
 
     <div class="hero-stats">
       <div class="hero-stat">
         <span class="hero-stat-num">R$19</span>
-        <span class="hero-stat-label">salões / mês</span>
+        <span class="hero-stat-label">plano beleza / mês</span>
       </div>
       <div class="hero-stat">
-        <span class="hero-stat-num">∞</span>
-        <span class="hero-stat-label">clientes incluídos</span>
+        <span class="hero-stat-num">100%</span>
+        <span class="hero-stat-label">digital e automático</span>
       </div>
       <div class="hero-stat">
-        <span class="hero-stat-num">10min</span>
-        <span class="hero-stat-label">para configurar</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">14d</span>
-        <span class="hero-stat-label">grátis para testar</span>
+        <span class="hero-stat-num">PIX</span>
+        <span class="hero-stat-label">integrado no sistema</span>
       </div>
     </div>
   </div>
@@ -712,102 +633,134 @@
 <!-- SEGMENTS -->
 <section class="segments" id="segmentos">
   <div class="segments-header container">
-    <span class="tag">Escolha seu segmento</span>
-    <h2 class="section-title">Para salões, barbearias e mais</h2>
-    <p class="section-sub" style="margin: 14px auto 0; text-align: center;">Funcionalidades específicas para o que você realmente precisa.</p>
+    <span class="tag">Segmentos atendidos</span>
+    <h2 class="section-title">Escolha o Agendofy ideal para você</h2>
+    <p class="section-sub" style="margin: 14px auto 0; text-align: center;">Funcionalidades desenhadas para a rotina do seu negócio.</p>
   </div>
 
   <div class="segments-grid container">
-    <!-- Salão (destaque) -->
-    <a href="/landing-salao.html" class="seg-card salon reveal">
-      <div class="seg-badge">✨ Mais popular</div>
-      <div class="seg-icon orange">✂️</div>
-      <h3>Salões &amp; Barbearias</h3>
-      <p>Para cabeleireiros, barbearias, clínicas de estética e qualquer negócio que trabalhe com agendamentos individuais por profissional.</p>
+    <!-- Manicures & Salões (Foco Principal) -->
+    <a href="/landing-salao.html" class="seg-card beauty featured reveal">
+      <div class="seg-badge">✨ Destaque</div>
+      <div class="seg-icon pink">💅</div>
+      <h3>Manicures &amp; Salões</h3>
+      <p>Perfeito para profissionais liberais e salões que buscam sofisticação e uma experiência única para suas clientes.</p>
 
       <div class="seg-features">
         <div class="seg-feat">
-          <div class="seg-feat-icon orange">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="seg-feat-icon pink">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Agenda online por profissional
+          Link de agendamento elegante
         </div>
         <div class="seg-feat">
-          <div class="seg-feat-icon orange">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="seg-feat-icon pink">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Catálogo de serviços e preços
+          Lembretes automáticos (E-mail)
         </div>
         <div class="seg-feat">
-          <div class="seg-feat-icon orange">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="seg-feat-icon pink">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Link de agendamento personalizado
-        </div>
-        <div class="seg-feat">
-          <div class="seg-feat-icon orange">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Lembretes automáticos por WhatsApp
+          Gestão de serviços e combos
         </div>
       </div>
 
       <div class="seg-price">
-        <span class="seg-price-val" style="color:#F97316">R$19</span>
-        <span class="seg-price-period">/mês · clientes ilimitados</span>
+        <span class="seg-price-val">R$19</span>
+        <span class="seg-price-period">/mês · Tudo incluso</span>
       </div>
 
-      <div class="seg-cta orange">
-        Começar grátis por 14 dias →
+      <div class="seg-cta pink">
+        Conhecer Plano Beleza →
       </div>
     </a>
 
-    <!-- Academia (secundário) -->
-    <a href="/landing.html" class="seg-card academy secondary reveal reveal-d2">
-      <div class="seg-icon blue">🥊</div>
+    <!-- Cabelereiros & Barbearias (Secundário) -->
+    <a href="/landing-salao.html" class="seg-card hair reveal reveal-d1">
+      <div class="seg-icon amber">✂️</div>
+      <h3>Cabelereiros &amp; Barbearias</h3>
+      <p>Gestão ágil para equipes, controle de comissões por profissional e agenda sincronizada em tempo real.</p>
+
+      <div class="seg-features">
+        <div class="seg-feat">
+          <div class="seg-feat-icon amber">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Múltiplos profissionais e agendas
+        </div>
+        <div class="seg-feat">
+          <div class="seg-feat-icon amber">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Controle de comissões automático
+        </div>
+        <div class="seg-feat">
+          <div class="seg-feat-icon amber">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Histórico completo dos clientes
+        </div>
+      </div>
+
+      <div class="seg-price">
+        <span class="seg-price-val">R$19</span>
+        <span class="seg-price-period">/mês · Equipe ilimitada</span>
+      </div>
+
+      <div class="seg-cta amber">
+        Conhecer Plano Estilo →
+      </div>
+    </a>
+
+    <!-- Academias (Terciário) -->
+    <a href="/landing.html" class="seg-card gym reveal reveal-d2">
+      <div class="seg-icon blue">🏋️</div>
       <h3>Academias &amp; Estúdios</h3>
-      <p>Para boxe, pilates, yoga, CrossFit e modalidades com grade de aulas e pacotes com créditos.</p>
+      <p>Para Pilates, Yoga, Crossfit e Academias que trabalham com pacotes de créditos e aulas coletivas.</p>
 
       <div class="seg-features">
         <div class="seg-feat">
           <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Grade de horários semanal
+          Controle de pacotes e créditos
         </div>
         <div class="seg-feat">
           <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Pacotes com créditos por modalidade
+          Grade de aulas e turmas
         </div>
         <div class="seg-feat">
           <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          Auto-agendamento pelo aluno
+          Check-in via QR Code ou App
         </div>
       </div>
 
       <div class="seg-price">
         <span class="seg-price-val">R$49</span>
-        <span class="seg-price-period">/mês · alunos ilimitados</span>
+        <span class="seg-price-period">/mês · Alunos ilimitados</span>
       </div>
 
       <div class="seg-cta blue">
-        Ver plano para academias →
+        Conhecer Plano Fitness →
       </div>
     </a>
   </div>
 </section>
 
+
 <!-- WHY AGENDOFY -->
 <section class="why">
   <div class="why-inner">
     <div class="why-header">
-      <span class="tag">Por que o Agendofy</span>
-      <h2 class="section-title">Feito para quem não tem tempo a perder</h2>
-      <p class="section-sub">Sem planilha. Sem WhatsApp. Sem complicação.</p>
+      <span class="tag">Diferenciais</span>
+      <h2 class="section-title">A tecnologia a serviço da sua beleza</h2>
+      <p class="section-sub">Foque no seu talento enquanto o Agendofy cuida da sua organização.</p>
     </div>
 
     <div class="why-grid">
@@ -815,48 +768,24 @@
         <div class="why-icon">
           <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <h3>Configuração em 10 minutos</h3>
-        <p>Sem instalação, sem servidor. Acesse pelo navegador, cadastre seu negócio e compartilhe o link com seus clientes.</p>
+        <h3>Configuração Instantânea</h3>
+        <p>Cadastre seus serviços e profissionais em minutos. Seu link de agendamento fica pronto para compartilhar na hora.</p>
       </div>
 
       <div class="why-card reveal reveal-d1">
         <div class="why-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <h3>White label completo</h3>
-        <p>Seu logo, suas cores, seu subdomínio. Seus clientes veem apenas a identidade do seu negócio — nunca o nome do sistema.</p>
+        <h3>Sua Marca, Suas Cores</h3>
+        <p>Personalize o sistema com sua identidade visual. Para sua cliente, a experiência é 100% com a sua marca.</p>
       </div>
 
       <div class="why-card reveal reveal-d2">
         <div class="why-icon">
           <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
-        <h3>Pagamento automático via Pix</h3>
-        <p>Seu cliente compra o plano ou serviço diretamente no sistema. O Pix é gerado automaticamente e o acesso ativado na hora.</p>
-      </div>
-
-      <div class="why-card reveal reveal-d3">
-        <div class="why-icon">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <h3>Dashboard em tempo real</h3>
-        <p>Veja de uma tela só: clientes ativos, agenda do dia, receita do mês e pacotes vencendo. Tudo atualizado em tempo real.</p>
-      </div>
-
-      <div class="why-card reveal reveal-d4">
-        <div class="why-icon">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <h3>Sem app para instalar</h3>
-        <p>Seus clientes se agendariam pelo navegador do celular. Funciona como um app sem que ninguém precise baixar nada.</p>
-      </div>
-
-      <div class="why-card reveal reveal-d5">
-        <div class="why-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <h3>Suporte real por e-mail</h3>
-        <p>Precisa de ajuda? Escreva para contato@agendofy.com. Respondemos em até 1 dia útil — sem chatbot, sem fila de espera.</p>
+        <h3>PIX Automático</h3>
+        <p>Receba pagamentos ou sinal no ato do agendamento. O PIX é gerado e confirmado pelo sistema sem você fazer nada. *<small>Disponível para academias</small></p>
       </div>
     </div>
   </div>
@@ -866,31 +795,30 @@
 <section class="how">
   <div class="how-inner">
     <div class="how-header">
-      <span class="tag white">Como funciona</span>
-      <h2 class="section-title white">Pronto para usar em 4 passos</h2>
-      <p class="section-sub white" style="margin: 14px auto 0; text-align: center;">Tão simples que você não vai precisar de suporte para começar.</p>
+      <span class="tag white">Passo a passo</span>
+      <h2 class="section-title white">Comece a brilhar em 4 passos</h2>
     </div>
 
     <div class="how-steps">
       <div class="how-step reveal">
         <div class="how-step-num">01</div>
-        <h3>Cadastre seu negócio</h3>
-        <p>Preencha nome, logo e cores. Seu painel e link personalizado ficam prontos na hora.</p>
+        <h4>Cadastre seu Espaço</h4>
+        <p>Escolha suas cores, suba seu logo e defina seu endereço personalizado.</p>
       </div>
       <div class="how-step reveal reveal-d1">
         <div class="how-step-num">02</div>
-        <h3>Configure serviços</h3>
-        <p>Crie modalidades, horários ou serviços. Monte a grade ou calendário da sua equipe.</p>
+        <h4>Liste seus Serviços</h4>
+        <p>Defina preços, durações e quais profissionais realizam cada procedimento.</p>
       </div>
       <div class="how-step reveal reveal-d2">
         <div class="how-step-num">03</div>
-        <h3>Cadastre seus clientes</h3>
-        <p>Adicione clientes e crie planos ou pacotes. Defina preços, créditos e vencimentos.</p>
+        <h4>Divulgue seu Link</h4>
+        <p>Coloque na sua bio do Instagram e envie para suas clientes no WhatsApp.</p>
       </div>
       <div class="how-step reveal reveal-d3">
         <div class="how-step-num">04</div>
-        <h3>Compartilhe o link</h3>
-        <p>Envie o link para seus clientes. Eles se agendarão sozinhos. Você gerencia pelo painel.</p>
+        <h4>Acompanhe o Sucesso</h4>
+        <p>Veja sua agenda se auto-preencher e receba notificações de novos agendamentos.</p>
       </div>
     </div>
   </div>
@@ -900,8 +828,8 @@
 <section class="testimonials">
   <div class="testimonials-header container">
     <span class="tag">Depoimentos</span>
-    <h2 class="section-title">Negócios que já simplificaram a gestão</h2>
-    <p class="section-sub">Histórias de quem parou de gerenciar pelo WhatsApp.</p>
+    <h2 class="section-title">Quem usa, ama</h2>
+    <p class="section-sub">Histórias reais de transformação e organização.</p>
   </div>
 
   <div class="testi-grid container">
@@ -909,12 +837,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"Meus clientes adoraram ter a agenda com o nome da barbearia. Parece que somos muito maiores do que somos. E a cobrança pelo sistema economizou meu tempo demais."</p>
+      <p class="testi-quote">"O Agendofy mudou minha vida como manicure. Minhas clientes agora agendam sozinhas de madrugada e eu só acordo com a agenda cheia. É maravilhoso!"</p>
       <div class="testi-author">
-        <div class="testi-avatar a3">TF</div>
+        <div class="testi-avatar a2" style="background: var(--beauty-light); color: var(--beauty);">AM</div>
         <div>
-          <div class="testi-name">Thiago Fonseca</div>
-          <div class="testi-gym">Barbearia Fonseca · Belo Horizonte, MG</div>
+          <div class="testi-name">Aline Mendes</div>
+          <div class="testi-gym">Nails Design · São Paulo, SP</div>
         </div>
       </div>
     </div>
@@ -923,12 +851,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"Antes eu confirmava horário por WhatsApp até meia-noite. Hoje o cliente entra no meu link, escolhe o horário e aparece. Eu só preparo tudo e atendo."</p>
+      <p class="testi-quote">"Antes eu perdia muito tempo confirmando horários. Agora o sistema envia o lembrete automático e as faltas diminuíram 90%. Vale cada centavo."</p>
       <div class="testi-author">
-        <div class="testi-avatar a2">PS</div>
+        <div class="testi-avatar a3" style="background: var(--hair-light); color: var(--hair);">RC</div>
         <div>
-          <div class="testi-name">Patrícia Souza</div>
-          <div class="testi-gym">Salão Bella Arte · Campinas, SP</div>
+          <div class="testi-name">Ricardo Costa</div>
+          <div class="testi-gym">Barbearia VIP · Curitiba, PR</div>
         </div>
       </div>
     </div>
@@ -937,12 +865,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"Também uso para minha academia de boxe. O controle de pacotes e créditos por modalidade resolveu um problema que eu tinha há anos."</p>
+      <p class="testi-quote">"Uso para meu estúdio de Pilates e a gestão de créditos é perfeita. Os alunos adoram a facilidade de agendar e desmarcar pelo link."</p>
       <div class="testi-author">
-        <div class="testi-avatar a1">RC</div>
+        <div class="testi-avatar a1" style="background: var(--gym-light); color: var(--gym);">FL</div>
         <div>
-          <div class="testi-name">Ricardo Correia</div>
-          <div class="testi-gym">Boxe Elite · São Paulo, SP</div>
+          <div class="testi-name">Fernanda Lima</div>
+          <div class="testi-gym">Studio Equilíbrio · Rio de Janeiro, RJ</div>
         </div>
       </div>
     </div>
@@ -952,20 +880,16 @@
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-inner">
-    <h2>Seu salão merece uma agenda profissional</h2>
-    <p>14 dias de acesso completo, sem cartão de crédito. Configure em 10 minutos e compartilhe o link com seus clientes.</p>
+    <h2 style="color:white">Sua jornada para o sucesso começa aqui</h2>
+    <p style="color:rgba(255,255,255,0.7); margin-bottom: 40px;">Experimente grátis por 14 dias. Sem cartão de crédito, sem compromisso.</p>
 
     <div class="cta-btns">
       <a href="/landing-salao.html#cadastro" class="btn-cta-white">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Para salões &amp; barbearias — R$19/mês
-      </a>
-      <a href="/landing.html#cadastro" class="btn-cta-outline" style="font-size:13px; padding: 12px 20px;">
-        Para academias — R$49/mês
+        Criar minha agenda agora
       </a>
     </div>
 
-    <p class="cta-note">Sem taxa de adesão · Cancele quando quiser · Dados sempre seus</p>
+    <p class="cta-note" style="color:rgba(255,255,255,0.4)">Configuração em 10 minutos · Suporte humanizado · Cancele quando quiser</p>
   </div>
 </section>
 
@@ -973,8 +897,10 @@
 <footer class="inst-footer">
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
-      <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para salões de beleza, barbearias e clínicas de estética brasileiras.</p>
+      <a href="/" class="inst-footer-logo">
+        <br>agendo<span>fy</span>
+      </a>
+      <p class="inst-footer-tagline">O sistema de agendamento que valoriza o seu talento e organiza o seu negócio.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
@@ -982,7 +908,7 @@
     </div>
 
     <div class="inst-footer-col">
-      <h3>Produto</h3>
+      <h4>Produto</h4>
       <ul>
         <li><a href="/funcionalidades.html">Funcionalidades</a></li>
         <li><a href="/precos.html">Preços</a></li>
@@ -992,7 +918,7 @@
     </div>
 
     <div class="inst-footer-col">
-      <h3>Empresa</h3>
+      <h4>Empresa</h4>
       <ul>
         <li><a href="/sobre.html">Sobre nós</a></li>
         <li><a href="/contato.html">Contato</a></li>
@@ -1001,7 +927,8 @@
     </div>
 
     <div class="inst-footer-col">
-      <h3>Legal</h3>
+      <h4>Legal</h4>
+
       <ul>
         <li><a href="/termos.html">Termos de uso</a></li>
         <li><a href="/privacidade.html">Privacidade</a></li>
