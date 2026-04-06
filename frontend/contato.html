@@ -39,9 +39,7 @@
 }
 
 .contact-inner {
-  max-width: 1000px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1.6fr;
-  gap: 64px;
+  max-width: 600px; margin: 0 auto;
 }
 
 /* Info side */
@@ -127,105 +125,6 @@
   50% { opacity: 0.4; }
 }
 
-/* Form side */
-.contact-form-wrap {
-  background: var(--light);
-  border-radius: var(--radius-xl);
-  padding: 40px;
-  border: 1px solid var(--border);
-}
-
-.contact-form-title {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 800;
-  color: var(--dark); margin-bottom: 6px;
-}
-
-.contact-form-sub {
-  font-size: 14px; font-weight: 300;
-  color: var(--mid); margin-bottom: 28px;
-}
-
-.form-group {
-  display: flex; flex-direction: column; gap: 6px;
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  font-size: 13px; font-weight: 600;
-  color: var(--dark);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  font-family: var(--font-body);
-  font-size: 14px; font-weight: 400;
-  color: var(--dark);
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 11px 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-  width: 100%;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(53,99,233,0.08);
-}
-
-.form-group textarea {
-  resize: vertical; min-height: 120px;
-}
-
-.form-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-}
-
-.form-submit {
-  width: 100%;
-  background: var(--brand);
-  color: white;
-  font-family: var(--font-body);
-  font-size: 15px; font-weight: 700;
-  padding: 14px 0;
-  border-radius: var(--radius);
-  border: none; cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
-}
-
-.form-submit:hover {
-  background: var(--brand-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(53,99,233,0.3);
-}
-
-.form-success {
-  display: none;
-  text-align: center;
-  padding: 32px 0;
-}
-
-.form-success-icon {
-  font-size: 40px; margin-bottom: 12px;
-}
-
-.form-success h3 {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 800;
-  color: var(--dark); margin-bottom: 8px;
-}
-
-.form-success p {
-  font-size: 14px; font-weight: 300;
-  color: var(--mid); line-height: 1.65;
-}
-
 /* FAQ */
 .faq-section {
   background: var(--light);
@@ -264,10 +163,6 @@
 
 .faq-answer p { font-size: 14px; font-weight: 300; color: var(--mid); line-height: 1.75; }
 
-@media (max-width: 768px) {
-  .contact-inner { grid-template-columns: 1fr; gap: 40px; }
-  .form-row { grid-template-columns: 1fr; }
-}
 </style>
 </head>
 <body>
@@ -369,52 +264,6 @@
       </div>
     </div>
 
-    <!-- Form -->
-    <div class="contact-form-wrap">
-      <div id="form-content">
-        <p class="contact-form-sub">Preencha o formulário e entraremos em contato em breve.</p>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Seu nome *</label>
-            <input type="text" id="ct-nome" placeholder="João Silva" required>
-          </div>
-          <div class="form-group">
-            <label>E-mail *</label>
-            <input type="email" id="ct-email" placeholder="joao@suaacademia.com.br" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Assunto *</label>
-          <select id="ct-assunto">
-            <option value="">Selecione um assunto</option>
-            <option value="suporte">Preciso de suporte técnico</option>
-            <option value="duvida">Dúvida sobre funcionalidades</option>
-            <option value="preco">Dúvida sobre preço ou cobrança</option>
-            <option value="bug">Encontrei um problema</option>
-            <option value="sugestao">Tenho uma sugestão</option>
-            <option value="parceria">Proposta de parceria</option>
-            <option value="outro">Outro assunto</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Mensagem *</label>
-          <textarea id="ct-mensagem" placeholder="Descreva sua dúvida ou problema com o máximo de detalhes possível..."></textarea>
-        </div>
-
-        <button type="button" class="form-submit" onclick="sendContact()">
-          Enviar mensagem →
-        </button>
-      </div>
-
-      <div class="form-success" id="form-success">
-        <div class="form-success-icon">✅</div>
-        <h3>Mensagem enviada!</h3>
-        <p>Recebemos sua mensagem e responderemos para o seu e-mail em até 1 dia útil. Obrigado pelo contato!</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -537,31 +386,6 @@ function toggleFaq(btn) {
   if (!wasOpen) item.classList.add('open');
 }
 
-function sendContact() {
-  const nome = document.getElementById('ct-nome').value.trim();
-  const email = document.getElementById('ct-email').value.trim();
-  const assunto = document.getElementById('ct-assunto').value;
-  const mensagem = document.getElementById('ct-mensagem').value.trim();
-
-  if (!nome || !email || !assunto || !mensagem) {
-    alert('Por favor, preencha todos os campos obrigatórios.');
-    return;
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert('Por favor, insira um e-mail válido.');
-    return;
-  }
-
-  // Send via mailto (simple fallback; replace with real API endpoint later)
-  const subject = encodeURIComponent('[Agendofy] ' + assunto);
-  const body = encodeURIComponent('Nome: ' + nome + '\nE-mail: ' + email + '\n\n' + mensagem);
-  window.location.href = 'mailto:contato@agendofy.com?subject=' + subject + '&body=' + body;
-
-  document.getElementById('form-content').style.display = 'none';
-  document.getElementById('form-success').style.display = 'block';
-}
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
