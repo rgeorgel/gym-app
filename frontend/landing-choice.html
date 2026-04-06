@@ -87,6 +87,12 @@
 <style>
 /* ─── HOME-SPECIFIC STYLES ─── */
 
+/* Nav — white logo/links over dark hero */
+.inst-nav:not(.scrolled) .inst-nav-logo { color: var(--white); }
+.inst-nav:not(.scrolled) .inst-nav-links a { color: rgba(255,255,255,0.7); }
+.inst-nav:not(.scrolled) .inst-nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.inst-nav:not(.scrolled) .inst-nav-hamburger { color: var(--white); }
+
 /* Hero */
 .hero {
   background: linear-gradient(170deg, var(--dark) 0%, var(--dark3) 60%, #0F172A 100%);

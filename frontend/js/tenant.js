@@ -18,13 +18,21 @@ export async function loadTenantTheme() {
   try {
     const host = location.hostname;
     const parts = host.split('.');
-    const slug = parts.length >= 3 ? parts[0] : localStorage.getItem('tenant_slug') || 'boxe-elite';
+    const slug = parts.length >= 3 ? parts[0] : localStorage.getItem('tenant_slug') || null;
+
+    if (!slug) {
+      applyAgendofyDefaults();
+      return null;
+    }
 
     const res = await fetch(`/api/tenant/config`, {
       headers: { 'X-Tenant-Slug': slug }
     });
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      applyAgendofyDefaults();
+      return null;
+    }
 
     const config = await res.json();
 
@@ -67,6 +75,30 @@ export async function loadTenantTheme() {
   } catch (e) {
     console.warn('Could not load tenant config:', e);
   }
+}
+
+function applyAgendofyDefaults() {
+  const root = document.documentElement;
+  root.style.setProperty('--brand-primary', '#7e5aeb');
+  root.style.setProperty('--brand-secondary', '#f23147');
+  root.style.setProperty('--brand-primary-light', shadeColor('#7e5aeb', -20));
+  root.style.setProperty('--brand-text-on-primary', '#ffffff');
+  root.style.setProperty('--brand-text-on-secondary', '#ffffff');
+
+  document.title = 'Agendofy — Login';
+
+  document.querySelectorAll('[data-tenant-logo]').forEach(el => {
+    el.src = 'https://agendofy.com/assets/logo-placeholder.svg';
+    el.alt = 'Agendofy';
+  });
+
+  document.querySelectorAll('[data-tenant-name]').forEach(el => {
+    el.textContent = 'Agendofy';
+  });
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
 }
 
 function shadeColor(color, percent) {

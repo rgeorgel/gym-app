@@ -120,7 +120,7 @@ p.section-sub.white { color: rgba(255,255,255,0.55); }
   color: var(--dark);
   text-decoration: none;
   letter-spacing: -0.5px;
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 0;
 }
 
 .inst-nav-logo img {
