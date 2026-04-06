@@ -19,8 +19,8 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agendofy — Agendamento inteligente para academias e salões</title>
-<meta name="description" content="Sistema de agendamento online para academias, estúdios e salões de beleza. Grade de horários, controle de clientes e pagamento integrado. 14 dias grátis.">
+<title>Agendofy — Agendamento online para salões de beleza e barbearias</title>
+<meta name="description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética. Agenda por profissional, link personalizado, lembretes automáticos e Pix integrado. 14 dias grátis.">
 
 <link rel="canonical" href="https://www.agendofy.com/">
 <meta name="robots" content="index, follow">
@@ -28,16 +28,16 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.agendofy.com/">
 <meta property="og:site_name" content="Agendofy">
-<meta property="og:title" content="Agendofy — Agendamento inteligente para academias e salões">
-<meta property="og:description" content="Sistema de agendamento online para academias, estúdios e salões de beleza. Grade de horários, controle de clientes e pagamento integrado.">
+<meta property="og:title" content="Agendofy — Agendamento online para salões de beleza e barbearias">
+<meta property="og:description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética. Agenda por profissional, lembretes automáticos e Pix integrado.">
 <meta property="og:image" content="https://www.agendofy.com/assets/og-gym.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Agendofy — Agendamento inteligente para academias e salões">
-<meta name="twitter:description" content="Sistema de agendamento online para academias, estúdios e salões de beleza.">
+<meta name="twitter:title" content="Agendofy — Agendamento online para salões de beleza e barbearias">
+<meta name="twitter:description" content="Sistema de agendamento online para salões de beleza, barbearias e clínicas de estética.">
 <meta name="twitter:image" content="https://www.agendofy.com/assets/og-gym.png">
 
 <meta name="geo.region" content="BR">
@@ -55,7 +55,7 @@
       "url": "https://www.agendofy.com",
       "logo": "https://www.agendofy.com/assets/agendofy-logo-v1-calendar.svg",
       "email": "contato@agendofy.com",
-      "description": "Sistema de agendamento online para academias, estúdios e salões de beleza.",
+      "description": "Sistema de agendamento online para salões de beleza, barbearias, clínicas de estética e academias.",
       "areaServed": "BR",
       "inLanguage": "pt-BR"
     },
@@ -73,7 +73,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "url": "https://www.agendofy.com",
-      "description": "Sistema de agendamento para academias, estúdios e salões de beleza.",
+      "description": "Sistema de agendamento para salões de beleza, barbearias, clínicas de estética e academias.",
       "publisher": { "@id": "https://www.agendofy.com/#organization" }
     }
   ]
@@ -217,9 +217,33 @@
 
 .segments-grid {
   max-width: 900px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: 1.15fr 0.85fr;
   gap: 24px;
 }
+
+/* Featured badge */
+.seg-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #F97316, #FBBF24);
+  color: var(--white);
+  font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+/* Secondary card (academy) */
+.seg-card.secondary {
+  opacity: 0.85;
+  padding: 32px 28px 28px;
+}
+
+.seg-card.secondary h3 { font-size: 18px; }
+.seg-card.secondary .seg-price-val { font-size: 26px; }
+.seg-card.secondary .seg-features { gap: 6px; margin-bottom: 20px; }
+.seg-card.secondary p { font-size: 13px; margin-bottom: 18px; }
 
 .seg-card {
   background: var(--white);
@@ -593,6 +617,7 @@
   .hero-stat { border-right: none; padding: 8px 0; }
 
   .segments-grid { grid-template-columns: 1fr; }
+  .seg-card.secondary { opacity: 1; padding: 32px 28px 28px; }
 
   .why-grid { grid-template-columns: 1fr; }
 
@@ -644,30 +669,26 @@
   <div class="hero-inner">
     <div class="hero-badge">
       <span class="hero-badge-dot"></span>
-      Software brasileiro para negócios fitness
+      Agendamento online para salões e barbearias
     </div>
 
-    <h1>Agendamento inteligente<br>para quem <span class="highlight">trabalha com o que ama</span></h1>
+    <h1>Chega de agenda no<br>WhatsApp — use um <span class="highlight">sistema profissional</span></h1>
 
     <p class="hero-sub">
-      Sistema completo para academias, estúdios e salões de beleza. Grade de horários, controle de clientes e pagamento via Pix — com a identidade visual do seu negócio.
+      Seu salão, barbearia ou clínica de estética com agenda online, link personalizado e lembretes automáticos. Tudo por R$19/mês.
     </p>
 
     <div class="hero-actions">
-      <a href="/landing.html#cadastro" class="btn-primary">
+      <a href="/landing-salao.html#cadastro" class="btn-primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         Começar 14 dias grátis
       </a>
       <a href="#segmentos" class="btn-secondary" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">
-        Ver planos por segmento →
+        Ver planos disponíveis →
       </a>
     </div>
 
     <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="hero-stat-num">R$49</span>
-        <span class="hero-stat-label">academias / mês</span>
-      </div>
       <div class="hero-stat">
         <span class="hero-stat-num">R$19</span>
         <span class="hero-stat-label">salões / mês</span>
@@ -680,6 +701,10 @@
         <span class="hero-stat-num">10min</span>
         <span class="hero-stat-label">para configurar</span>
       </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">14d</span>
+        <span class="hero-stat-label">grátis para testar</span>
+      </div>
     </div>
   </div>
 </section>
@@ -688,56 +713,14 @@
 <section class="segments" id="segmentos">
   <div class="segments-header container">
     <span class="tag">Escolha seu segmento</span>
-    <h2 class="section-title">Para cada negócio, um plano certo</h2>
+    <h2 class="section-title">Para salões, barbearias e mais</h2>
     <p class="section-sub" style="margin: 14px auto 0; text-align: center;">Funcionalidades específicas para o que você realmente precisa.</p>
   </div>
 
   <div class="segments-grid container">
-    <!-- Academia -->
-    <a href="/landing.html" class="seg-card academy reveal">
-      <div class="seg-icon blue">🥊</div>
-      <h3>Academias &amp; Estúdios</h3>
-      <p>Para boxe, pilates, yoga, muay thai, CrossFit e qualquer modalidade que trabalhe com grade de aulas em grupo ou individuais.</p>
-
-      <div class="seg-features">
-        <div class="seg-feat">
-          <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Grade de horários semanal
-        </div>
-        <div class="seg-feat">
-          <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Pacotes multi-modalidade com créditos
-        </div>
-        <div class="seg-feat">
-          <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Auto-agendamento pelo aluno
-        </div>
-        <div class="seg-feat">
-          <div class="seg-feat-icon blue">
-            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Venda de planos via Pix
-        </div>
-      </div>
-
-      <div class="seg-price">
-        <span class="seg-price-val">R$49</span>
-        <span class="seg-price-period">/mês · alunos ilimitados</span>
-      </div>
-
-      <div class="seg-cta blue">
-        Começar grátis por 14 dias →
-      </div>
-    </a>
-
-    <!-- Salão -->
-    <a href="/landing-salao.html" class="seg-card salon reveal reveal-d2">
+    <!-- Salão (destaque) -->
+    <a href="/landing-salao.html" class="seg-card salon reveal">
+      <div class="seg-badge">✨ Mais popular</div>
       <div class="seg-icon orange">✂️</div>
       <h3>Salões &amp; Barbearias</h3>
       <p>Para cabeleireiros, barbearias, clínicas de estética e qualquer negócio que trabalhe com agendamentos individuais por profissional.</p>
@@ -776,6 +759,43 @@
 
       <div class="seg-cta orange">
         Começar grátis por 14 dias →
+      </div>
+    </a>
+
+    <!-- Academia (secundário) -->
+    <a href="/landing.html" class="seg-card academy secondary reveal reveal-d2">
+      <div class="seg-icon blue">🥊</div>
+      <h3>Academias &amp; Estúdios</h3>
+      <p>Para boxe, pilates, yoga, CrossFit e modalidades com grade de aulas e pacotes com créditos.</p>
+
+      <div class="seg-features">
+        <div class="seg-feat">
+          <div class="seg-feat-icon blue">
+            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Grade de horários semanal
+        </div>
+        <div class="seg-feat">
+          <div class="seg-feat-icon blue">
+            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Pacotes com créditos por modalidade
+        </div>
+        <div class="seg-feat">
+          <div class="seg-feat-icon blue">
+            <svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Auto-agendamento pelo aluno
+        </div>
+      </div>
+
+      <div class="seg-price">
+        <span class="seg-price-val">R$49</span>
+        <span class="seg-price-period">/mês · alunos ilimitados</span>
+      </div>
+
+      <div class="seg-cta blue">
+        Ver plano para academias →
       </div>
     </a>
   </div>
@@ -889,12 +909,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"Antes eu passava horas confirmando alunos pelo WhatsApp. Agora eles se agendariam sozinhos e eu só acompanho pelo painel. Economizo pelo menos 2 horas por dia."</p>
+      <p class="testi-quote">"Meus clientes adoraram ter a agenda com o nome da barbearia. Parece que somos muito maiores do que somos. E a cobrança pelo sistema economizou meu tempo demais."</p>
       <div class="testi-author">
-        <div class="testi-avatar a1">RC</div>
+        <div class="testi-avatar a3">TF</div>
         <div>
-          <div class="testi-name">Ricardo Correia</div>
-          <div class="testi-gym">Boxe Elite · São Paulo, SP</div>
+          <div class="testi-name">Thiago Fonseca</div>
+          <div class="testi-gym">Barbearia Fonseca · Belo Horizonte, MG</div>
         </div>
       </div>
     </div>
@@ -903,12 +923,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"O controle de créditos era um pesadelo. Cada aluno com um pacote diferente. Agora o sistema controla tudo automaticamente. Nunca mais errei."</p>
+      <p class="testi-quote">"Antes eu confirmava horário por WhatsApp até meia-noite. Hoje o cliente entra no meu link, escolhe o horário e aparece. Eu só preparo tudo e atendo."</p>
       <div class="testi-author">
-        <div class="testi-avatar a2">ML</div>
+        <div class="testi-avatar a2">PS</div>
         <div>
-          <div class="testi-name">Mariana Lima</div>
-          <div class="testi-gym">Studio Pilates Essencial · Curitiba, PR</div>
+          <div class="testi-name">Patrícia Souza</div>
+          <div class="testi-gym">Salão Bella Arte · Campinas, SP</div>
         </div>
       </div>
     </div>
@@ -917,12 +937,12 @@
       <div class="testi-stars">
         <span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span>
       </div>
-      <p class="testi-quote">"Meus clientes adoraram ter a agenda com o nome do salão. Parece que somos muito maiores do que somos. E a cobrança pelo sistema economizou meu tempo demais."</p>
+      <p class="testi-quote">"Também uso para minha academia de boxe. O controle de pacotes e créditos por modalidade resolveu um problema que eu tinha há anos."</p>
       <div class="testi-author">
-        <div class="testi-avatar a3">TF</div>
+        <div class="testi-avatar a1">RC</div>
         <div>
-          <div class="testi-name">Thiago Fonseca</div>
-          <div class="testi-gym">Barbearia Fonseca · Belo Horizonte, MG</div>
+          <div class="testi-name">Ricardo Correia</div>
+          <div class="testi-gym">Boxe Elite · São Paulo, SP</div>
         </div>
       </div>
     </div>
@@ -932,16 +952,16 @@
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-inner">
-    <h2>Comece hoje, de graça</h2>
-    <p>14 dias de acesso completo, sem cartão de crédito. Configure em minutos e compartilhe com seus clientes.</p>
+    <h2>Seu salão merece uma agenda profissional</h2>
+    <p>14 dias de acesso completo, sem cartão de crédito. Configure em 10 minutos e compartilhe o link com seus clientes.</p>
 
     <div class="cta-btns">
-      <a href="/landing.html#cadastro" class="btn-cta-white">
+      <a href="/landing-salao.html#cadastro" class="btn-cta-white">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Para academias — R$49/mês
+        Para salões &amp; barbearias — R$19/mês
       </a>
-      <a href="/landing-salao.html#cadastro" class="btn-cta-outline">
-        Para salões — R$19/mês →
+      <a href="/landing.html#cadastro" class="btn-cta-outline" style="font-size:13px; padding: 12px 20px;">
+        Para academias — R$49/mês
       </a>
     </div>
 
@@ -954,7 +974,7 @@
   <div class="inst-footer-top">
     <div class="inst-footer-brand">
       <a href="/" class="inst-footer-logo">agendo<span>fy</span></a>
-      <p class="inst-footer-tagline">Agendamento inteligente para academias, estúdios e salões de beleza brasileiros.</p>
+      <p class="inst-footer-tagline">Agendamento inteligente para salões de beleza, barbearias e clínicas de estética brasileiras.</p>
       <a href="mailto:contato@agendofy.com" class="inst-footer-email">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         contato@agendofy.com
