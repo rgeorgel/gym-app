@@ -33,11 +33,13 @@ public static class BillingEndpoints
                 tenant.IsInTrial ? tenant.CreatedAt.AddDays(tenant.TrialDays) : null,
                 tenant.SubscriptionCurrentPeriodEnd,
                 BillingUrl: null,   // URL is only returned during setup
-                SubscriptionPriceCents: tenant.SubscriptionPriceCents
+                SubscriptionPriceCents: tenant.SubscriptionPriceCents,
+                HasCardSubscription: tenant.SubscriptionStatus == SubscriptionStatus.Active
+                                     && !string.IsNullOrEmpty(tenant.AbacatePaySubscriptionId)
             ));
         });
 
-        // POST /api/billing/setup — create AbacatePay customer + billing, returns payment URL
+        // POST /api/billing/setup — first-time subscription setup (Trial/PastDue/Canceled)
         group.MapPost("/setup", async (
             SetupBillingRequest req,
             AppDbContext db,
@@ -52,16 +54,12 @@ public static class BillingEndpoints
             if (tenant.SubscriptionStatus == SubscriptionStatus.Active)
                 return Results.Conflict("Assinatura já está ativa.");
 
-            var adminName  = principal.FindFirstValue(ClaimTypes.Name)   ?? tenant.Name;
+            var adminName  = principal.FindFirstValue(ClaimTypes.Name)  ?? tenant.Name;
             var adminEmail = principal.FindFirstValue(ClaimTypes.Email)
                              ?? principal.FindFirstValue("email")
                              ?? string.Empty;
 
-            // Reuse existing billing link if one already exists (e.g. user went to payment page but didn't pay)
-            if (!string.IsNullOrEmpty(tenant.AbacatePayBillingUrl))
-                return Results.Ok(new { url = tenant.AbacatePayBillingUrl });
-
-            // Reuse existing AbacatePay customer or create a new one
+            // Ensure customer exists (stores CPF/phone for pre-fill)
             if (string.IsNullOrEmpty(tenant.AbacatePayCustomerId))
             {
                 var customer = await abacatePay.CreateCustomerAsync(
@@ -76,24 +74,18 @@ public static class BillingEndpoints
 
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
             var uri = new Uri(baseUrl);
-            var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
+            var returnUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}/admin/index.html#billing";
 
-            var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl,
-                tenant.SubscriptionPriceCents);
+            var url = await EnsureSubscriptionCheckoutAsync(tenant, abacatePay, returnUrl, db, req.PaymentMethod);
+            if (url is null)
+                return Results.Problem("Erro ao criar assinatura no AbacatePay. Tente novamente.");
 
-            if (billing is null)
-                return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
-
-            tenant.AbacatePayBillingId = billing.Id;
-            tenant.AbacatePayBillingUrl = billing.Url;
-            await db.SaveChangesAsync();
-
-            return Results.Ok(new { url = billing.Url });
+            return Results.Ok(new { url });
         });
 
-        // POST /api/billing/pay — get (or create) a payment link, works for any subscription status
+        // POST /api/billing/pay — renew or reactivate subscription (any status)
         group.MapPost("/pay", async (
+            PayBillingRequest req,
             AppDbContext db,
             TenantContext tenantCtx,
             ClaimsPrincipal principal,
@@ -108,10 +100,6 @@ public static class BillingEndpoints
                              ?? principal.FindFirstValue("email")
                              ?? string.Empty;
 
-            // Reuse pending link if one already exists (admin opened it but hasn't paid yet)
-            if (!string.IsNullOrEmpty(tenant.AbacatePayBillingUrl))
-                return Results.Ok(new { url = tenant.AbacatePayBillingUrl });
-
             // Ensure customer exists
             if (string.IsNullOrEmpty(tenant.AbacatePayCustomerId))
             {
@@ -124,20 +112,13 @@ public static class BillingEndpoints
 
             var baseUrl = config["App:BaseUrl"]?.TrimEnd('/') ?? "https://agendofy.com";
             var uri = new Uri(baseUrl);
-            var panelUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}";
+            var returnUrl = $"{uri.Scheme}://{tenant.Slug}.{uri.Host}/admin/index.html#billing";
 
-            var billing = await abacatePay.CreateBillingAsync(
-                tenant.AbacatePayCustomerId, tenant.Slug, tenant.Name, adminEmail, panelUrl,
-                tenant.SubscriptionPriceCents);
+            var url = await EnsureSubscriptionCheckoutAsync(tenant, abacatePay, returnUrl, db, req.PaymentMethod);
+            if (url is null)
+                return Results.Problem("Erro ao criar assinatura no AbacatePay. Tente novamente.");
 
-            if (billing is null)
-                return Results.Problem("Erro ao criar cobrança no AbacatePay. Tente novamente.");
-
-            tenant.AbacatePayBillingId  = billing.Id;
-            tenant.AbacatePayBillingUrl = billing.Url;
-            await db.SaveChangesAsync();
-
-            return Results.Ok(new { url = billing.Url });
+            return Results.Ok(new { url });
         });
 
         // POST /api/billing/cancel — cancel the subscription
@@ -152,10 +133,16 @@ public static class BillingEndpoints
             if (tenant.SubscriptionStatus is SubscriptionStatus.Trial or SubscriptionStatus.Canceled)
                 return Results.BadRequest("Nenhuma assinatura ativa para cancelar.");
 
+            // Cancel both recurring subscription (CC) and any pending one-time billing (PIX)
+            if (!string.IsNullOrEmpty(tenant.AbacatePaySubscriptionId))
+                await abacatePay.CancelBillingAsync(tenant.AbacatePaySubscriptionId);
+
             if (!string.IsNullOrEmpty(tenant.AbacatePayBillingId))
                 await abacatePay.CancelBillingAsync(tenant.AbacatePayBillingId);
 
-            tenant.SubscriptionStatus = SubscriptionStatus.Canceled;
+            tenant.AbacatePaySubscriptionId = null;
+            tenant.AbacatePayBillingId      = null;
+            tenant.SubscriptionStatus       = SubscriptionStatus.Canceled;
             // Access remains until end of current period (already set)
             await db.SaveChangesAsync();
 
@@ -283,7 +270,8 @@ public static class BillingEndpoints
             Tenant? tenant = null;
 
             if (!string.IsNullOrEmpty(billingId))
-                tenant = await db.Tenants.FirstOrDefaultAsync(t => t.AbacatePayBillingId == billingId);
+                tenant = await db.Tenants.FirstOrDefaultAsync(t =>
+                    t.AbacatePayBillingId == billingId || t.AbacatePaySubscriptionId == billingId);
 
             if (tenant is null && !string.IsNullOrEmpty(customerId))
                 tenant = await db.Tenants.FirstOrDefaultAsync(t => t.AbacatePayCustomerId == customerId);
@@ -306,8 +294,6 @@ public static class BillingEndpoints
                             ? tenant.SubscriptionCurrentPeriodEnd.Value
                             : DateTime.UtcNow;
                     tenant.SubscriptionCurrentPeriodEnd = from.AddDays(30);
-                    if (!string.IsNullOrEmpty(billingId))
-                        tenant.AbacatePayBillingId = billingId;
                     // Clear the billing URL so the next /billing/pay generates a fresh link
                     tenant.AbacatePayBillingUrl = null;
                     logger.LogInformation("Subscription activated for tenant {Slug}, period ends {End}",
@@ -401,8 +387,13 @@ public static class BillingEndpoints
                     break;
 
                 case "billing.cancelled":
+                case "subscription.canceled":
                     tenant.SubscriptionStatus = SubscriptionStatus.Canceled;
                     logger.LogInformation("Subscription cancelled for tenant {Slug}", tenant.Slug);
+                    break;
+
+                case "subscription.created":
+                    logger.LogInformation("Subscription created for tenant {Slug}", tenant.Slug);
                     break;
 
                 default:
@@ -414,5 +405,67 @@ public static class BillingEndpoints
             return Results.Ok();
 
         }).AllowAnonymous();
+    }
+
+    // Gets or creates the checkout URL for this tenant.
+    // CARD  → AbacatePay subscription (auto-recurring, card only)
+    // PIX   → AbacatePay billing with MULTIPLE_PAYMENTS (manual each month)
+    private static async Task<string?> EnsureSubscriptionCheckoutAsync(
+        Domain.Entities.Tenant tenant,
+        AbacatePayService abacatePay,
+        string returnUrl,
+        Infra.Data.AppDbContext db,
+        string? paymentMethod = null)
+    {
+        var isPix = string.Equals(paymentMethod, "PIX", StringComparison.OrdinalIgnoreCase);
+
+        if (isPix)
+        {
+            var billing = await abacatePay.CreateBillingAsync(
+                customerId: tenant.AbacatePayCustomerId ?? string.Empty,
+                tenantSlug: tenant.Slug,
+                tenantName: tenant.Name,
+                returnUrl: returnUrl,
+                priceCents: tenant.SubscriptionPriceCents,
+                methods: ["PIX"]);
+
+            if (billing is null) return null;
+
+            tenant.AbacatePayBillingId  = billing.Id;   // avulso — não sobrescreve subscription
+            tenant.AbacatePayBillingUrl = billing.Url;
+            await db.SaveChangesAsync();
+
+            return billing.Url;
+        }
+
+        // CARD: use subscription flow (auto-recurring)
+        // 1. Get or create the subscription product (created once per tenant, reused after)
+        if (string.IsNullOrEmpty(tenant.AbacatePaySubscriptionProductId))
+        {
+            var product = await abacatePay.CreateSubscriptionProductAsync(
+                externalId: $"sub-product-{tenant.Slug}",
+                name: $"Assinatura Agendofy — {tenant.Name}",
+                priceCents: tenant.SubscriptionPriceCents,
+                description: $"Mensalidade da plataforma Agendofy para {tenant.Name}");
+
+            if (product is null) return null;
+
+            tenant.AbacatePaySubscriptionProductId = product.Id;
+            await db.SaveChangesAsync();
+        }
+
+        // 2. Create the subscription checkout
+        var subscription = await abacatePay.CreateSubscriptionAsync(
+            productId: tenant.AbacatePaySubscriptionProductId,
+            customerId: tenant.AbacatePayCustomerId,
+            returnUrl: returnUrl);
+
+        if (subscription is null) return null;
+
+        tenant.AbacatePaySubscriptionId = subscription.Id;  // recorrente — campo próprio
+        tenant.AbacatePayBillingUrl     = subscription.Url;
+        await db.SaveChangesAsync();
+
+        return subscription.Url;
     }
 }

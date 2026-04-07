@@ -143,6 +143,25 @@ export function emptyState(icon, text) {
   return `<div class="empty-state"><div class="empty-state-icon">${icon}</div><div class="empty-state-text">${text}</div></div>`;
 }
 
+// CPF/CNPJ mask: 000.000.000-00 (CPF, 11 digits) or 00.000.000/0001-00 (CNPJ, 14 digits)
+export function applyTaxIdMask(input) {
+  const fmt = v => {
+    const d = v.replace(/\D/g, '').slice(0, 14);
+    if (d.length <= 11) {
+      // CPF
+      if (d.length <= 3) return d;
+      if (d.length <= 6) return `${d.slice(0,3)}.${d.slice(3)}`;
+      if (d.length <= 9) return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6)}`;
+      return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
+    }
+    // CNPJ
+    if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
+    return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
+  };
+  input.value = fmt(input.value);
+  input.addEventListener('input', () => { input.value = fmt(input.value); });
+}
+
 // Phone mask: (XX) XXXX-XXXX (10 digits) or (XX) XXXXX-XXXX (11 digits)
 export function applyPhoneMask(input) {
   const fmt = v => {

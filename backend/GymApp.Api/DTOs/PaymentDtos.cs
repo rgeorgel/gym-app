@@ -2,7 +2,9 @@ using GymApp.Domain.Enums;
 
 namespace GymApp.Api.DTOs;
 
-public record CheckoutRequest(Guid PackageTemplateId);
+/// <param name="PackageTemplateId">Plan to purchase.</param>
+/// <param name="PaymentMethod">"PIX" or "CREDIT_CARD". Defaults to PIX.</param>
+public record CheckoutRequest(Guid PackageTemplateId, string? PaymentMethod);
 
 public record CheckoutResponse(
     Guid PaymentId,

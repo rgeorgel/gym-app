@@ -1,5 +1,5 @@
 import { api } from '../api.js?v=202603311200';
-import { showToast, formatDate, confirm, applyPhoneMask } from '../ui.js?v=202603311200';
+import { showToast, formatDate, confirm, applyPhoneMask, applyTaxIdMask, createModal, openModal, closeModal } from '../ui.js?v=202603311200';
 
 export async function renderBilling(container) {
   container.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -34,7 +34,7 @@ function buildPage(s) {
   const isPastDue   = s.status === 'PastDue';
   const isCanceled  = s.status === 'Canceled';
   const canSetup    = !isActive;
-  const canRenew    = isActive;
+  const canRenew    = isActive && !s.hasCardSubscription;
   const canCancel   = isActive;
 
   let infoHtml = '';
@@ -107,8 +107,8 @@ function buildPage(s) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">Configurar pagamento</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">
-            A assinatura é cobrada mensalmente via PIX (AbacatePay).
-            Após clicar em continuar, você será redirecionado para efetuar o pagamento.
+            A assinatura é cobrada mensalmente via PIX ou Cartão de Crédito (AbacatePay).
+            Após clicar em continuar, você escolhe a forma de pagamento e é redirecionado.
           </p>
           <button class="btn btn-primary" id="btnSetupBilling">Configurar pagamento →</button>
         </div>
@@ -119,7 +119,7 @@ function buildPage(s) {
         <div class="card-body" style="padding:1.5rem">
           <h3 style="margin:0 0 0.25rem">Renovar assinatura</h3>
           <p class="text-muted text-sm" style="margin:0 0 1.25rem">
-            Adiciona mais 30 dias ao vencimento atual. O pagamento é feito via PIX (AbacatePay).
+            Adiciona mais 30 dias ao vencimento atual. Aceita PIX ou Cartão de Crédito (AbacatePay).
           </p>
           <button class="btn btn-primary" id="btnPayNow">Pagar agora →</button>
         </div>
@@ -137,56 +137,63 @@ function buildPage(s) {
       </div>` : ''}
 
     </div>
-
-    <!-- Setup payment modal (inline — avoids DOM element stringification issues with createModal) -->
-    <div id="modalSetupBilling" class="modal-overlay hidden">
-      <div class="modal" role="dialog" aria-modal="true">
-        <div class="modal-header">
-          <h2 class="modal-title">Configurar pagamento</h2>
-          <button class="modal-close" id="btnCloseSetupModal" aria-label="Fechar">✕</button>
-        </div>
-        <div class="modal-body">
-          <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
-          <div class="form-group">
-            <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
-            <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Telefone (WhatsApp)</label>
-            <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
-          </div>
-          <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" id="btnCancelSetupModal">Cancelar</button>
-          <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
-        </div>
-      </div>
-    </div>
   `;
 }
 
-function showModal(container) {
-  container.querySelector('#modalSetupBilling').classList.remove('hidden');
-}
-
-function hideModal(container) {
-  container.querySelector('#modalSetupBilling').classList.add('hidden');
-}
-
-function attachEvents(container) {
-  applyPhoneMask(container.querySelector('#inputPhone'));
-  container.querySelector('#btnSetupBilling')?.addEventListener('click', () => {
-    showModal(container);
+function openSetupModal(container) {
+  createModal({
+    id: 'modalSetupBilling',
+    title: 'Configurar pagamento',
+    body: `
+      <p class="text-muted text-sm" style="margin:0 0 1.25rem">Informe os dados para cadastro no sistema de cobrança.</p>
+      <div class="form-group">
+        <label class="form-label">CPF / CNPJ <span style="color:var(--color-danger)">*</span></label>
+        <input class="form-control" id="inputTaxId" placeholder="000.000.000-00 ou 00.000.000/0001-00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone (WhatsApp)</label>
+        <input class="form-control" id="inputPhone" placeholder="(11) 99999-9999">
+      </div>
+      <div class="form-group" style="margin-top:1rem">
+        <label class="form-label">Forma de pagamento</label>
+        <div style="display:flex;gap:0.75rem;margin-top:0.4rem">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;flex:1;border:1px solid var(--gray-300);border-radius:var(--border-radius);padding:0.65rem 0.9rem;transition:border-color 0.15s" id="labelPix">
+            <input type="radio" name="paymentMethod" value="PIX" checked style="accent-color:var(--brand-secondary)">
+            🏦 PIX
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;flex:1;border:1px solid var(--gray-300);border-radius:var(--border-radius);padding:0.65rem 0.9rem;transition:border-color 0.15s" id="labelCard">
+            <input type="radio" name="paymentMethod" value="CARD" style="accent-color:var(--brand-secondary)">
+            💳 Cartão de Crédito
+          </label>
+        </div>
+      </div>
+      <div id="setupError" style="display:none;color:var(--color-danger);font-size:0.875rem;margin-top:0.5rem"></div>
+    `,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal('modalSetupBilling')">Cancelar</button>
+      <button class="btn btn-primary" id="btnConfirmSetup">Continuar para pagamento</button>
+    `
   });
+  openModal('modalSetupBilling');
 
-  container.querySelector('#btnCloseSetupModal')?.addEventListener('click', () => hideModal(container));
-  container.querySelector('#btnCancelSetupModal')?.addEventListener('click', () => hideModal(container));
+  applyTaxIdMask(document.getElementById('inputTaxId'));
+  applyPhoneMask(document.getElementById('inputPhone'));
 
-  container.querySelector('#btnConfirmSetup')?.addEventListener('click', async () => {
-    const taxId = container.querySelector('#inputTaxId').value.trim();
-    const phone = container.querySelector('#inputPhone').value.trim();
-    const errEl = container.querySelector('#setupError');
+  // Highlight selected method
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('labelPix').style.borderColor = '';
+      document.getElementById('labelCard').style.borderColor = '';
+      radio.closest('label').style.borderColor = 'var(--brand-secondary)';
+    });
+  });
+  document.getElementById('labelPix').style.borderColor = 'var(--brand-secondary)';
+
+  document.getElementById('btnConfirmSetup').addEventListener('click', async () => {
+    const taxId = document.getElementById('inputTaxId').value.trim();
+    const phone = document.getElementById('inputPhone').value.trim();
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value ?? 'PIX';
+    const errEl = document.getElementById('setupError');
 
     if (!taxId) {
       errEl.textContent = 'Informe o CPF ou CNPJ.';
@@ -195,13 +202,13 @@ function attachEvents(container) {
     }
     errEl.style.display = 'none';
 
-    const btn = container.querySelector('#btnConfirmSetup');
+    const btn = document.getElementById('btnConfirmSetup');
     btn.disabled = true;
     btn.textContent = 'Aguarde...';
 
     try {
-      const res = await api.post('/billing/setup', { taxId, phone: phone || null });
-      hideModal(container);
+      const res = await api.post('/billing/setup', { taxId, phone: phone || null, paymentMethod });
+      closeModal('modalSetupBilling');
       if (res.url) {
         showToast('Redirecionando para o pagamento...', 'success');
         window.open(res.url, '_blank');
@@ -213,23 +220,69 @@ function attachEvents(container) {
       btn.textContent = 'Continuar para pagamento';
     }
   });
+}
 
-  container.querySelector('#btnPayNow')?.addEventListener('click', async () => {
-    const btn = container.querySelector('#btnPayNow');
-    btn.disabled = true;
-    btn.textContent = 'Aguarde...';
-    try {
-      const res = await api.post('/billing/pay', {});
-      if (res.url) {
-        showToast('Redirecionando para o pagamento...', 'success');
-        window.open(res.url, '_blank');
+function openPayMethodModal(onConfirm) {
+  createModal({
+    id: 'modalPayMethod',
+    title: 'Forma de pagamento',
+    body: `
+      <div style="display:flex;gap:0.75rem;margin-top:0.25rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;flex:1;border:1px solid var(--brand-secondary);border-radius:var(--border-radius);padding:0.75rem 0.9rem" id="payLabelPix">
+          <input type="radio" name="payMethod" value="PIX" checked style="accent-color:var(--brand-secondary)">
+          🏦 PIX
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;flex:1;border:1px solid var(--gray-300);border-radius:var(--border-radius);padding:0.75rem 0.9rem" id="payLabelCard">
+          <input type="radio" name="payMethod" value="CARD" style="accent-color:var(--brand-secondary)">
+          💳 Cartão de Crédito
+        </label>
+      </div>
+    `,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal('modalPayMethod')">Cancelar</button>
+      <button class="btn btn-primary" id="btnConfirmPayMethod">Continuar →</button>
+    `
+  });
+  openModal('modalPayMethod');
+
+  document.querySelectorAll('input[name="payMethod"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('payLabelPix').style.borderColor = '';
+      document.getElementById('payLabelCard').style.borderColor = '';
+      radio.closest('label').style.borderColor = 'var(--brand-secondary)';
+    });
+  });
+
+  document.getElementById('btnConfirmPayMethod').addEventListener('click', () => {
+    const method = document.querySelector('input[name="payMethod"]:checked')?.value ?? 'PIX';
+    closeModal('modalPayMethod');
+    onConfirm(method);
+  });
+}
+
+function attachEvents(container) {
+  container.querySelector('#btnSetupBilling')?.addEventListener('click', () => {
+    openSetupModal(container);
+  });
+
+  container.querySelector('#btnPayNow')?.addEventListener('click', () => {
+    openPayMethodModal(async (paymentMethod) => {
+      const btn = container.querySelector('#btnPayNow');
+      btn.disabled = true;
+      btn.textContent = 'Aguarde...';
+      try {
+        const res = await api.post('/billing/pay', { paymentMethod });
+        if (res.url) {
+          showToast('Redirecionando para o pagamento...', 'success');
+          window.open(res.url, '_blank');
+        }
+      } catch (e) {
+        showToast('Erro: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Pagar agora →';
       }
-    } catch (e) {
-      showToast('Erro: ' + e.message, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Pagar agora →';
-    }
+    });
   });
 
   container.querySelector('#btnCancelBilling')?.addEventListener('click', async () => {

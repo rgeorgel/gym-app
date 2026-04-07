@@ -62,27 +62,52 @@ export async function renderPlans(container) {
 
 async function openPaymentModal(planId, planName) {
   trackEvent('checkout_initiated', { plan_name: planName });
+
   createModal({
     id: 'paymentModal',
-    title: t('store.payment.title'),
-    body: '<div class="loading-center"><span class="spinner"></span></div>',
+    title: t('store.payment.chooseMethod'),
+    body: `
+      <div style="display:flex;flex-direction:column;gap:0.75rem;padding:0.25rem 0">
+        <button class="btn btn-primary" id="payByPix" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;font-size:1rem;padding:0.85rem">
+          <span style="font-size:1.2rem">🏦</span> ${t('store.payment.pix')}
+        </button>
+        <button class="btn btn-secondary" id="payByCard" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;font-size:1rem;padding:0.85rem">
+          <span style="font-size:1.2rem">💳</span> ${t('store.payment.creditCard')}
+        </button>
+      </div>
+    `,
     footer: `<button class="btn btn-secondary" onclick="closeModal('paymentModal')">${t('btn.close')}</button>`
   });
   openModal('paymentModal');
+
+  document.getElementById('payByPix')?.addEventListener('click', () => startCheckout(planId, planName, 'PIX'));
+  document.getElementById('payByCard')?.addEventListener('click', () => startCheckout(planId, planName, 'CARD'));
+}
+
+async function startCheckout(planId, planName, paymentMethod) {
+  const isCreditCard = paymentMethod === 'CARD';
+  const modalTitle = document.querySelector('#paymentModal .modal-title');
+  if (modalTitle) {
+    modalTitle.textContent = isCreditCard ? t('store.payment.title.creditCard') : t('store.payment.title');
+  }
+
+  const body = document.querySelector('#paymentModal .modal-body');
+  if (body) body.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
 
   let pollInterval = null;
   const stopPolling = () => { if (pollInterval) clearInterval(pollInterval); };
 
   try {
-    const payment = await api.post('/payments/checkout', { packageTemplateId: planId });
-    const body = document.querySelector('#paymentModal .modal-body');
+    const payment = await api.post('/payments/checkout', { packageTemplateId: planId, paymentMethod });
 
     // Open the AbacatePay payment page in a new tab
     window.open(payment.billingUrl, '_blank');
 
+    const redirectedMsg = isCreditCard ? t('store.payment.redirected.creditCard') : t('store.payment.redirected');
+
     body.innerHTML = `
       <div style="text-align:center;padding:0.5rem 0">
-        <p style="margin-bottom:1rem">${t('store.payment.redirected')}</p>
+        <p style="margin-bottom:1rem">${redirectedMsg}</p>
         <a href="${payment.billingUrl}" target="_blank" class="btn btn-primary" style="margin-bottom:1.25rem">
           ${t('store.payment.openLink')}
         </a>
@@ -101,7 +126,7 @@ async function openPaymentModal(planId, planName) {
 
         if (status.status === 'Paid') {
           stopPolling();
-          trackEvent('purchase', { plan_name: planName, currency: 'BRL' });
+          trackEvent('purchase', { plan_name: planName, currency: 'BRL', payment_method: paymentMethod });
           if (statusEl) statusEl.innerHTML = `<span style="color:var(--color-success);font-weight:600">${t('store.payment.success')}</span>`;
           setTimeout(() => closeModal('paymentModal'), 3000);
         } else if (status.status === 'Expired' || status.status === 'Cancelled') {
@@ -115,7 +140,6 @@ async function openPaymentModal(planId, planName) {
     document.querySelector('#paymentModal .modal-close')?.addEventListener('click', stopPolling);
 
   } catch (e) {
-    const body = document.querySelector('#paymentModal .modal-body');
     if (body) {
       const msg = e.message?.includes('not configured')
         ? t('store.notConfigured')

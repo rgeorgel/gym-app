@@ -4,7 +4,8 @@ namespace GymApp.Api.DTOs;
 
 public record SetupBillingRequest(
     string? TaxId,
-    string? Phone
+    string? Phone,
+    string? PaymentMethod
 );
 
 public record SubscriptionStatusResponse(
@@ -15,8 +16,11 @@ public record SubscriptionStatusResponse(
     DateTime? TrialEndsAt,
     DateTime? CurrentPeriodEnd,
     string? BillingUrl,
-    int SubscriptionPriceCents
+    int SubscriptionPriceCents,
+    bool HasCardSubscription
 );
+
+public record PayBillingRequest(string? PaymentMethod);
 
 public record SetTrialDaysRequest(int Days);
 public record SetSubscriptionPriceRequest(int PriceCents);

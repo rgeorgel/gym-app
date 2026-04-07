@@ -5,11 +5,15 @@ using System.Text.Json.Serialization;
 
 namespace GymApp.Api.Services;
 
-public record AbacatePayCustomer(
-    string Id,
-    string Name,
-    string Email
-);
+public record AbacatePayCustomer(string Id);
+
+// V2 customer/create response wraps fields inside "metadata"
+public record AbacatePayCustomerV2Response(string Id, AbacatePayCustomerMetadata? Metadata);
+public record AbacatePayCustomerMetadata(string Name, string Email);
+
+public record AbacatePayProduct(string Id, string Name, int Price, string? Cycle, string Status);
+
+public record AbacatePaySubscription(string Id, string Url, string Status);
 
 public record AbacatePayBilling(
     string Id,
@@ -42,12 +46,12 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         PropertyNameCaseInsensitive = true
     };
 
-    private HttpClient CreateClient(string? apiKey = null, string version = "v1")
+    private HttpClient CreateClient(string? apiKey = null)
     {
         apiKey ??= config["AbacatePay:ApiKey"]
             ?? throw new InvalidOperationException("AbacatePay:ApiKey not configured.");
 
-        var client = new HttpClient { BaseAddress = new Uri($"https://api.abacatepay.com/{version}/") };
+        var client = new HttpClient { BaseAddress = new Uri("https://api.abacatepay.com/v2/") };
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         return client;
     }
@@ -58,16 +62,23 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         string apiKey, string name, string email) =>
         CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
 
+    // Normalizes payment method to V2 values: "CARD" or "PIX"
+    public static string[] NormalizeMethods(string[]? methods) =>
+        methods?.Select(m => m.ToUpperInvariant() == "CREDIT_CARD" ? "CARD" : m.ToUpperInvariant()).ToArray()
+        ?? ["PIX"];
+
     public async Task<AbacatePayBilling?> CreateStudentBillingAsync(
-        string apiKey, string customerId, string productName, string studentName, int priceCents, string returnUrl)
+        string apiKey, string customerId, string productName, string studentName, int priceCents, string returnUrl,
+        string[]? methods = null)
     {
         using var client = CreateClient(apiKey);
+        methods = NormalizeMethods(methods);
 
         var displayName = $"{productName} — {studentName}";
         var body = new
         {
             frequency = "ONE_TIME",
-            methods = new[] { "PIX" },
+            methods,
             products = new[]
             {
                 new
@@ -84,7 +95,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             completionUrl = returnUrl
         };
 
-        var response = await client.PostAsync("billing/create",
+        var response = await client.PostAsync("billings/create",
             new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
 
         if (!response.IsSuccessStatusCode)
@@ -119,7 +130,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             taxId = taxId ?? string.Empty
         };
 
-        var response = await client.PostAsync("customer/create",
+        var response = await client.PostAsync("customers/create",
             new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
 
         var responseBody = await response.Content.ReadAsStringAsync();
@@ -132,21 +143,22 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
 
         using var doc = JsonDocument.Parse(responseBody);
         var data = doc.RootElement.GetProperty("data");
-        return JsonSerializer.Deserialize<AbacatePayCustomer>(data.GetRawText(), JsonOpts);
+        var v2 = JsonSerializer.Deserialize<AbacatePayCustomerV2Response>(data.GetRawText(), JsonOpts);
+        return v2 is null ? null : new AbacatePayCustomer(v2.Id);
     }
 
     public async Task<AbacatePayBilling?> CreateBillingAsync(
-        string customerId, string tenantSlug, string tenantName, string adminEmail, string baseUrl,
-        int? priceCents = null)
+        string customerId, string tenantSlug, string tenantName, string returnUrl,
+        int? priceCents = null, string[]? methods = null)
     {
         using var client = CreateClient();
         var subscriptionPrice = priceCents ?? config.GetValue<int>("AbacatePay:SubscriptionPriceCents", 4900);
-        var returnUrl = $"{baseUrl.TrimEnd('/')}/admin/index.html#billing";
+        var normalizedMethods = NormalizeMethods(methods);
 
         var body = new
         {
             frequency = "MULTIPLE_PAYMENTS",
-            methods = new[] { "PIX" },
+            methods = normalizedMethods,
             products = new[]
             {
                 new
@@ -163,7 +175,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             completionUrl = returnUrl
         };
 
-        var response = await client.PostAsync("billing/create",
+        var response = await client.PostAsync("billings/create",
             new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
 
         if (!response.IsSuccessStatusCode)
@@ -178,11 +190,74 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         return JsonSerializer.Deserialize<AbacatePayBilling>(data.GetRawText(), JsonOpts);
     }
 
+    // ── V2 Subscription flow ───────────────────────────────────────────────────
+
+    public async Task<AbacatePayProduct?> CreateSubscriptionProductAsync(
+        string externalId, string name, int priceCents, string description)
+    {
+        using var client = CreateClient();
+
+        var body = new
+        {
+            externalId,
+            name,
+            price = priceCents,
+            currency = "BRL",
+            description,
+            cycle = "MONTHLY"
+        };
+
+        var response = await client.PostAsync("products/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError("AbacatePay CreateSubscriptionProduct failed: {Status} {Body}", response.StatusCode, responseBody);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(responseBody);
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayProduct>(data.GetRawText(), JsonOpts);
+    }
+
+    public async Task<AbacatePaySubscription?> CreateSubscriptionAsync(
+        string productId, string? customerId, string returnUrl)
+    {
+        using var client = CreateClient();
+
+        var body = new
+        {
+            items = new[] { new { id = productId, quantity = 1 } },
+            methods = new[] { "CARD" },
+            customerId,
+            returnUrl,
+            completionUrl = returnUrl
+        };
+
+        var response = await client.PostAsync("subscriptions/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError("AbacatePay CreateSubscription failed: {Status} {Body}", response.StatusCode, responseBody);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(responseBody);
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePaySubscription>(data.GetRawText(), JsonOpts);
+    }
+
     public async Task<bool> CancelBillingAsync(string billingId)
     {
         using var client = CreateClient();
 
-        var response = await client.DeleteAsync($"billing/{billingId}");
+        var response = await client.DeleteAsync($"billings/{billingId}");
 
         if (!response.IsSuccessStatusCode)
         {

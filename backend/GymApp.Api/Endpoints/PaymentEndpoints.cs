@@ -94,9 +94,15 @@ public static class PaymentEndpoints
             var returnUrl = $"{uri.Scheme}://{tenantRecord.Slug}.{uri.Host}/app/index.html#my-packages";
 
             var priceCents = (int)Math.Round(amount * 100);
+            var method = req.PaymentMethod?.ToUpperInvariant() switch
+            {
+                "CREDIT_CARD" => new[] { "CREDIT_CARD" },
+                _ => new[] { "PIX" }
+            };
+
             var billing = await abacatePay.CreateStudentBillingAsync(
                 apiKey, studentUser.AbacatePayCustomerId,
-                template.Name, studentUser.Name, priceCents, returnUrl);
+                template.Name, studentUser.Name, priceCents, returnUrl, method);
 
             if (billing is null)
                 return Results.Problem("Failed to create payment.", statusCode: 502);

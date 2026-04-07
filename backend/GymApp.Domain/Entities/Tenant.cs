@@ -32,9 +32,16 @@ public class Tenant
     public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Trial;
     public DateTime? SubscriptionCurrentPeriodEnd { get; set; }
     public string? AbacatePayCustomerId { get; set; }
+    /// <summary>ID da cobrança avulsa mais recente (PIX). Usado para cancelar cobranças manuais.</summary>
     public string? AbacatePayBillingId { get; set; }
     public string? AbacatePayBillingUrl { get; set; }
     public DateTime? LastReminderSentAt { get; set; }
+
+    // AbacatePay subscription product ID (V2 — created once per tenant, reused)
+    public string? AbacatePaySubscriptionProductId { get; set; }
+
+    /// <summary>ID da assinatura recorrente via cartão (V2 /subscriptions/create). Separado do billing avulso.</summary>
+    public string? AbacatePaySubscriptionId { get; set; }
 
     // AbacatePay key for student payments (tenant's own account)
     public string? AbacatePayStudentApiKey { get; set; }
