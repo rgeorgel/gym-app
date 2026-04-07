@@ -443,7 +443,7 @@ public static class BillingEndpoints
         if (string.IsNullOrEmpty(tenant.AbacatePaySubscriptionProductId))
         {
             var product = await abacatePay.CreateSubscriptionProductAsync(
-                externalId: $"sub-product-{tenant.Slug}",
+                externalId: $"sub-product-{tenant.Slug}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}",
                 name: $"Assinatura Agendofy — {tenant.Name}",
                 priceCents: tenant.SubscriptionPriceCents,
                 description: $"Mensalidade da plataforma Agendofy para {tenant.Name}");
