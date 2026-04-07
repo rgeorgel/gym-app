@@ -201,7 +201,7 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
         {
             externalId,
             name,
-            price = priceCents,
+            price = priceCents / 100,   // products API expects BRL reais, not cents
             currency = "BRL",
             description,
             cycle = "MONTHLY"
