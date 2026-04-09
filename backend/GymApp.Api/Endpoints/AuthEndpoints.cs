@@ -36,13 +36,20 @@ public static class AuthEndpoints
             var user = tenantCtx.IsResolved
                 ? await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantCtx.TenantId && u.Email == email)
                 : await db.Users.FirstOrDefaultAsync(u => u.Email == email
-                      && (u.Role == UserRole.SuperAdmin || u.Role == UserRole.Affiliate));
+                      && (u.Role == UserRole.SuperAdmin || u.Role == UserRole.Affiliate || u.Role == UserRole.Admin));
 
             if (user is null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
                 return Results.Unauthorized();
 
             if (user.Status != GymApp.Domain.Enums.StudentStatus.Active)
                 return Results.Forbid();
+
+            // If tenant wasn't resolved yet (login from landing page), resolve from the user's own tenant
+            if (!tenantCtx.IsResolved && user.TenantId != Guid.Empty)
+            {
+                var t = await db.Tenants.AsNoTracking().FirstOrDefaultAsync(t => t.Id == user.TenantId);
+                if (t is not null) tenantCtx.Resolve(t.Id, t.Slug);
+            }
 
             var (access, refresh) = GenerateTokens(user, config);
             user.RefreshToken = refresh;

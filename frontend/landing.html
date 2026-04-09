@@ -1552,6 +1552,7 @@ footer {
       <li><a href="#como-funciona">Como funciona</a></li>
       <li><a href="#preco">Preço</a></li>
       <li><a href="#faq">FAQ</a></li>
+      <li><a href="#" onclick="openLoginModal();return false;" style="font-weight:600;">Entrar</a></li>
       <li><a href="#cadastro" class="btn-nav">Começar grátis →</a></li>
     </ul>
     <button class="nav-hamburger" id="hamburger" aria-label="Menu">
@@ -1570,6 +1571,7 @@ footer {
   <a href="#como-funciona" onclick="closeMobile()">Como funciona</a>
   <a href="#preco" onclick="closeMobile()">Preço</a>
   <a href="#faq" onclick="closeMobile()">FAQ</a>
+  <a href="#" onclick="closeMobile();openLoginModal();return false;" style="font-weight:600;">Entrar</a>
   <a href="#cadastro" class="btn-nav-mobile" onclick="closeMobile()">Começar grátis →</a>
 </div>
 
@@ -2564,6 +2566,87 @@ window.addEventListener('scroll', () => {
   80% { transform: translateX(4px); }
 }
 </style>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;width:100%;max-width:400px;margin:16px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;">
+    <button onclick="closeLoginModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:#64748B;font-size:20px;line-height:1;">✕</button>
+    <h2 style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:700;color:#060A14;margin-bottom:6px;">Entrar na sua conta</h2>
+    <p style="font-size:14px;color:#64748B;margin-bottom:24px;">Acesse o painel do seu espaço</p>
+    <form id="landing-login-form" novalidate>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">E-mail</label>
+        <input id="ll-email" type="email" autocomplete="email" placeholder="seu@email.com" required
+          style="width:100%;padding:10px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#3563E9'" onblur="this.style.borderColor='#E2E8F0'">
+      </div>
+      <div style="margin-bottom:8px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Senha</label>
+        <input id="ll-password" type="password" autocomplete="current-password" placeholder="••••••••" required
+          style="width:100%;padding:10px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#3563E9'" onblur="this.style.borderColor='#E2E8F0'">
+      </div>
+      <div style="text-align:right;margin-bottom:20px;">
+        <a href="/reset-password.html" style="font-size:13px;color:#3563E9;text-decoration:none;">Esqueci a senha</a>
+      </div>
+      <div id="ll-error" style="display:none;background:#FEF2F2;color:#DC2626;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;"></div>
+      <button type="submit" id="ll-btn"
+        style="width:100%;padding:12px;background:#3563E9;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s;"
+        onmouseover="this.style.background='#2348C4'" onmouseout="this.style.background='#3563E9'">
+        Entrar
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openLoginModal() {
+  var modal = document.getElementById('login-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('ll-email').focus(); }, 50);
+}
+function closeLoginModal() {
+  document.getElementById('login-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.getElementById('login-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLoginModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLoginModal();
+});
+document.getElementById('landing-login-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('ll-btn');
+  var errorEl = document.getElementById('ll-error');
+  var email = document.getElementById('ll-email').value.trim();
+  var password = document.getElementById('ll-password').value;
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  errorEl.style.display = 'none';
+  try {
+    var res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    if (!res.ok) throw new Error(res.status);
+    var data = await res.json();
+    localStorage.setItem('access_token', data.accessToken);
+    localStorage.setItem('refresh_token', data.refreshToken);
+    localStorage.setItem('user', JSON.stringify({ id: data.userId, name: data.name, role: data.role }));
+    if (data.tenantSlug) localStorage.setItem('tenant_slug', data.tenantSlug);
+    if (data.role === 'SuperAdmin') location.href = '/superadmin/index.html';
+    else if (data.role === 'Admin') location.href = '/admin/index.html';
+    else if (data.role === 'Affiliate') location.href = '/affiliate/index.html';
+    else location.href = '/app/index.html';
+  } catch (err) {
+    errorEl.textContent = 'E-mail ou senha inválidos.';
+    errorEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+</script>
 
 </body>
 </html>
