@@ -139,7 +139,29 @@ public class DemoSeedService(AppDbContext db)
                 }
 
                 await Del<Instructor>("Instructor",             ids => db.Instructors.Where(x => ids.Contains(x.Id)));
+                await Del<FinancialTransaction>("FinancialTransaction", ids => db.FinancialTransactions.Where(x => ids.Contains(x.Id)));
+                await Del<Expense>("Expense",                   ids => db.Expenses.Where(x => ids.Contains(x.Id)));
                 await Del<User>("User",                         ids => db.Users.Where(x => ids.Contains(x.Id)));
+
+                // Cascade-safe: delete any Sessions/Bookings still referencing demo ClassTypes
+                // (handles sessions not individually tracked, or created after the seed)
+                var demoCtIds = await db.DemoSeedLogs
+                    .Where(l => l.TenantId == tenantId && l.EntityType == "ClassType")
+                    .Select(l => l.EntityId).ToListAsync();
+                if (demoCtIds.Count > 0)
+                {
+                    var ctSet = demoCtIds.ToHashSet();
+                    var orphanIds = await db.Sessions
+                        .Where(s => s.ClassTypeId != null && ctSet.Contains(s.ClassTypeId.Value))
+                        .Select(s => s.Id).ToListAsync();
+                    if (orphanIds.Count > 0)
+                    {
+                        var osSet = orphanIds.ToHashSet();
+                        await db.Bookings.Where(b => osSet.Contains(b.SessionId)).ExecuteDeleteAsync();
+                        await db.Sessions.Where(s => s.ClassTypeId != null && ctSet.Contains(s.ClassTypeId.Value)).ExecuteDeleteAsync();
+                    }
+                }
+
                 await Del<ClassType>("ClassType",               ids => db.ClassTypes.Where(x => ids.Contains(x.Id)));
                 await Del<ServiceCategory>("ServiceCategory",   ids => db.ServiceCategories.Where(x => ids.Contains(x.Id)));
                 await Del<Location>("Location",                 ids => db.Locations.Where(x => ids.Contains(x.Id)));
@@ -269,6 +291,9 @@ public class DemoSeedService(AppDbContext db)
         // Sessions + Bookings
         var instructors = new[] { profFernanda, profBeatriz };
         await CreateSessionsAndBookingsAsync(tid, location.Id, services, clients, instructors, packageMap, logs, isSalon: true);
+
+        // Financial data
+        await SeedFinancialAsync(tenant, clients, services, logs);
     }
 
     // ── Gym seed ────────────────────────────────────────────────────────────
@@ -381,6 +406,9 @@ public class DemoSeedService(AppDbContext db)
         // Sessions + Bookings
         await CreateSessionsAndBookingsAsync(tid, location.Id, classTypes, students,
             instructorPair, packageMap, logs, isSalon: false);
+
+        // Financial data
+        await SeedFinancialAsync(tenant, students, classTypes, logs);
     }
 
     // ── Shared session/booking generation ───────────────────────────────────
@@ -523,6 +551,162 @@ public class DemoSeedService(AppDbContext db)
 
         await db.SaveChangesAsync();
     }
+
+    // ── Financial seed ──────────────────────────────────────────────────────
+
+    private async Task SeedFinancialAsync(Tenant tenant, User[] clients, ClassType[] classTypes, List<DemoSeedLog> logs)
+    {
+        var tid = tenant.Id;
+        void Track(string type, Guid id) => logs.Add(new DemoSeedLog { TenantId = tid, EntityType = type, EntityId = id });
+
+        var today    = DateOnly.FromDateTime(DateTime.UtcNow);
+        var prevM    = new DateOnly(today.Year, today.Month, 1).AddMonths(-1);
+        int prevDays = DateTime.DaysInMonth(prevM.Year, prevM.Month);
+        bool isSalon = tenant.TenantType == TenantType.BeautySalon;
+
+        // Package-like price per service (monthly total for gym, per-session for salon)
+        static decimal TxAmount(ClassType ct, bool salon) =>
+            salon ? (ct.Price ?? 50m) : Math.Round((ct.Price ?? 50m) * 4m, 2);
+
+        int slot = 0;
+        for (int i = 0; i < clients.Length; i++)
+        {
+            var client = clients[i];
+            var ct     = classTypes[i % classTypes.Length];
+            var amount = TxAmount(ct, isSalon);
+
+            // Transaction in previous month
+            int day = Math.Min(((i * 3 + 2) % (prevDays - 1)) + 1, prevDays);
+            var (pm, feePct, inst) = PickPaymentMethod(slot++);
+            var feeAmt = Math.Round(amount * feePct / 100m, 2);
+            var prevTx = new FinancialTransaction
+            {
+                TenantId          = tid,
+                Date              = prevM.AddDays(day - 1),
+                StudentId         = client.Id,
+                StudentName       = client.Name,
+                ServiceName       = isSalon ? ct.Name : $"Plano Mensal – {ct.Name}",
+                GrossAmount       = amount,
+                PaymentMethod     = pm,
+                Installments      = inst,
+                CardFeePercentage = feePct,
+                CardFeeAmount     = feeAmt,
+                NetAmount         = amount - feeAmt,
+            };
+            db.FinancialTransactions.Add(prevTx);
+            Track("FinancialTransaction", prevTx.Id);
+
+            // Extra transaction for ~1/3 of clients in prev month (additional service)
+            if (i % 3 == 1)
+            {
+                var ct2    = classTypes[(i + 1) % classTypes.Length];
+                var amt2   = TxAmount(ct2, isSalon);
+                int day2   = Math.Min(((i * 5 + 12) % (prevDays - 1)) + 1, prevDays);
+                var (pm2, fee2, inst2) = PickPaymentMethod(slot++);
+                var fee2Amt = Math.Round(amt2 * fee2 / 100m, 2);
+                var prevTx2 = new FinancialTransaction
+                {
+                    TenantId          = tid,
+                    Date              = prevM.AddDays(day2 - 1),
+                    StudentId         = client.Id,
+                    StudentName       = client.Name,
+                    ServiceName       = isSalon ? ct2.Name : $"Plano Mensal – {ct2.Name}",
+                    GrossAmount       = amt2,
+                    PaymentMethod     = pm2,
+                    Installments      = inst2,
+                    CardFeePercentage = fee2,
+                    CardFeeAmount     = fee2Amt,
+                    NetAmount         = amt2 - fee2Amt,
+                };
+                db.FinancialTransactions.Add(prevTx2);
+                Track("FinancialTransaction", prevTx2.Id);
+            }
+
+            // Transaction in current month for first 2/3 of clients
+            if (today.Day >= 5 && i < (clients.Length * 2 / 3))
+            {
+                int curDay = Math.Min(((i * 2 + 1) % Math.Min(today.Day - 1, 28)) + 1, today.Day - 1);
+                var (pm3, fee3, inst3) = PickPaymentMethod(slot++);
+                var fee3Amt = Math.Round(amount * fee3 / 100m, 2);
+                var curTx = new FinancialTransaction
+                {
+                    TenantId          = tid,
+                    Date              = new DateOnly(today.Year, today.Month, curDay),
+                    StudentId         = client.Id,
+                    StudentName       = client.Name,
+                    ServiceName       = isSalon ? ct.Name : $"Plano Mensal – {ct.Name}",
+                    GrossAmount       = amount,
+                    PaymentMethod     = pm3,
+                    Installments      = inst3,
+                    CardFeePercentage = fee3,
+                    CardFeeAmount     = fee3Amt,
+                    NetAmount         = amount - fee3Amt,
+                };
+                db.FinancialTransactions.Add(curTx);
+                Track("FinancialTransaction", curTx.Id);
+            }
+        }
+
+        await db.SaveChangesAsync();
+
+        // Recurring expense templates — dated 2 months ago so the auto-gen system
+        // creates copies for both the previous month and the current month
+        var twoMonthsAgo = new DateOnly(today.Year, today.Month, 1).AddMonths(-2);
+
+        (string Cat, string Desc, decimal Amt)[] recurring = isSalon
+            ? [
+                ("Locação",    "Aluguel do espaço",          2200m),
+                ("Utilidades", "Água e Energia Elétrica",      280m),
+                ("Serviços",   "Internet e Telefone",          150m),
+                ("Software",   "Sistema de Agendamento",        99m),
+              ]
+            : [
+                ("Locação",    "Aluguel da academia",         3500m),
+                ("Utilidades", "Água e Energia Elétrica",      650m),
+                ("Serviços",   "Internet e Telefone",          150m),
+                ("Software",   "Sistema de Gestão",             99m),
+              ];
+
+        foreach (var (cat, desc, amt) in recurring)
+        {
+            var exp = new Expense { TenantId = tid, Date = twoMonthsAgo, Category = cat, Description = desc, Amount = amt, IsRecurring = true };
+            db.Expenses.Add(exp);
+            Track("Expense", exp.Id);
+        }
+
+        // One-time expenses in previous month
+        (string Cat, string Desc, decimal Amt, int DayOff)[] oneTime = isSalon
+            ? [
+                ("Produtos",   "Tintas e produtos químicos",    420m, 5),
+                ("Manutenção", "Cadeiras e lavatório",          280m, 12),
+                ("Marketing",  "Anúncios e material gráfico",   220m, 18),
+              ]
+            : [
+                ("Manutenção", "Revisão de equipamentos",       580m, 4),
+                ("Suprimentos","Toalhas e produtos de limpeza", 220m, 11),
+                ("Marketing",  "Anúncios em redes sociais",     300m, 20),
+              ];
+
+        foreach (var (cat, desc, amt, dayOff) in oneTime)
+        {
+            var exp = new Expense { TenantId = tid, Date = prevM.AddDays(dayOff), Category = cat, Description = desc, Amount = amt, IsRecurring = false };
+            db.Expenses.Add(exp);
+            Track("Expense", exp.Id);
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+    private static (PaymentMethod Method, decimal FeePercent, int Installments) PickPaymentMethod(int idx) =>
+        (idx % 6) switch
+        {
+            0 => (PaymentMethod.Pix,        0m,   1),
+            1 => (PaymentMethod.Pix,        0m,   1),
+            2 => (PaymentMethod.DebitCard,  1.5m, 1),
+            3 => (PaymentMethod.CreditCard, 2.5m, 1),
+            4 => (PaymentMethod.CreditCard, 3.5m, 3),
+            _ => (PaymentMethod.Cash,       0m,   1),
+        };
 
     // ── Helpers ─────────────────────────────────────────────────────────────
 

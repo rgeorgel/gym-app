@@ -33,7 +33,14 @@
       "Bash(tr -d '' node -e \":*)",
       "Bash(cat /c/code/personal/gym-app/backend/GymApp.Domain/Enums/*.cs)",
       "Bash(find /c/code/personal/gym-app -type f -name *.conf -o -name nginx.conf -o -name *.json -path */package.json)",
-      "Bash(grep -rl \"from ''''.*\\\\.js''''\" /c/code/personal/gym-app/frontend/js/)"
+      "Bash(grep -rl \"from ''''.*\\\\.js''''\" /c/code/personal/gym-app/frontend/js/)",
+      "Bash(del \"C:\\\\code\\\\personal\\\\gym-app\\\\backend\\\\GymApp.Domain\\\\obj\\\\Debug\\\\net10.0\\\\GymApp.Domain.AssemblyInfoInputs.cache\")",
+      "Bash(del \"C:\\\\code\\\\personal\\\\gym-app\\\\backend\\\\GymApp.Infra\\\\obj\\\\Debug\\\\net10.0\\\\GymApp.Infra.csproj.CoreCompileInputs.cache\")",
+      "Bash(del \"C:\\\\code\\\\personal\\\\gym-app\\\\backend\\\\GymApp.Infra\\\\obj\\\\Debug\\\\net10.0\\\\GymApp.Infra.AssemblyInfoInputs.cache\")",
+      "Bash(python -c \"import graphify\")",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(start:*)"
     ]
   }
 }
