@@ -2,6 +2,7 @@ using GymApp.Api.DTOs;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Enums;
 using GymApp.Infra.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymApp.Api.Endpoints;
@@ -42,7 +43,7 @@ public static class WhatsAppBotEndpoints
 
         // ── Professionals ─────────────────────────────────────────────────────
         // GET /api/bot/tenants/:tenant_id/professionals?service_id=xxx
-        group.MapGet("/tenants/{tenantId:guid}/professionals", async (Guid tenantId, Guid? serviceId, AppDbContext db) =>
+        group.MapGet("/tenants/{tenantId:guid}/professionals", async (Guid tenantId, [FromQuery(Name = "service_id")] Guid? serviceId, AppDbContext db) =>
         {
             if (!await TenantExistsAndEnabled(db, tenantId))
                 return Results.NotFound();
@@ -76,9 +77,9 @@ public static class WhatsAppBotEndpoints
         // GET /api/bot/tenants/:tenant_id/availability?service_id=xxx&date=2026-04-17&professional_id=xxx
         group.MapGet("/tenants/{tenantId:guid}/availability", async (
             Guid tenantId,
-            Guid serviceId,
+            [FromQuery(Name = "service_id")] Guid serviceId,
             DateOnly date,
-            Guid? professionalId,
+            [FromQuery(Name = "professional_id")] Guid? professionalId,
             AppDbContext db) =>
         {
             if (!await TenantExistsAndEnabled(db, tenantId))
@@ -192,8 +193,11 @@ public static class WhatsAppBotEndpoints
             AppDbContext db) =>
         {
             var tenant = await db.Tenants.AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Id == tenantId && t.IsActive && t.WhatsAppAutoServiceEnabled);
+                .FirstOrDefaultAsync(t => t.Id == tenantId && t.IsActive);
             if (tenant is null) return Results.NotFound();
+
+            if (!tenant.WhatsAppAutoServiceEnabled)
+                return Results.Problem("WhatsApp auto-service is not enabled for this tenant.", statusCode: 403);
 
             // Validate service
             var service = await db.ClassTypes.AsNoTracking()
@@ -506,7 +510,13 @@ public static class WhatsAppBotEndpoints
         });
     }
 
+    // Read-only public endpoints: just require the tenant to be active.
+    // WhatsAppAutoServiceEnabled is only required for creating appointments.
     private static async Task<bool> TenantExistsAndEnabled(AppDbContext db, Guid tenantId) =>
+        await db.Tenants.AsNoTracking()
+            .AnyAsync(t => t.Id == tenantId && t.IsActive);
+
+    private static async Task<bool> TenantHasAutoService(AppDbContext db, Guid tenantId) =>
         await db.Tenants.AsNoTracking()
             .AnyAsync(t => t.Id == tenantId && t.IsActive && t.WhatsAppAutoServiceEnabled);
 }
