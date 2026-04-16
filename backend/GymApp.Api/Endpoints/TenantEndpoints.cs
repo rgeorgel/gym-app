@@ -1,4 +1,5 @@
 using GymApp.Api.DTOs;
+using GymApp.Api.Services;
 using GymApp.Domain.Entities;
 using GymApp.Domain.Interfaces;
 using GymApp.Infra.Data;
@@ -368,6 +369,78 @@ public static class TenantEndpoints
             return Results.Ok(ToSettingsResponse(tenant));
         });
 
+        // WhatsApp auto-service: enable (creates Evolution instance)
+        settingsGroup.MapPost("/whatsapp-autoservice", async (
+            EnableWhatsAppAutoServiceRequest req,
+            AppDbContext db,
+            TenantContext tenantCtx,
+            EvolutionApiService evolution) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            if (string.IsNullOrWhiteSpace(req.PhoneNumber))
+                return Results.BadRequest("PhoneNumber is required.");
+
+            // Use slug as instance name (unique, URL-safe)
+            var instanceName = tenant.Slug;
+
+            try
+            {
+                await evolution.CreateInstanceAsync(instanceName, req.PhoneNumber);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to create WhatsApp instance: {ex.Message}");
+            }
+
+            tenant.WhatsAppInstanceName = instanceName;
+            tenant.WhatsAppAutoServiceEnabled = true;
+            tenant.SocialWhatsApp = req.PhoneNumber.Trim();
+            await db.SaveChangesAsync();
+
+            return Results.Ok(new WhatsAppAutoServiceStateResponse(true, instanceName, "created"));
+        });
+
+        // WhatsApp auto-service: get state
+        settingsGroup.MapGet("/whatsapp-autoservice", async (
+            AppDbContext db,
+            TenantContext tenantCtx,
+            EvolutionApiService evolution) =>
+        {
+            var tenant = await db.Tenants.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            string? state = null;
+            if (tenant.WhatsAppAutoServiceEnabled && tenant.WhatsAppInstanceName is not null)
+                state = await evolution.GetInstanceStateAsync(tenant.WhatsAppInstanceName);
+
+            return Results.Ok(new WhatsAppAutoServiceStateResponse(
+                tenant.WhatsAppAutoServiceEnabled,
+                tenant.WhatsAppInstanceName,
+                state));
+        });
+
+        // WhatsApp auto-service: disable (deletes Evolution instance)
+        settingsGroup.MapDelete("/whatsapp-autoservice", async (
+            AppDbContext db,
+            TenantContext tenantCtx,
+            EvolutionApiService evolution) =>
+        {
+            var tenant = await db.Tenants.FindAsync(tenantCtx.TenantId);
+            if (tenant is null) return Results.NotFound();
+
+            if (tenant.WhatsAppInstanceName is not null)
+                await evolution.DeleteInstanceAsync(tenant.WhatsAppInstanceName);
+
+            tenant.WhatsAppInstanceName = null;
+            tenant.WhatsAppAutoServiceEnabled = false;
+            await db.SaveChangesAsync();
+
+            return Results.Ok(ToSettingsResponse(tenant));
+        });
+
         adminGroup.MapPut("/{id:guid}", async (Guid id, UpdateTenantRequest req, AppDbContext db) =>
         {
             if (!IsValidHexColor(req.PrimaryColor) || !IsValidHexColor(req.SecondaryColor))
@@ -401,7 +474,9 @@ public static class TenantEndpoints
             SocialWhatsApp: t.SocialWhatsApp,
             SocialWebsite: t.SocialWebsite,
             SocialTikTok: t.SocialTikTok,
-            AiEnabled: t.AiEnabled);
+            AiEnabled: t.AiEnabled,
+            WhatsAppAutoServiceEnabled: t.WhatsAppAutoServiceEnabled,
+            WhatsAppInstanceName: t.WhatsAppInstanceName);
 
     private static bool IsValidHexColor(string? color) =>
         !string.IsNullOrWhiteSpace(color) && Regex.IsMatch(color.Trim(), @"^#[0-9a-fA-F]{6}$");

@@ -67,6 +67,11 @@ public class Tenant
     /// <summary>Affiliate referral code used when this tenant registered.</summary>
     public string? AffiliateReferralCode { get; set; }
 
+    // ── WhatsApp Auto-Service (Evolution API) ─────────────────────────────
+    /// <summary>Evolution API instance name linked to this tenant's WhatsApp number.</summary>
+    public string? WhatsAppInstanceName { get; set; }
+    public bool WhatsAppAutoServiceEnabled { get; set; } = false;
+
     /// <summary>True while in trial, while paid and active, or during the
     /// remaining paid period after a cancellation.</summary>
     public bool HasStudentAccess => IsActive && SubscriptionStatus switch

@@ -79,7 +79,9 @@ public record TenantSettingsResponse(
     string? SocialWhatsApp,
     string? SocialWebsite,
     string? SocialTikTok,
-    bool AiEnabled = false
+    bool AiEnabled = false,
+    bool WhatsAppAutoServiceEnabled = false,
+    string? WhatsAppInstanceName = null
 );
 
 public record SetAiEnabledRequest(bool Enabled);
@@ -154,3 +156,6 @@ public record SelfSignupResponse(
     string Slug,
     string AdminEmail
 );
+
+public record EnableWhatsAppAutoServiceRequest(string PhoneNumber);
+public record WhatsAppAutoServiceStateResponse(bool Enabled, string? InstanceName, string? InstanceState);

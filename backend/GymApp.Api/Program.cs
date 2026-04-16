@@ -112,6 +112,14 @@ builder.Services.AddHttpClient("MiMo", client =>
             "Bearer", builder.Configuration["AI:ApiKey"] ?? "");
     client.Timeout = TimeSpan.FromSeconds(60);
 });
+
+// Evolution API (WhatsApp auto-service)
+builder.Services.AddHttpClient("Evolution", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Evolution:BaseUrl"] ?? "http://localhost:8080");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddScoped<GymApp.Api.Services.EvolutionApiService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AiAssistantService>();
 builder.Services.AddScoped<DemoSeedService>();
@@ -162,6 +170,7 @@ app.MapSystemConfigEndpoints();
 app.MapDemoEndpoints();
 app.MapAiAssistantEndpoints();
 app.MapLocationEndpoints();
+app.MapWhatsAppBotEndpoints();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "healthy", Time = DateTime.UtcNow }));
 

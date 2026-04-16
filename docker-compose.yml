@@ -60,6 +60,8 @@ services:
       AI__Model: "${AI_MODEL:-mimo-v2-omni}"
       AI__MaxTokens: "${AI_MAX_TOKENS:-2048}"
       AI__MaxToolRounds: "${AI_MAX_TOOL_ROUNDS:-5}"
+      Evolution__BaseUrl: "${EVOLUTION_BASE_URL:-http://evolution-api:8080}"
+      Evolution__ApiKey: "${EVOLUTION_API_KEY:-}"
     networks:
       - gymapp
     healthcheck:

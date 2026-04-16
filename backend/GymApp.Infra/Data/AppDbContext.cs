@@ -374,6 +374,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.Property(x => x.AffiliateReferralCode).HasMaxLength(50);
         });
+
+        // Tenant: WhatsApp instance
+        modelBuilder.Entity<Tenant>(e =>
+        {
+            e.Property(x => x.WhatsAppInstanceName).HasMaxLength(200);
+        });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
