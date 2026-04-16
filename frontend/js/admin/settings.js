@@ -234,6 +234,50 @@ export async function renderSettings(container) {
         </div>
       </div>
 
+      <div class="card">
+        <div class="card-body" style="padding:1.5rem">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem">
+            <h3 style="margin:0">Auto-atendimento WhatsApp</h3>
+            ${settings.whatsAppAutoServiceEnabled
+              ? `<span class="badge badge-success">Ativo</span>`
+              : `<span class="badge badge-gray">Inativo</span>`
+            }
+          </div>
+          <p class="text-muted text-sm" style="margin:0 0 1.25rem">
+            Permite que seus clientes agendem diretamente pelo WhatsApp, sem precisar acessar o link de agendamento.
+            Utiliza a Evolution API para conectar o número da sua empresa.
+          </p>
+
+          ${settings.whatsAppAutoServiceEnabled ? `
+            <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--border-radius);padding:1rem;margin-bottom:1.25rem">
+              <div style="display:grid;gap:0.4rem">
+                <div style="display:flex;gap:0.5rem;font-size:0.875rem">
+                  <span class="text-muted" style="min-width:100px">Instância:</span>
+                  <code style="color:var(--gray-700)">${settings.whatsAppInstanceName ?? '—'}</code>
+                </div>
+                <div style="display:flex;gap:0.5rem;font-size:0.875rem">
+                  <span class="text-muted" style="min-width:100px">Número:</span>
+                  <span>${settings.socialWhatsApp ?? '—'}</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-danger btn-sm" id="btnDisableWhatsApp">Desativar auto-atendimento</button>
+          ` : `
+            <div class="form-group" style="margin:0 0 1rem">
+              <label class="form-label">Número do WhatsApp <span style="color:var(--danger)">*</span></label>
+              <input class="form-control" id="inputWhatsAppPhone" type="tel"
+                placeholder="5511999999999"
+                value="${settings.socialWhatsApp ? settings.socialWhatsApp.replace(/\D/g,'') : ''}"
+                style="max-width:280px">
+              <p class="text-sm text-muted" style="margin:0.3rem 0 0">
+                Apenas dígitos, com DDI. Ex.: <code>5511999999999</code>
+              </p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btnEnableWhatsApp">Ativar auto-atendimento</button>
+          `}
+        </div>
+      </div>
+
       ${!isSalon ? `
       <div class="card" style="grid-column:1/-1">
         <div class="card-body" style="padding:1.5rem">
@@ -447,6 +491,39 @@ export async function renderSettings(container) {
       showToast(t('error.prefix') + e.message, 'error');
     } finally {
       btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnEnableWhatsApp')?.addEventListener('click', async () => {
+    const phone = document.getElementById('inputWhatsAppPhone').value.trim().replace(/\D/g, '');
+    if (!phone) { showToast('Informe o número do WhatsApp', 'error'); return; }
+    const btn = document.getElementById('btnEnableWhatsApp');
+    btn.disabled = true;
+    btn.textContent = 'Ativando…';
+    try {
+      await api.post('/settings/whatsapp-autoservice', { phoneNumber: phone });
+      showToast('Auto-atendimento ativado!', 'success');
+      await renderSettings(container);
+    } catch (e) {
+      showToast('Erro ao ativar: ' + e.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Ativar auto-atendimento';
+    }
+  });
+
+  document.getElementById('btnDisableWhatsApp')?.addEventListener('click', async () => {
+    if (!confirm('Desativar o auto-atendimento vai remover a instância no Evolution. Confirmar?')) return;
+    const btn = document.getElementById('btnDisableWhatsApp');
+    btn.disabled = true;
+    btn.textContent = 'Desativando…';
+    try {
+      await api.delete('/settings/whatsapp-autoservice');
+      showToast('Auto-atendimento desativado.', 'success');
+      await renderSettings(container);
+    } catch (e) {
+      showToast('Erro ao desativar: ' + e.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Desativar auto-atendimento';
     }
   });
 
