@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace GymApp.Api.DTOs;
 
 // GET /tenants/by-instance
@@ -16,11 +18,11 @@ public record BotAvailabilityResponse(string Date, IList<BotSlotItem> Slots);
 
 // POST /tenants/:id/appointments
 public record BotCreateAppointmentRequest(
-    Guid ServiceId,
-    Guid ProfessionalId,
-    DateTime Datetime,
-    string ClientName,
-    string ClientPhone
+    [property: JsonPropertyName("service_id")]      Guid ServiceId,
+    [property: JsonPropertyName("professional_id")] Guid ProfessionalId,
+    [property: JsonPropertyName("datetime")]        DateTime Datetime,
+    [property: JsonPropertyName("client_name")]     string ClientName,
+    [property: JsonPropertyName("client_phone")]    string ClientPhone
 );
 
 public record BotAppointmentResponse(
@@ -39,6 +41,6 @@ public record BotAppointmentResponse(
 
 // PATCH /tenants/:id/appointments/:appointmentId
 public record BotRescheduleRequest(
-    DateTime NewDatetime,
-    Guid? ProfessionalId = null
+    [property: JsonPropertyName("new_datetime")]    DateTime NewDatetime,
+    [property: JsonPropertyName("professional_id")] Guid? ProfessionalId = null
 );
