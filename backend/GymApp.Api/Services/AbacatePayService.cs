@@ -95,8 +95,11 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             completionUrl = returnUrl
         };
 
+        var jsonBody = JsonSerializer.Serialize(body, JsonOpts);
+        logger.LogDebug("AbacatePay CreateStudentBilling request: {Body}", jsonBody);
+
         var response = await client.PostAsync("billings/create",
-            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+            new StringContent(jsonBody, Encoding.UTF8, "application/json"));
 
         if (!response.IsSuccessStatusCode)
         {
@@ -130,10 +133,14 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
             taxId = taxId ?? string.Empty
         };
 
+        var jsonBody = JsonSerializer.Serialize(body, JsonOpts);
+        logger.LogDebug("AbacatePay CreateCustomer request: {Body}", jsonBody);
+
         var response = await client.PostAsync("customers/create",
-            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+            new StringContent(jsonBody, Encoding.UTF8, "application/json"));
 
         var responseBody = await response.Content.ReadAsStringAsync();
+        logger.LogDebug("AbacatePay CreateCustomer response: {Status} {Body}", response.StatusCode, responseBody);
 
         if (!response.IsSuccessStatusCode)
         {
