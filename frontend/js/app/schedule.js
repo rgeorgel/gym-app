@@ -23,6 +23,12 @@ export async function renderSchedule(container) {
     <div id="scheduleList" class="sessions-list"><div class="loading-center"><span class="spinner"></span></div></div>
   `;
 
+  const pendingDate = sessionStorage.getItem('pendingGymDate');
+  if (pendingDate) {
+    sessionStorage.removeItem('pendingGymDate');
+    currentDate = new Date(pendingDate + 'T12:00:00');
+  }
+
   await loadLocations();
   if (tenantType !== 'BeautySalon') await loadPackages();
   renderLocationFilter();
@@ -171,7 +177,15 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
   if (!session) return;
   trackEvent('view_class', { class_type: session.classTypeName });
 
+  // Auto-open pending session from public gym schedule flow
+  let pendingGymSession = null;
+  try {
+    const stored = sessionStorage.getItem('pendingGymSession');
+    pendingGymSession = stored ? JSON.parse(stored) : null;
+  } catch { }
+
   const isBeautySalon = tenantType === 'BeautySalon';
+  const loc = locations.find(l => l.id === session.locationId);
   const loc = locations.find(l => l.id === session.locationId);
 
   // Get available package items for this class type (gym only)
@@ -237,6 +251,11 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
     `
   });
   openModal('sessionModal');
+
+  if (pendingGymSession && pendingGymSession.sessionId === sessionId && !isBooked && !isFull) {
+    const btnBook = document.getElementById('btnBook');
+    if (btnBook) setTimeout(() => btnBook.click(), 100);
+  }
 
   document.getElementById('btnBook')?.addEventListener('click', async () => {
     const body = isBeautySalon

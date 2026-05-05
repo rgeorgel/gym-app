@@ -72,6 +72,14 @@
     const user = getUser();
     document.getElementById('navUserName').textContent = user?.name ?? '';
 
+    // Check for pending gym session from public schedule flow
+    const pendingGym = (() => {
+      try {
+        const stored = sessionStorage.getItem('pendingGymSession');
+        return stored ? JSON.parse(stored) : null;
+      } catch { return null; }
+    })();
+
     // Build tab configuration based on business type
     const tabsConfig = isBeautySalon
       ? [
@@ -104,6 +112,12 @@
       `).join('');
 
     let currentTab = defaultTab;
+
+    // If gym user came from public schedule with pending session, switch to schedule tab
+    if (pendingGym && !isBeautySalon) {
+      sessionStorage.setItem('pendingGymSession', JSON.stringify(pendingGym));
+      sessionStorage.setItem('pendingGymDate', pendingGym.selectedDate || pendingGym.date);
+    }
 
     async function switchTab(tab) {
       if (!tabs[tab]) return;

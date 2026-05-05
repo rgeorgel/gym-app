@@ -210,8 +210,9 @@
             classTypeName: session.classTypeName,
             classTypeId: session.classTypeId,
             slotsAvailable: session.slotsAvailable,
+            selectedDate: toDateStr(currentDate),
           }));
-          location.href = `/login.html?slug=${encodeURIComponent(slug)}&redirect=/gym/index.html`;
+          location.href = `/login.html?slug=${encodeURIComponent(slug)}&redirect=/app/index.html`;
         };
       } catch (e) {
         list.innerHTML = `<div class="empty-state"><p>Erro ao carregar horários.</p></div>`;
@@ -250,7 +251,7 @@
           <p style="font-size:var(--font-size-sm);color:var(--gray-600)">Você precisa estar logado para reservar esta aula.</p>
           <div style="display:flex;gap:0.75rem;margin-top:1.25rem">
             <button class="btn btn-secondary" style="flex:1" onclick="closePendingModal()">Fechar</button>
-            <a href="/login.html?slug=${encodeURIComponent(slug)}&redirect=/gym/index.html" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">Fazer Login</a>
+            <a href="/login.html?slug=${encodeURIComponent(slug)}&redirect=/app/index.html" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">Fazer Login</a>
           </div>
         </div>
       `;
