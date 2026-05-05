@@ -159,6 +159,9 @@ function storeSession(data) {
 }
 
 function redirectByRole(role) {
+  const redirect = new URLSearchParams(location.search).get('redirect');
+  if (redirect && role === 'Student') { location.href = redirect; return; }
+
   if (role === 'SuperAdmin') { location.href = '/superadmin/index.html'; return; }
   if (role === 'Admin') { location.href = '/admin/index.html'; return; }
   if (role === 'Affiliate') { location.href = '/affiliate/index.html'; return; }

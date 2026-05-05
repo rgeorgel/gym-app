@@ -13,6 +13,77 @@ public static class SessionEndpoints
     {
         var group = app.MapGroup("/api/sessions").RequireAuthorization();
 
+        // Public endpoint for gym schedule (no auth required) — mirrors the catalog flow for BeautySalon
+        app.MapGet("/api/public/sessions", async (
+            AppDbContext db, TenantContext tenant,
+            DateOnly? from, DateOnly? to) =>
+        {
+            var start = from ?? DateOnly.FromDateTime(DateTime.Today);
+            var end = to ?? start.AddDays(13);
+
+            var schedulesQuery = db.Schedules.AsNoTracking()
+                .Include(s => s.ClassType)
+                .Include(s => s.Instructor).ThenInclude(i => i!.User)
+                .Where(s => s.TenantId == tenant.TenantId && s.IsActive);
+
+            if (tenant.LocationId.HasValue)
+                schedulesQuery = schedulesQuery.Where(s => s.LocationId == tenant.LocationId.Value);
+
+            var schedules = await schedulesQuery.ToListAsync();
+            var scheduleIds = schedules.Select(s => s.Id).ToList();
+
+            var existingSessions = await db.Sessions.AsNoTracking()
+                .Include(s => s.ClassType)
+                .Include(s => s.Schedule).ThenInclude(s => s!.Instructor).ThenInclude(i => i!.User)
+                .Where(s => s.ScheduleId != null && scheduleIds.Contains(s.ScheduleId!.Value) && s.Date >= start && s.Date <= end)
+                .ToListAsync();
+
+            var existingKeys = existingSessions.Select(s => (s.ScheduleId, s.Date)).ToHashSet();
+
+            var toCreate = new List<Session>();
+            for (var date = start; date <= end; date = date.AddDays(1))
+            {
+                var dayOfWeek = (int)date.DayOfWeek;
+                foreach (var schedule in schedules.Where(s => s.Weekday == dayOfWeek))
+                {
+                    if (!existingKeys.Contains((schedule.Id, date)))
+                    {
+                        toCreate.Add(new Session
+                        {
+                            ScheduleId = schedule.Id,
+                            TenantId = schedule.TenantId,
+                            ClassTypeId = schedule.ClassTypeId,
+                            LocationId = schedule.LocationId,
+                            StartTime = schedule.StartTime,
+                            DurationMinutes = schedule.DurationMinutes,
+                            Date = date,
+                            SlotsAvailable = schedule.Capacity
+                        });
+                    }
+                }
+            }
+
+            if (toCreate.Count > 0)
+            {
+                db.Sessions.AddRange(toCreate);
+                await db.SaveChangesAsync();
+                var newSessions = await db.Sessions.AsNoTracking()
+                    .Include(s => s.ClassType)
+                    .Include(s => s.Schedule).ThenInclude(s => s!.Instructor).ThenInclude(i => i!.User)
+                    .Where(s => toCreate.Select(c => c.Id).Contains(s.Id))
+                    .ToListAsync();
+                existingSessions.AddRange(newSessions);
+            }
+
+            var result = existingSessions
+                .Where(s => s.Date >= start && s.Date <= end)
+                .OrderBy(s => s.Date).ThenBy(s => s.StartTime)
+                .Select(s => ToPublicResponse(s))
+                .ToList();
+
+            return Results.Ok(result);
+        }).AllowAnonymous();
+
         // Get or generate sessions for a date range (gym only — salon uses /api/slots)
         group.MapGet("/", async (
             AppDbContext db, TenantContext tenant,
@@ -178,6 +249,20 @@ public static class SessionEndpoints
         s.Schedule?.Capacity ?? 1,
         s.SlotsAvailable, s.Status,
         s.Bookings.Count(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.CheckedIn),
+        s.LocationId
+    );
+
+    internal static SessionResponse ToPublicResponse(Session s) => new(
+        s.Id, s.ScheduleId, s.Date, s.StartTime, s.DurationMinutes,
+        s.ClassTypeId,
+        s.ClassType?.Name ?? "",
+        s.ClassType?.Color ?? "#ccc",
+        s.ClassType?.Price,
+        s.ClassType?.ModalityType ?? ModalityType.Group,
+        s.Schedule?.Instructor?.User.Name,
+        s.Schedule?.Capacity ?? 1,
+        s.SlotsAvailable, s.Status,
+        0,
         s.LocationId
     );
 }
