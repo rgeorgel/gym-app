@@ -22,6 +22,13 @@ public record AbacatePayBilling(
     string? CustomerId
 );
 
+public record AbacatePayCheckout(
+    string Id,
+    string Url,
+    string Status,
+    string? CustomerId
+);
+
 public record AbacatePayWebhookEvent(
     string Event,
     AbacatePayWebhookData? Data
@@ -61,6 +68,70 @@ public class AbacatePayService(IConfiguration config, ILogger<AbacatePayService>
     public Task<AbacatePayCustomer?> CreateStudentCustomerAsync(
         string apiKey, string name, string email) =>
         CreateCustomerCoreAsync(CreateClient(apiKey), name, email, null, null);
+
+    public async Task<AbacatePayProduct?> GetOrCreateProductAsync(
+        string apiKey, string externalId, string name, string description, int priceCents)
+    {
+        using var client = CreateClient(apiKey);
+
+        var body = new
+        {
+            externalId,
+            name,
+            price = priceCents,
+            currency = "BRL",
+            description
+        };
+
+        var response = await client.PostAsync("products/create",
+            new StringContent(JsonSerializer.Serialize(body, JsonOpts), Encoding.UTF8, "application/json"));
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError("AbacatePay GetOrCreateProduct failed: {Status} {Body}", response.StatusCode, responseBody);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(responseBody);
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayProduct>(data.GetRawText(), JsonOpts);
+    }
+
+    public async Task<AbacatePayCheckout?> CreateStudentCheckoutAsync(
+        string apiKey, string customerId, string productId, string returnUrl,
+        string[]? methods = null)
+    {
+        using var client = CreateClient(apiKey);
+        methods = NormalizeMethods(methods);
+
+        var body = new
+        {
+            items = new[] { new { id = productId, quantity = 1 } },
+            customerId,
+            methods,
+            returnUrl,
+            completionUrl = returnUrl
+        };
+
+        var jsonBody = JsonSerializer.Serialize(body, JsonOpts);
+        logger.LogInformation("AbacatePay CreateStudentCheckout request: {Body}", jsonBody);
+
+        var response = await client.PostAsync("checkouts/create",
+            new StringContent(jsonBody, Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            logger.LogError("AbacatePay CreateStudentCheckout failed: {Status} {Body}", response.StatusCode, err);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var data = doc.RootElement.GetProperty("data");
+        return JsonSerializer.Deserialize<AbacatePayCheckout>(data.GetRawText(), JsonOpts);
+    }
 
     // Normalizes payment method to V2 values: "CARD" or "PIX"
     public static string[] NormalizeMethods(string[]? methods) =>

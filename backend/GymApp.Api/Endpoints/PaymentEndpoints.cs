@@ -96,15 +96,27 @@ public static class PaymentEndpoints
             var priceCents = (int)Math.Round(amount * 100);
             var method = req.PaymentMethod?.ToUpperInvariant() switch
             {
-                "CREDIT_CARD" => new[] { "CREDIT_CARD" },
+                "CREDIT_CARD" => new[] { "CARD" },
                 _ => new[] { "PIX" }
             };
 
-            var billing = await abacatePay.CreateStudentBillingAsync(
-                apiKey, studentUser.AbacatePayCustomerId,
-                template.Name, studentUser.Name, priceCents, returnUrl, method);
+            // Get or create the AbacatePay product for this package template
+            if (string.IsNullOrEmpty(template.AbacatePayProductId))
+            {
+                var externalId = $"pkg-{template.Id}";
+                var product = await abacatePay.GetOrCreateProductAsync(
+                    apiKey, externalId, template.Name, template.Name, priceCents);
+                if (product is null)
+                    return Results.Problem("Failed to create product in payment gateway.", statusCode: 502);
+                template.AbacatePayProductId = product.Id;
+                await db.SaveChangesAsync();
+            }
 
-            if (billing is null)
+            var checkout = await abacatePay.CreateStudentCheckoutAsync(
+                apiKey, studentUser.AbacatePayCustomerId,
+                template.AbacatePayProductId, returnUrl, method);
+
+            if (checkout is null)
                 return Results.Problem("Failed to create payment.", statusCode: 502);
 
             var payment = new Payment
@@ -113,15 +125,15 @@ public static class PaymentEndpoints
                 StudentId = studentId,
                 PackageTemplateId = template.Id,
                 Amount = amount,
-                AbacatePayBillingId = billing.Id,
-                AbacatePayBillingUrl = billing.Url,
+                AbacatePayBillingId = checkout.Id,
+                AbacatePayBillingUrl = checkout.Url,
                 ExpiresAt = DateTime.UtcNow.AddHours(24)
             };
 
             db.Payments.Add(payment);
             await db.SaveChangesAsync();
 
-            return Results.Ok(new CheckoutResponse(payment.Id, amount, billing.Url, payment.ExpiresAt));
+            return Results.Ok(new CheckoutResponse(payment.Id, amount, checkout.Url, payment.ExpiresAt));
         }).RequireAuthorization("AnyUser");
 
         // Student: poll payment status
