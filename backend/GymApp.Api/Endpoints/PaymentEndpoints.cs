@@ -221,6 +221,29 @@ public static class PaymentEndpoints
             if (package is not null)
                 payment.AssignedPackageId = package.Id;
 
+            // Record revenue in FinancialTransactions for the admin financial dashboard
+            var templateName = payment.PackageTemplate?.Name ?? "Pacote";
+            var student = await db.Users.AsNoTracking()
+                .Where(u => u.Id == payment.StudentId && u.TenantId == payment.TenantId)
+                .Select(u => u.Name)
+                .FirstOrDefaultAsync();
+
+            db.FinancialTransactions.Add(new GymApp.Domain.Entities.FinancialTransaction
+            {
+                TenantId = payment.TenantId,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                StudentId = payment.StudentId,
+                StudentName = student,
+                ServiceName = $"Compra de pacote — {templateName}",
+                GrossAmount = payment.Amount,
+                PaymentMethod = GymApp.Domain.Enums.PaymentMethod.Pix,
+                Installments = 1,
+                CardFeePercentage = 0,
+                CardFeeAmount = 0,
+                NetAmount = payment.Amount,
+                Notes = $"Pagamento via AbacatePay | Payment ID: {payment.Id}"
+            });
+
             await db.SaveChangesAsync();
 
             logger.LogInformation("Student payment confirmed: paymentId={P}, tenant={T}", payment.Id, payment.TenantId);
