@@ -13,10 +13,14 @@
       color: var(--brand-text-on-primary, #fff);
       padding: 1.5rem 1rem;
       text-align: center;
+      position: relative;
     }
     .gym-header img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; margin-bottom: 0.5rem; }
     .gym-header h1 { margin: 0 0 0.25rem; font-size: 1.4rem; }
     .gym-header p { margin: 0; opacity: 0.85; font-size: 0.85rem; }
+    .gym-header-actions { position: absolute; top: 1rem; right: 1rem; }
+    .btn-login-header { padding: 0.4rem 1rem; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.6); background: transparent; color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.15s, border-color 0.15s; }
+    .btn-login-header:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.9); }
     .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.875rem; }
     .social-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; background: rgba(255,255,255,0.18); color: #fff; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
 
@@ -57,7 +61,12 @@
   </style>
 </head>
 <body>
-  <div class="gym-header" id="gymHeader"><div class="loading-center"><span class="spinner"></span></div></div>
+  <div class="gym-header" id="gymHeader">
+    <div class="gym-header-actions">
+      <a href="#" class="btn-login-header" id="btnLoginHeader" style="display:none">🔐 Entrar</a>
+    </div>
+    <div class="loading-center"><span class="spinner"></span></div>
+  </div>
 
   <div class="gym-content">
     <div class="day-selector" id="daySelector"></div>
@@ -129,6 +138,13 @@
         `;
         header.style.background = primaryColor;
         header.style.color = textColor;
+
+        const isLoggedIn = !!localStorage.getItem('access_token');
+        const btnLogin = document.getElementById('btnLoginHeader');
+        if (!isLoggedIn) {
+          btnLogin.style.display = 'inline-flex';
+          btnLogin.href = `/login.html?slug=${encodeURIComponent(slug)}`;
+        }
       } catch (e) {
         document.getElementById('gymHeader').innerHTML = `<h1>Horários Disponíveis</h1>`;
       }
