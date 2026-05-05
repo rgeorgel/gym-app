@@ -70,7 +70,7 @@
         <div class="nav-item" data-page="referral">
           <span class="nav-icon">🎁</span> <span>Indicar &amp; Ganhar</span>
         </div>
-        <a class="nav-item" href="/panfleto/" target="_blank" style="text-decoration:none;color:inherit">
+        <a class="nav-item" href="/panfleto/" target="_blank" style="text-decoration:none;color:inherit" id="navPanfleto">
           <span class="nav-icon">🖼️</span> <span>Criar Panfleto</span>
         </a>
 
@@ -155,6 +155,12 @@
 
     const config = await loadTenantTheme();
     const isBeautySalon = config?.tenantType === 'BeautySalon';
+
+    // Hide Panfleto for gyms (only makes sense for salons)
+    if (!isBeautySalon) {
+      const panfletoLink = document.getElementById('navPanfleto');
+      if (panfletoLink) panfletoLink.style.display = 'none';
+    }
 
     // Load locations for the location selector
     const { getLocationId } = await import('/js/api.js?v=202603311200');
