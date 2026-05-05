@@ -8,6 +8,10 @@
   <style>
     body { background: var(--bg-secondary, #f5f5f5); min-height: 100vh; }
 
+    .gym-topbar { display: flex; justify-content: flex-end; padding: 0.75rem 1rem; background: var(--primary, #6c63ff); }
+    .btn-login-header { padding: 0.4rem 1rem; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.6); background: transparent; color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.15s, border-color 0.15s; }
+    .btn-login-header:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.9); }
+
     .gym-header {
       background: var(--primary, #6c63ff);
       color: var(--brand-text-on-primary, #fff);
@@ -18,7 +22,7 @@
     .gym-header img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; margin-bottom: 0.5rem; }
     .gym-header h1 { margin: 0 0 0.25rem; font-size: 1.4rem; }
     .gym-header p { margin: 0; opacity: 0.85; font-size: 0.85rem; }
-    .gym-header-actions { position: absolute; top: 1rem; right: 1rem; }
+    .gym-topbar { display: flex; justify-content: flex-end; padding: 0.75rem 1rem; background: var(--primary, #6c63ff); }
     .btn-login-header { padding: 0.4rem 1rem; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.6); background: transparent; color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.15s, border-color 0.15s; }
     .btn-login-header:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.9); }
     .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.875rem; }
@@ -61,12 +65,11 @@
   </style>
 </head>
 <body>
-  <div class="gym-header" id="gymHeader">
-    <div class="gym-header-actions">
-      <a href="#" class="btn-login-header" id="btnLoginHeader" style="display:none">🔐 Entrar</a>
-    </div>
-    <div class="loading-center"><span class="spinner"></span></div>
+  <div class="gym-topbar" id="gymTopbar" style="display:none">
+    <a href="#" class="btn-login-header" id="btnLoginHeader">🔐 Entrar</a>
   </div>
+
+  <div class="gym-header" id="gymHeader"><div class="loading-center"><span class="spinner"></span></div></div>
 
   <div class="gym-content">
     <div class="day-selector" id="daySelector"></div>
@@ -140,9 +143,10 @@
         header.style.color = textColor;
 
         const isLoggedIn = !!localStorage.getItem('access_token');
+        const topbar = document.getElementById('gymTopbar');
         const btnLogin = document.getElementById('btnLoginHeader');
         if (!isLoggedIn) {
-          btnLogin.style.display = 'inline-flex';
+          topbar.style.display = 'flex';
           btnLogin.href = `/login.html?slug=${encodeURIComponent(slug)}`;
         }
       } catch (e) {
