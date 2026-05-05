@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horários Disponíveis</title>
+  <link rel="stylesheet" href="/css/main.css?v=202603311200">
+  <style>
+    body { background: var(--bg-secondary, #f5f5f5); min-height: 100vh; }
+
+    .gym-header {
+      background: var(--primary, #6c63ff);
+      color: var(--brand-text-on-primary, #fff);
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    .gym-header img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; margin-bottom: 0.5rem; }
+    .gym-header h1 { margin: 0 0 0.25rem; font-size: 1.4rem; }
+    .gym-header p { margin: 0; opacity: 0.85; font-size: 0.85rem; }
+    .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.875rem; }
+    .social-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; background: rgba(255,255,255,0.18); color: #fff; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+
+    .gym-content { max-width: 600px; margin: 0 auto; padding: 1rem; }
+
+    .day-selector { display: flex; gap: 0.5rem; overflow-x: auto; scrollbar-width: none; padding: 0.75rem 0; }
+    .day-selector::-webkit-scrollbar { display: none; }
+    .day-btn { display: flex; flex-direction: column; align-items: center; min-width: 52px; padding: 0.5rem 0.4rem; border-radius: 10px; border: 1.5px solid var(--border-color, #ddd); background: #fff; cursor: pointer; font-size: 0.7rem; color: var(--text-muted, #666); font-weight: 500; transition: border-color 0.15s, background 0.15s, color 0.15s; flex-shrink: 0; }
+    .day-btn .day-name { font-size: 0.65rem; text-transform: uppercase; }
+    .day-btn .day-num { font-size: 1.1rem; font-weight: 700; color: #222; margin: 0.15rem 0; }
+    .day-btn .day-month { font-size: 0.6rem; }
+    .day-btn.active { border-color: var(--primary, #6c63ff); background: var(--primary, #6c63ff); color: #fff; }
+    .day-btn.active .day-num { color: #fff; }
+
+    .sessions-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem; }
+    .session-item { background: #fff; border-radius: 12px; padding: 1rem; display: flex; gap: 0.75rem; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+    .session-item:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .session-item.full { opacity: 0.6; }
+    .session-item.cancelled { opacity: 0.5; }
+    .session-color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .session-time-block { text-align: center; min-width: 50px; }
+    .session-time { font-size: 1rem; font-weight: 700; color: #222; }
+    .session-duration { font-size: 0.7rem; color: #888; }
+    .session-info { flex: 1; }
+    .session-name { font-weight: 600; font-size: 0.95rem; color: #222; }
+    .session-meta { font-size: 0.75rem; color: #888; margin-top: 0.2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .session-slots { text-align: right; min-width: 60px; }
+    .slots-count { font-size: 0.65rem; color: #888; }
+    .slots-available { font-size: 1.2rem; font-weight: 700; color: var(--primary, #6c63ff); }
+    .slots-available.low { color: #e67e22; }
+    .slots-available.full { color: #e74c3c; }
+    .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
+    .badge-danger { background: #fee; color: #e74c3c; }
+
+    .loading-center { text-align: center; padding: 2rem; }
+    .empty-state { text-align: center; padding: 2rem; color: var(--text-muted, #888); }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="gym-header" id="gymHeader"><div class="loading-center"><span class="spinner"></span></div></div>
+
+  <div class="gym-content">
+    <div class="day-selector" id="daySelector"></div>
+    <div id="scheduleList" class="sessions-list"><div class="loading-center"><span class="spinner"></span></div></div>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug') || location.hostname.split('.')[0];
+
+    async function fetchJSON(path) {
+      const res = await fetch('/api' + path, { headers: { 'Content-Type': 'application/json', 'X-Tenant-Slug': slug } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    function toDateStr(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    const DAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+    let currentDate = new Date();
+    let sessions = [];
+
+    async function loadTenantConfig() {
+      try {
+        const config = await fetchJSON('/tenant/config');
+
+        if (config.tenantType !== 'Gym') {
+          location.href = '/app/index.html';
+          return;
+        }
+
+        const primaryColor = config.primaryColor || '#6c63ff';
+        const textColor = config.textColor || '#ffffff';
+        document.documentElement.style.setProperty('--primary', primaryColor);
+        document.documentElement.style.setProperty('--brand-secondary', primaryColor);
+        document.documentElement.style.setProperty('--brand-text-on-primary', textColor);
+        document.title = config.name + ' — Horários';
+
+        const SOCIAL_ICONS = {
+          instagram: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
+        };
+
+        function extractHandle(url, network) {
+          if (!url) return null;
+          try {
+            const path = new URL(url).pathname.replace(/\/+$/, '');
+            const last = path.split('/').filter(Boolean).pop() || '';
+            if (network === 'instagram') return '@' + last.replace(/^@/, '');
+          } catch { return url; }
+          return null;
+        }
+
+        const socialChips = [];
+        if (config.socialInstagram) {
+          const handle = extractHandle(config.socialInstagram, 'instagram');
+          socialChips.push(`<a href="${config.socialInstagram}" target="_blank" rel="noopener" class="social-chip">${SOCIAL_ICONS.instagram}${handle}</a>`);
+        }
+
+        const header = document.getElementById('gymHeader');
+        header.innerHTML = `
+          ${config.logoUrl ? `<img src="${config.logoUrl}" alt="${config.name}">` : ''}
+          <h1>${config.name}</h1>
+          <p>Consulte os horários disponíveis</p>
+          ${socialChips.length ? `<div class="social-links">${socialChips.join('')}</div>` : ''}
+        `;
+        header.style.background = primaryColor;
+        header.style.color = textColor;
+      } catch (e) {
+        document.getElementById('gymHeader').innerHTML = `<h1>Horários Disponíveis</h1>`;
+      }
+    }
+
+    function renderDaySelector() {
+      const container = document.getElementById('daySelector');
+      const days = [];
+      for (let i = 0; i < 14; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        days.push(d);
+      }
+      container.innerHTML = days.map((d) => {
+        const isActive = d.toDateString() === currentDate.toDateString();
+        return `
+          <button class="day-btn ${isActive ? 'active' : ''}" data-date="${toDateStr(d)}">
+            <span class="day-name">${DAY_NAMES[d.getDay()]}</span>
+            <span class="day-num">${d.getDate()}</span>
+            <span class="day-month">${MONTH_NAMES[d.getMonth()]}</span>
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.day-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentDate = new Date(btn.dataset.date + 'T12:00:00');
+          loadSessions();
+        });
+      });
+    }
+
+    async function loadSessions() {
+      const list = document.getElementById('scheduleList');
+      list.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+
+      try {
+        const dateStr = toDateStr(currentDate);
+        sessions = await fetchJSON(`/public/sessions?from=${dateStr}&to=${dateStr}`);
+
+        if (!sessions.length) {
+          list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><p>Nenhum horário disponível neste dia.</p></div>`;
+          return;
+        }
+
+        const modalityLabels = { Group: 'Grupo', Individual: 'Individual', Pair: 'Dupla' };
+
+        list.innerHTML = sessions.map(s => {
+          const isFull = s.slotsAvailable <= 0;
+          const isCancelled = s.status === 'Cancelled';
+          return `
+            <div class="session-item ${isFull ? 'full' : ''} ${isCancelled ? 'cancelled' : ''}" onclick="window._selectSession('${s.id}')">
+              <div class="session-color-dot" style="background:${s.classTypeColor}"></div>
+              <div class="session-time-block">
+                <div class="session-time">${s.startTime?.substring(0, 5) ?? ''}</div>
+                <div class="session-duration">${s.durationMinutes}min</div>
+              </div>
+              <div class="session-info">
+                <div class="session-name">${s.classTypeName}</div>
+                <div class="session-meta">
+                  ${s.instructorName ? `<span>👤 ${s.instructorName}</span>` : ''}
+                  <span>${modalityLabels[s.modalityType] ?? ''}</span>
+                </div>
+              </div>
+              <div class="session-slots">
+                ${isCancelled
+                  ? `<span class="badge badge-danger">Cancelada</span>`
+                  : `<div class="slots-count">vagas</div>
+                     <div class="slots-available ${isFull ? 'full' : s.slotsAvailable <= 3 ? 'low' : ''}">${isFull ? '0' : s.slotsAvailable}</div>`}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        window._selectSession = (sessionId) => {
+          const session = sessions.find(s => s.id === sessionId);
+          if (!session || session.status === 'Cancelled' || session.slotsAvailable <= 0) return;
+          sessionStorage.setItem('pendingGymSession', JSON.stringify({
+            slug,
+            sessionId: session.id,
+            date: session.date,
+            startTime: session.startTime,
+            classTypeName: session.classTypeName,
+            classTypeId: session.classTypeId,
+            slotsAvailable: session.slotsAvailable,
+            selectedDate: toDateStr(currentDate),
+          }));
+          location.href = `/login.html?slug=${encodeURIComponent(slug)}&redirect=/app/index.html`;
+        };
+      } catch (e) {
+        list.innerHTML = `<div class="empty-state"><p>Erro ao carregar horários.</p></div>`;
+      }
+    }
+
+    async function init() {
+      await loadTenantConfig();
+      renderDaySelector();
+      await loadSessions();
+      handlePendingSession();
+    }
+
+    function handlePendingSession() {
+      const stored = sessionStorage.getItem('pendingGymSession');
+      if (!stored) return;
+      try {
+        const data = JSON.parse(stored);
+        if (data.slug !== slug) return;
+        sessionStorage.removeItem('pendingGymSession');
+        const session = sessions.find(s => s.id === data.sessionId);
+        if (session) openLoginModal(session);
+      } catch (e) { }
+    }
+
+    function openLoginModal(session) {
+      const modal = document.createElement('div');
+      modal.id = 'pendingModal';
+      modal.innerHTML = `
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998" onclick="closePendingModal()"></div>
+        <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:1.5rem;max-width:320px;width:90%;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.15)">
+          <h3 style="margin:0 0 1rem;font-size:1.1rem">${session.classTypeName}</h3>
+          <div style="margin-bottom:1rem;font-size:var(--font-size-sm);color:var(--gray-500)">
+            🕐 ${session.startTime?.substring(0, 5)} · ${session.durationMinutes}min
+          </div>
+          <p style="font-size:var(--font-size-sm);color:var(--gray-600)">Você precisa estar logado para reservar esta aula.</p>
+          <div style="display:flex;gap:0.75rem;margin-top:1.25rem">
+            <button class="btn btn-secondary" style="flex:1" onclick="closePendingModal()">Fechar</button>
+            <a href="/login.html?slug=${encodeURIComponent(slug)}&redirect=/app/index.html" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">Fazer Login</a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      window.closePendingModal = () => {
+        document.body.removeChild(modal);
+        delete window.closePendingModal;
+      };
+    }
+
+    init();
+  </script>
+</body>
+</html>
