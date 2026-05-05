@@ -186,7 +186,6 @@ async function openSessionModal(sessionId, isBooked, isFull, bookingId) {
 
   const isBeautySalon = tenantType === 'BeautySalon';
   const loc = locations.find(l => l.id === session.locationId);
-  const loc = locations.find(l => l.id === session.locationId);
 
   // Get available package items for this class type (gym only)
   const items = isBeautySalon ? [] :
